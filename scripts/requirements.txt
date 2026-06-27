@@ -1,0 +1,5 @@
+# Python dependencies for the ingestion/computation scripts.
+# Standard library covers the CSV parsing skeleton; the DB driver is only
+# needed when running with --commit.
+psycopg[binary]>=3.1
+python-dotenv>=1.0
