@@ -43,7 +43,6 @@ export function WineMap({
       },
       center: FRANCE_CENTER,
       zoom: 4.7,
-      attributionControl: true,
     });
     mapRef.current = map;
 
