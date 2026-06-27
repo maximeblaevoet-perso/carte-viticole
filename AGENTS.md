@@ -117,3 +117,4 @@ Key code: `src/lib/types.ts`, `src/lib/indicators.ts`, `src/data/synthetic.ts`,
 - Do not replace real weather data with invented data.
 - Do not remove source/provenance fields.
 - Update the documentation whenever the data model, UX, or methodology changes.
+- Explain shortly each time you make a modification on the documentation

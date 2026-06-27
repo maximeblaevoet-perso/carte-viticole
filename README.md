@@ -6,8 +6,8 @@ frost, and heat episodes. The map is the entry point; a side panel (desktop) or
 bottom sheet (mobile) shows the selected region × vintage.
 
 > **V1 runs on clearly-labelled synthetic data** generated in TypeScript, so it
-> works with no database. Real Météo-France ingestion is prepared (SQL + Python
-> skeleton). See `AGENTS.md` before changing anything.
+> works with no database. Real Météo-France ingestion is prepared (SQL + Python skeleton). 
+> See `AGENTS.md` before changing anything.
 
 ## Stack
 
