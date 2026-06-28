@@ -12,25 +12,22 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Set `DATABASE_URL` (see `../.env.example`) before using `--commit`.
+Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` before using `--commit`.
 
 ## `import_meteo_france.py`
 
-Skeleton importer for Météo-France daily CSV exports into `daily_weather`.
+Importer for Météo-France daily CSV exports into `daily_weather`.
 
 ```bash
-# Dry-run preview (no DB writes)
-python import_meteo_france.py --csv data_raw/Q_33_2018.csv --station 07510
+# Dry-run by default
+python import_meteo_france.py --csv data_raw/Q_33_2018.csv
 
 # Actually write (upsert)
-python import_meteo_france.py --csv data_raw/Q_33_2018.csv --station 07510 --commit
+python import_meteo_france.py --csv data_raw/Q_33_2018.csv --commit
 ```
 
-Rules enforced / intended:
-
-- Imported observations are tagged `source_type = "real"`.
-- The upsert guard never lets synthetic data overwrite real observations.
-- Adjust `COLUMN_MAP` in the script to match your exact CSV export columns.
+Each row uses `NUM_POSTE`, `AAAAMMJJ`, `TX`, `TN`, `TM`, and `RR`, and imported
+observations are tagged `source_type = "real"`.
 
 ## Next steps (not implemented yet)
 
