@@ -29,7 +29,7 @@ wine region + vintage + historical weather + soil type
 ## V1 scope
 
 - Interactive map of wine France.
-- Three test regions: **Bordeaux, Bourgogne, Vallee du Rhone**.
+- Twelve test regions: **Bordeaux, Bourgogne, Vallee du Rhone, Alsace, Champagne, Loire, Corse, Provence, Beaujolais, Jura, Savoie, Languedoc-Roussillon**.
 - Vintages **2000–2024**.
 - Region fiche and region × vintage fiche.
 - Desktop right-side panel; mobile bottom sheet.

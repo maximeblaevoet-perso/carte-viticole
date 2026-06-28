@@ -124,6 +124,29 @@ export function CompareView({
             </table>
           </div>
 
+          <div className="mt-6 grid gap-6">
+            <MonthlyClimateChart
+              title="Températures"
+              subtitle="Max, moyenne et min sur le même graphe. Les séries peuvent être désactivées."
+              mode="temperature"
+              vintages={[
+                { year: yearA, monthly: a.monthly },
+                { year: yearB, monthly: b.monthly },
+              ]}
+              height={240}
+            />
+            <MonthlyClimateChart
+              title="Hygrométrie"
+              subtitle="Comparaison basée sur les précipitations mensuelles disponibles."
+              mode="moisture"
+              vintages={[
+                { year: yearA, monthly: a.monthly },
+                { year: yearB, monthly: b.monthly },
+              ]}
+              height={240}
+            />
+          </div>
+
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             {[
               { v: a, y: yearA },
@@ -140,9 +163,6 @@ export function CompareView({
                   />
                 </div>
                 <FlagChips flags={v.flags} />
-                <div className="mt-3">
-                  <MonthlyClimateChart monthly={v.monthly} height={220} />
-                </div>
                 <p className="mt-2 text-xs leading-relaxed text-slate-600">
                   {v.summary}
                 </p>

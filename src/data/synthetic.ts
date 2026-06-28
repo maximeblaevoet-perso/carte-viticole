@@ -2,7 +2,7 @@
  * Synthetic data engine.
  *
  * This module generates DETERMINISTIC, clearly-labelled synthetic climate data
- * for the three V1 regions and vintages 2000-2024. It demonstrates the real
+ * for the twelve V1 regions and vintages 2000-2024. It demonstrates the real
  * pipeline shape: generate a DAILY series (the source granularity for V1), then
  * roll it up to monthly aggregates and compute the headline indicators.
  *

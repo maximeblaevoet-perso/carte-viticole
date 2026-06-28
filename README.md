@@ -33,7 +33,7 @@ Other scripts: `npm run build`, `npm run typecheck`, `npm run lint`.
   Sources, Methodologie)
 - `/compare?region=&a=&b=` — compare two vintages in the same region
 
-V1 regions: Bordeaux, Bourgogne, Vallee du Rhone. Vintages: 2000–2024.
+V1 regions: Bordeaux, Bourgogne, Vallee du Rhone, Alsace, Champagne, Loire, Corse, Provence, Beaujolais, Jura, Savoie, Languedoc-Roussillon. Vintages: 2000–2024.
 
 ## Project layout
 
@@ -52,6 +52,17 @@ docs              spec, UX, data model, methodology, ADRs
 Apply migrations in order (`supabase/migrations/0001…`, `0002…`, `0003…`) to a
 PostgreSQL instance with PostGIS, e.g. via the Supabase CLI or `psql`. Then use
 `scripts/import_meteo_france.py` to load real daily observations.
+
+### Supabase CLI (local dev, Windows)
+
+Node.js **20+** is required to run the Supabase CLI via `npx`.
+
+Use the commands below (no secrets should be committed):
+
+1. `npx supabase login`
+2. `npx supabase init`
+3. `npx supabase link --project-ref xdlnoqmuomqgtsfjtria`
+4. `npx supabase db push`
 
 ## Data integrity rules (short version)
 

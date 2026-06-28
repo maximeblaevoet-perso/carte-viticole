@@ -8,7 +8,7 @@ import { REGIONS_GEOJSON, WINE_REGIONS } from "@/data/regions";
 const FRANCE_CENTER: [number, number] = [2.6, 46.3];
 
 /**
- * MapLibre map of the three V1 wine regions. Uses a free OSM raster basemap
+ * MapLibre map of the V1 wine regions. Uses a free OSM raster basemap
  * (no API key required). Clicking a region polygon selects it.
  */
 export function WineMap({
