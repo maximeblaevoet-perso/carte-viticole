@@ -37,9 +37,13 @@
   - `indicators.ts`: flag derivation, summaries, metadata, thresholds.
   - `format.ts`: presentation helpers.
 - **`src/data`** — data access for V1.
-  - `regions.ts`: region metadata, baselines, GeoJSON footprints.
+  - `regions.ts`: region metadata, baselines, GeoJSON footprints (level 1).
+  - `areas.ts`: hierarchical `WineArea` tree (région → cru → parcelle) + helpers.
+  - `geo.ts`: geographic contours (kept SEPARATE from the hierarchy), keyed by
+    `geoJsonId`, plus the per-region colour palette.
   - `synthetic.ts`: deterministic daily generator → monthly + indicators.
-  - `soils.ts`, `scores.ts`: synthetic soils and generic scores.
+  - `soils.ts`: synthetic region soils + finer area soils with fallback resolver.
+  - `scores.ts`: generic scores (no protected source).
 - **`src/components`** — React UI (client where stateful/interactive).
 - **`src/app`** — routes.
 - **`supabase/migrations`** — append-only SQL (PostGIS + 7 core tables).
@@ -58,6 +62,7 @@ See `docs/decisions/` (ADRs):
 - 0001 — Next.js + Supabase + PostGIS
 - 0002 — daily weather first
 - 0003 — side panel on desktop
+- 0004 — hierarchical wine areas (see also `docs/wine-hierarchy.md`)
 
 ## Conventions
 

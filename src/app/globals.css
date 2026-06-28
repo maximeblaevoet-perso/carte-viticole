@@ -19,3 +19,36 @@ body {
 .maplibregl-ctrl-attrib {
   font-size: 10px;
 }
+
+/* Premium-ish hover popup for the hierarchical wine map. */
+.wine-popup .maplibregl-popup-content {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #ecd9c4;
+  background: #fbf7ef;
+  box-shadow: 0 6px 20px rgba(74, 27, 38, 0.15);
+}
+.wine-popup .maplibregl-popup-tip {
+  border-top-color: #fbf7ef;
+  border-bottom-color: #fbf7ef;
+}
+.wine-popup .wp-name {
+  font-weight: 700;
+  font-size: 13px;
+  color: #4a1b26;
+}
+.wine-popup .wp-meta {
+  font-size: 11px;
+  color: #7c5a4a;
+}
+.wine-popup .wp-data {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #2f6b40;
+}
+.wine-popup .wp-hint {
+  margin-top: 4px;
+  font-size: 10px;
+  font-style: italic;
+  color: #9a8678;
+}

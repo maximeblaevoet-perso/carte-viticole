@@ -48,11 +48,29 @@ wine_regions 1───* region_soils
 wine_regions 1───* vintage_scores
 ```
 
+## Hierarchical wine areas (map navigation)
+
+The map navigates a NON-uniform hierarchy (région → sous-région → village → cru
+→ parcelle). It is an additive layer on top of `wine_regions`: level-1 areas
+reuse the existing region ids, so climate/soils/scores keep working.
+
+- TS type: `WineArea` (`src/lib/types.ts`); seed tree + helpers in
+  `src/data/areas.ts`; contours kept SEPARATE in `src/data/geo.ts` (keyed by
+  `geoJsonId`).
+- Climate stays macro: sub-areas inherit it via `rootRegionId`. Soils can be
+  finer (`AREA_SOILS` + `getSoilsForArea` fallback). Missing data → "donnée
+  indisponible" (never invented).
+- Future SQL: a self-referencing `wine_areas` table (`id`, `name`, `level`,
+  `parent_id`, `root_region_id`, `region_type`, `geom`/`center`, `zoom_min`,
+  `zoom_max`, `available_data_scopes`) would mirror `WineArea`. Not yet migrated
+  (V1 is frontend-only). See `docs/wine-hierarchy.md` and ADR 0004.
+
 ## TypeScript ↔ SQL mapping
 
 | SQL table                 | TS type                |
 | ------------------------- | ---------------------- |
 | `wine_regions`            | `WineRegion`           |
+| (planned) `wine_areas`    | `WineArea`             |
 | `daily_weather`           | (ingestion only)       |
 | `region_vintage_climate`  | `RegionVintageClimate` |
 | (monthly jsonb)           | `MonthlyClimate[]`     |

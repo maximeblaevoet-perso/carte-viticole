@@ -28,6 +28,81 @@ export interface WineRegion {
   blurb: string;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Hierarchical wine areas (map navigation: region -> sub-region -> village …) */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Depth in the wine hierarchy. The hierarchy is intentionally NON-uniform: a
+ * given branch only goes as deep as we have meaningful divisions/data for it.
+ *
+ * 1 = grande région, 2 = sous-région / zone, 3 = village / appellation,
+ * 4 = cru / climat (1er cru, grand cru…), 5 = lieu-dit / parcelle.
+ */
+export type AreaLevel = 1 | 2 | 3 | 4 | 5;
+
+/**
+ * Editorial classification of an area. Drives labels and (later) styling. This
+ * is descriptive, not a strict 1:1 with {@link AreaLevel} (e.g. a "grand-cru"
+ * can be level 2 in Alsace but level 4 in Bourgogne).
+ */
+export type RegionType =
+  | "region"
+  | "subregion"
+  | "zone"
+  | "village"
+  | "appellation"
+  | "premier-cru"
+  | "grand-cru"
+  | "lieu-dit"
+  | "parcelle";
+
+/**
+ * The kinds of business data that *can* be attached to an area. Used to drive
+ * what the UI offers and to decide when to show a clean "donnée indisponible"
+ * fallback instead of inventing values.
+ */
+export type DataScope = "climate" | "soils" | "scores" | "vintages";
+
+/**
+ * A node in the hierarchical wine map. Geographic contours are kept OUT of this
+ * type (see `geoJsonId` + `src/data/geo.ts`) so business metadata and geometry
+ * evolve independently.
+ */
+export interface WineArea {
+  /** Stable, globally-unique slug across all levels, e.g. "meursault". */
+  id: string;
+  name: string;
+  level: AreaLevel;
+  /** Parent area id, or null for level-1 regions. */
+  parentId: string | null;
+  /**
+   * Id of the level-1 region this node ultimately belongs to. Used to inherit
+   * macro data (e.g. regional climate) without duplicating it down the tree.
+   */
+  rootRegionId: string;
+  regionType: RegionType;
+  /**
+   * Key into the geometry collections in `src/data/geo.ts`. `null` means we
+   * have no contour yet for this node (it can still appear via its center).
+   */
+  geoJsonId: string | null;
+  /** Representative point [lon, lat] for centering, labels and point markers. */
+  center: [number, number];
+  /** Map zoom at/after which this area becomes relevant. */
+  zoomMin: number;
+  /** Map zoom after which this area is hidden (0 = no upper bound). */
+  zoomMax: number;
+  /**
+   * Scopes for which this node carries its OWN data. Climate is deliberately
+   * usually absent below level 1 (climate stays macro/regional for now).
+   */
+  availableDataScopes: DataScope[];
+  blurb?: string;
+  /** Marks seed/placeholder nodes that are not yet validated data. */
+  provisional?: boolean;
+}
+
 /** Calendar month index 1..12. */
 export type MonthIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 

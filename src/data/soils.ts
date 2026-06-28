@@ -3,6 +3,7 @@
  * Editorial / synthetic for V1 — replace with sourced data later.
  */
 import type { RegionSoil } from "@/lib/types";
+import { getAncestors, getArea } from "./areas";
 
 export const REGION_SOILS: RegionSoil[] = [
   // Bordeaux
@@ -57,4 +58,78 @@ export const REGION_SOILS: RegionSoil[] = [
 
 export function getRegionSoils(regionId: string): RegionSoil[] {
   return REGION_SOILS.filter((s) => s.regionId === regionId);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Area-level soils (finer than region). SEED / provisional — clearly synthetic */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Soils attached to a specific sub-area (`regionId` here is an area id). This is
+ * where finer granularity lives (village, Grand Cru, parcelle…). Only a couple
+ * of illustrative, clearly-synthetic seed entries exist for now; everything
+ * else falls back to the parent/region soils, or to "donnée indisponible".
+ *
+ * Do NOT add invented precise soil splits. Add an entry only when you have a
+ * defensible (even synthetic, but labelled) breakdown — see docs.
+ */
+export const AREA_SOILS: RegionSoil[] = [
+  // Alsace Grand Cru — calcaire/marne/granite vary strongly by lieu-dit.
+  { regionId: "alsace-grand-cru", soilType: "Calcaire", description: "Calcaires des Grands Crus de coteau (seed provisoire, à affiner par lieu-dit).", sharePercent: 45, sourceType: "synthetic" },
+  { regionId: "alsace-grand-cru", soilType: "Marnes", description: "Marnes structurantes de mi-coteau (seed provisoire).", sharePercent: 30, sourceType: "synthetic" },
+  { regionId: "alsace-grand-cru", soilType: "Granite", description: "Socles granitiques des secteurs hauts (seed provisoire).", sharePercent: 25, sourceType: "synthetic" },
+  // Meursault 1er Cru Les Perrières — illustrative cru-level breakdown.
+  { regionId: "meursault-1er-cru-perrieres", soilType: "Calcaire à entroques", description: "Dalle calcaire affleurante, très drainante (seed provisoire).", sharePercent: 70, sourceType: "synthetic" },
+  { regionId: "meursault-1er-cru-perrieres", soilType: "Marnes caillouteuses", description: "Marnes pierreuses de bas de parcelle (seed provisoire).", sharePercent: 30, sourceType: "synthetic" },
+];
+
+export type SoilScope = "area" | "inherited" | "none";
+
+export interface ResolvedSoils {
+  soils: RegionSoil[];
+  /** "area" = own data, "inherited" = parent/region, "none" = unavailable. */
+  scope: SoilScope;
+  /** Area id the soils actually came from (for an inheritance note). */
+  sourceAreaId: string | null;
+}
+
+/**
+ * Resolve soils for any area: prefer its own data, otherwise walk up to the
+ * nearest ancestor (incl. the level-1 region) that has soils. Returns
+ * `scope: "none"` when nothing is available so the UI can show a clean
+ * "donnée indisponible" fallback instead of inventing values.
+ *
+ * Imports from `./areas` are intentional and acyclic (areas does not import
+ * soils).
+ */
+export function getSoilsForArea(areaId: string): ResolvedSoils {
+  // Lazy require avoids any bundler edge-case with circular hints.
+  const own = AREA_SOILS.filter((s) => s.regionId === areaId);
+  if (own.length > 0) {
+    return { soils: own, scope: "area", sourceAreaId: areaId };
+  }
+
+  const self = getArea(areaId);
+  if (!self) return { soils: [], scope: "none", sourceAreaId: null };
+
+  // Walk ancestors nearest-first.
+  const ancestors = [...getAncestors(areaId)].reverse();
+  for (const anc of ancestors) {
+    const ancArea = AREA_SOILS.filter((s) => s.regionId === anc.id);
+    if (ancArea.length > 0) {
+      return { soils: ancArea, scope: "inherited", sourceAreaId: anc.id };
+    }
+  }
+
+  // Finally fall back to the level-1 region soils.
+  const regionSoils = getRegionSoils(self.rootRegionId);
+  if (regionSoils.length > 0) {
+    return {
+      soils: regionSoils,
+      scope: self.id === self.rootRegionId ? "area" : "inherited",
+      sourceAreaId: self.rootRegionId,
+    };
+  }
+
+  return { soils: [], scope: "none", sourceAreaId: null };
 }
