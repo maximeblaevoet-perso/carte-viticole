@@ -7,7 +7,7 @@ import type {
   Feature,
   FeatureCollection,
   Point,
-  Polygon,
+  MultiPolygon,
 } from "geojson";
 import { WINE_AREAS, LEVEL_ZOOM, REGION_TYPE_LABELS, getArea } from "@/data/areas";
 import { AREA_GEOMETRIES, DEFAULT_AREA_COLOR, REGION_COLORS } from "@/data/geo";
@@ -41,11 +41,13 @@ function dataNoteFor(area: WineArea): string {
 
 /** Build polygon + point feature collections by merging metadata + geometry. */
 function buildCollections(): {
-  polygons: FeatureCollection<Polygon, AreaFeatureProps>;
+  polygons: FeatureCollection<MultiPolygon, AreaFeatureProps>;
   points: FeatureCollection<Point, AreaFeatureProps>;
+  labels: FeatureCollection<Point, AreaFeatureProps>;
 } {
-  const polygons: Feature<Polygon, AreaFeatureProps>[] = [];
+  const polygons: Feature<MultiPolygon, AreaFeatureProps>[] = [];
   const points: Feature<Point, AreaFeatureProps>[] = [];
+  const labels: Feature<Point, AreaFeatureProps>[] = [];
 
   for (const area of WINE_AREAS) {
     const parent = area.parentId ? getArea(area.parentId) : undefined;
@@ -71,11 +73,19 @@ function buildCollections(): {
         geometry: { type: "Point", coordinates: area.center },
       });
     }
+
+    labels.push({
+      type: "Feature",
+      id: area.id,
+      properties: props,
+      geometry: { type: "Point", coordinates: area.center },
+    });
   }
 
   return {
     polygons: { type: "FeatureCollection", features: polygons },
     points: { type: "FeatureCollection", features: points },
+    labels: { type: "FeatureCollection", features: labels },
   };
 }
 
@@ -171,6 +181,11 @@ export function WineMap({
         data: collections.points,
         promoteId: "id",
       });
+      map.addSource("area-labels", {
+        type: "geojson",
+        data: collections.labels,
+        promoteId: "id",
+      });
 
       // --- polygon layers, one set per level (progressive by zoom) ----------
       for (const level of POLYGON_LEVELS) {
@@ -225,7 +240,7 @@ export function WineMap({
         map.addLayer({
           id: labelId,
           type: "symbol",
-          source: "areas",
+          source: "area-labels",
           filter,
           minzoom: band.min,
           maxzoom: band.max,
@@ -280,7 +295,7 @@ export function WineMap({
         map.addLayer({
           id: labelId,
           type: "symbol",
-          source: "area-points",
+          source: "area-labels",
           filter,
           minzoom: band.min,
           maxzoom: band.max,

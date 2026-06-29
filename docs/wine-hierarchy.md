@@ -70,6 +70,13 @@ Même principe : `level: 5`, `parentId` = le cru/lieu-dit, `geoJsonId` = sa
 géométrie fine quand elle existe (sinon `null`). Aucun refactor nécessaire : la
 carte et le panneau gèrent déjà n'importe quel niveau.
 
+## Comment ajouter une nouvelle géométrie
+- Créer ou mettre à jour l'entrée correspondante dans `src/data/geo.ts`.
+- Utiliser `mpoly(...)` avec des coordonnées `[lon, lat]`.
+- Fermer chaque anneau polygonal en répétant le premier point à la fin.
+- Pour une sous-aire, relier la géométrie via `geoJsonId` dans `src/data/areas.ts`.
+- Garder le contour éditorial et provisoire s'il n'est pas officiel.
+
 ## 5. Où brancher les données plus tard
 
 - **Sols fins** : `AREA_SOILS` dans `src/data/soils.ts` (clé = `id` de l'aire).
