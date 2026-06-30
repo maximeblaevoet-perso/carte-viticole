@@ -4,8 +4,10 @@
  *
  * NOTE: These baselines drive SYNTHETIC demo data only. Real Météo-France data
  * will replace the generated series via the ingestion pipeline (see
- * `scripts/import_meteo_france.py` and `docs/data-sources.md`). The geometries
- * here are rough editorial footprints, NOT official AOC boundaries.
+ * `scripts/fetch_meteo_france_open_data.py`,
+ * `scripts/import_meteo_france_to_supabase.py`, and `docs/data-sources.md`).
+ * The geometries here are rough editorial footprints, NOT official AOC
+ * boundaries.
  */
 
 import type { WineRegion } from "@/lib/types";

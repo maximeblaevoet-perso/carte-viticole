@@ -28,8 +28,13 @@ Intended source for real daily weather: Météo-France public climatological dat
   `UM` (humidity), `FFM` (wind), `INST` (sunshine), `GLOT` (radiation).
 - Files are semicolon-separated.
 
-Mapping and import live in `scripts/import_meteo_france.py` (`COLUMN_MAP`).
-Adjust the mapping to the exact export you download.
+Open-data fetching and normalization live in
+`scripts/fetch_meteo_france_open_data.py`.
+Project-CSV import into Supabase lives in
+`scripts/import_meteo_france_to_supabase.py` (stations, region↔station mapping,
+daily weather, and region×vintage climate, in dependency order).
+Adjust the normalization to the exact export you download, then verify the CSV
+columns against `supabase/migrations/0002_core_tables.sql` before importing.
 
 ### Priority V1 variables
 

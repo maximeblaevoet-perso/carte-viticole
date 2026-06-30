@@ -51,7 +51,20 @@ docs              spec, UX, data model, methodology, ADRs
 
 Apply migrations in order (`supabase/migrations/0001…`, `0002…`, `0003…`) to a
 PostgreSQL instance with PostGIS, e.g. via the Supabase CLI or `psql`. Then use
-`scripts/import_meteo_france.py` to load real daily observations.
+`scripts/import_meteo_france_to_supabase.py` to load the real project CSVs.
+
+## Intégrer les données Météo-France
+
+1. Générer les CSV projet avec `scripts/fetch_meteo_france_open_data.py`.
+2. Vérifier les fichiers produits, surtout `weather_stations.csv` et
+   `region_vintage_climate.csv`.
+3. Importer les CSV projet (stations, mapping, quotidien, millésimes) en une
+   passe, dans l'ordre des dépendances :
+   `scripts/import_meteo_france_to_supabase.py --commit`.
+4. L'import charge aussi `region_vintage_climate`; sinon le recalculer après
+   les données stationnaires et quotidiennes.
+5. Vérifier dans l’UI que les observations réelles apparaissent avec
+   `source_type = real`.
 
 ### Supabase CLI (local dev, Windows)
 

@@ -127,7 +127,7 @@ const RHONE: WineArea[] = [
 ];
 
 const LOIRE: WineArea[] = [
-  area({ id: "pays-nantais", name: "Pays nantais", level: 2, parentId: "loire", rootRegionId: "loire", regionType: "subregion", center: [-0.78, 47.2], availableDataScopes: [] }),
+  area({ id: "pays-nantais", name: "Pays nantais", level: 2, parentId: "loire", rootRegionId: "loire", regionType: "subregion", center: [-1.55, 47.25], availableDataScopes: [] }),
   area({ id: "anjou-saumur", name: "Anjou-Saumur", level: 2, parentId: "loire", rootRegionId: "loire", regionType: "subregion", center: [-0.25, 47.3], availableDataScopes: [] }),
   area({ id: "touraine", name: "Touraine", level: 2, parentId: "loire", rootRegionId: "loire", regionType: "subregion", center: [0.8, 47.3], availableDataScopes: [] }),
   area({ id: "centre-loire", name: "Centre-Loire (Sancerrois)", level: 2, parentId: "loire", rootRegionId: "loire", regionType: "subregion", center: [1.5, 47.4], availableDataScopes: [] }),

@@ -34,3 +34,7 @@ scripts/.venv/
 
 # data dumps
 /data_raw/
+
+# local Météo-France exports and derived CSVs
+/data/meteo-france/
+/data/meteo-france-*/

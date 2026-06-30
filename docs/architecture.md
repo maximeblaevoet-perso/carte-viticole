@@ -25,8 +25,9 @@
                         ▲
                         │ upsert (source_type='real')
         ┌───────────────┴───────────────────────────────────┐
-        │  Python: scripts/import_meteo_france.py             │
-        │  (CSV daily → daily_weather → compute indicators)   │
+        │  Python: scripts/fetch_meteo_france_open_data.py    │
+        │  → scripts/import_meteo_france_to_supabase.py       │
+        │  (open data → project CSVs → Supabase tables)       │
         └─────────────────────────────────────────────────────┘
 ```
 

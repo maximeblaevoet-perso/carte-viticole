@@ -92,8 +92,8 @@ npm run typecheck   # tsc --noEmit
 npm run lint        # next lint
 
 # Python ingestion (see scripts/README.md)
-python scripts/import_meteo_france.py --csv FILE --station ID            # dry-run
-python scripts/import_meteo_france.py --csv FILE --station ID --commit   # write
+python scripts/import_meteo_france_to_supabase.py            # dry-run (all project CSVs)
+python scripts/import_meteo_france_to_supabase.py --commit   # write (idempotent upsert)
 ```
 
 ## 9. Files to read before modifying

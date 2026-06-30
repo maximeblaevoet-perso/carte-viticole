@@ -95,8 +95,8 @@ const POINT_LEVELS: AreaLevel[] = [2, 3, 4];
 /** Zoom we ease to after selecting an area of a given level (reveals children). */
 const SELECT_ZOOM: Record<AreaLevel, number> = {
   1: 8.2,
-  2: 10,
-  3: 11.5,
+  2: 8.8,
+  3: 10.6,
   4: 12.5,
   5: 13.5,
 };
