@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getRegion, REGION_BASELINES } from "@/data/regions";
-import { getVintage, YEARS } from "@/data/synthetic";
+import { YEARS } from "@/data/synthetic";
+import { getVintageClimate } from "@/data/climate";
 import { getRegionSoils } from "@/data/soils";
 import { getVintageScores } from "@/data/scores";
 import { VintageDetail } from "@/components/vintage/VintageDetail";
@@ -11,14 +12,14 @@ export function generateStaticParams() {
   );
 }
 
-export default function VintagePage({
+export default async function VintagePage({
   params,
 }: {
   params: { region: string; year: string };
 }) {
   const region = getRegion(params.region);
   const year = Number(params.year);
-  const vintage = region ? getVintage(region.id, year) : undefined;
+  const vintage = region ? await getVintageClimate(region.id, year) : undefined;
 
   if (!region || !vintage) {
     notFound();

@@ -226,12 +226,6 @@ def parse_args() -> argparse.Namespace:
         help="Optional CSV with columns region_id,station_id,weight. If provided, overrides department-based aggregation.",
     )
     parser.add_argument(
-        "--value-scale",
-        choices=["tenth", "unit", "auto"],
-        default="tenth",
-        help="Meteo-France RR/T/Vent files are documented in tenths. Use unit if your export is already in mm/C/m/s.",
-    )
-    parser.add_argument(
         "--accepted-quality",
         default="0,1,9",
         help="Comma-separated quality codes accepted per variable. Default keeps protected/validated/filtered and drops doubtful code 2.",
@@ -480,21 +474,6 @@ def parse_coordinate(raw: Any) -> Optional[float]:
     return value
 
 
-def scale_measure(value: Optional[float], scale: str, column: str) -> Optional[float]:
-    if value is None:
-        return None
-    if scale == "unit":
-        return value
-    if scale == "tenth":
-        return value / 10.0
-    # Auto: temperatures/wind above plausible human-scale values are tenths.
-    if column in {"TN", "TX", "TM", "TNTXM", "FFM"} and abs(value) > 80:
-        return value / 10.0
-    if column == "RR" and value > 500:
-        return value / 10.0
-    return value
-
-
 def quality_ok(row: Dict[str, Any], column: str, accepted_quality: set[str]) -> bool:
     candidates = [f"Q{column}", f"Q_{column}", f"{column}_Q"]
     for qcol in candidates:
@@ -504,12 +483,12 @@ def quality_ok(row: Dict[str, Any], column: str, accepted_quality: set[str]) -> 
     return True
 
 
-def get_scaled(row: Dict[str, Any], column: str, accepted_quality: set[str], scale: str) -> Optional[float]:
+def get_measure(row: Dict[str, Any], column: str, accepted_quality: set[str]) -> Optional[float]:
     if column not in row:
         return None
     if not quality_ok(row, column, accepted_quality):
         return None
-    return scale_measure(parse_float(row.get(column)), scale, column)
+    return parse_float(row.get(column))
 
 
 def parse_date_yyyymmdd(value: Any) -> Optional[dt.date]:
@@ -580,19 +559,18 @@ def update_station_info(stations: Dict[str, StationInfo], row: Dict[str, Any], d
     return info
 
 
-def normalize_daily_row(row: Dict[str, Any], accepted_quality: set[str], scale: str) -> Dict[str, Optional[float]]:
-    t_min = get_scaled(row, "TN", accepted_quality, scale)
-    t_max = get_scaled(row, "TX", accepted_quality, scale)
-    t_mean = get_scaled(row, "TM", accepted_quality, scale)
-    if t_mean is None:
-        t_mean = get_scaled(row, "TNTXM", accepted_quality, scale)
+def normalize_daily_row(row: Dict[str, Any], accepted_quality: set[str]) -> Dict[str, Optional[float]]:
+    # Météo-France QUOT RR-T-Vent: TN/TX/TM in °C, RR in mm (one decimal in CSV).
+    t_min = get_measure(row, "TN", accepted_quality)
+    t_max = get_measure(row, "TX", accepted_quality)
+    t_mean = get_measure(row, "TM", accepted_quality)
     if t_mean is None and t_min is not None and t_max is not None:
         t_mean = (t_min + t_max) / 2.0
-    precip = get_scaled(row, "RR", accepted_quality, scale)
+    precip = get_measure(row, "RR", accepted_quality)
     if precip is not None and precip < 0:
         # M-F can encode trace precipitation with negative tiny values in some products.
         precip = 0.0
-    wind = get_scaled(row, "FFM", accepted_quality, scale)
+    wind = get_measure(row, "FFM", accepted_quality)
     return {
         "t_min_c": t_min,
         "t_max_c": t_max,
@@ -609,7 +587,6 @@ def process_resource(
     start_date: dt.date,
     end_date: dt.date,
     accepted_quality: set[str],
-    scale: str,
     stations: Dict[str, StationInfo],
     station_map: Dict[str, List[Tuple[str, float]]],
     dep_to_regions: Dict[str, List[str]],
@@ -632,7 +609,7 @@ def process_resource(
 
             info = update_station_info(stations, row, department)
             row_department = info.department or department
-            daily = normalize_daily_row(row, accepted_quality, scale)
+            daily = normalize_daily_row(row, accepted_quality)
 
             output = {
                 "station_id": station_id,
@@ -666,7 +643,6 @@ def build_project_csvs(
     start_date: dt.date,
     end_date: dt.date,
     accepted_quality: set[str],
-    scale: str,
     stations: Dict[str, StationInfo],
     station_map: Dict[str, List[Tuple[str, float]]],
     dep_to_regions: Dict[str, List[str]],
@@ -690,7 +666,6 @@ def build_project_csvs(
                 start_date=start_date,
                 end_date=end_date,
                 accepted_quality=accepted_quality,
-                scale=scale,
                 stations=stations,
                 station_map=station_map,
                 dep_to_regions=dep_to_regions,
@@ -791,6 +766,10 @@ def count_days(days: List[Dict[str, Any]], field: str, predicate) -> int:
 
 
 def build_monthly(year_days: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    # Keys MUST match the schema/TS contract consumed by the frontend
+    # (MonthlyClimate -> t_mean_c, t_max_c, t_min_c, precip_mm). See the monthly
+    # JSONB comment in 0002_core_tables.sql, src/lib/types.ts and the mapper in
+    # src/data/climate.ts. The monthly rollup powers the default monthly charts.
     by_month: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
     for day in year_days:
         by_month[day["date"].month].append(day)
@@ -800,8 +779,10 @@ def build_monthly(year_days: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         monthly.append(
             {
                 "month": month,
-                "temperatureC": round_or_none(mean(day.get("t_mean_c") for day in days), 1),
-                "rainfallMm": round_or_none(total(day.get("precip_mm") for day in days), 1),
+                "t_mean_c": round_or_none(mean(day.get("t_mean_c") for day in days), 1),
+                "t_max_c": round_or_none(mean(day.get("t_max_c") for day in days), 1),
+                "t_min_c": round_or_none(mean(day.get("t_min_c") for day in days), 1),
+                "precip_mm": round_or_none(total(day.get("precip_mm") for day in days), 1),
             }
         )
     return monthly
@@ -1068,7 +1049,6 @@ def main() -> int:
         start_date=start_date,
         end_date=end_date,
         accepted_quality=accepted_quality,
-        scale=args.value_scale,
         stations=stations,
         station_map=station_map,
         dep_to_regions=dep_to_regions,

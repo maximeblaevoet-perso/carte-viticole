@@ -12,7 +12,9 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` before using `--commit`.
+For `--commit`, the importer loads `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
+from `.env` at the project root (or `.env.example` if `.env` is missing).
+`SUPABASE_URL` falls back to `NEXT_PUBLIC_SUPABASE_URL` when unset.
 
 ## Générer les CSV depuis l'open data Météo-France
 
@@ -40,6 +42,10 @@ python scripts/fetch_meteo_france_open_data.py --transform-only --out-dir data/m
 Notes:
 
 - The script uses only the Python standard library.
+- Daily temperatures and rain come from Météo-France columns **TN**, **TX**,
+  **TM**, and **RR**. Published QUOT CSV files already use °C and mm with one
+  decimal (the official descriptor « en °C et 1/10 » means 0.1 precision, not
+  integer tenths to divide).
 - `weather_stations.csv` is a project export, not a direct `\copy` match for
   `supabase/migrations/0002_core_tables.sql`: SQL expects `elevation_m` and a
   `location` geometry, while the CSV carries `latitude`, `longitude`,
@@ -73,19 +79,31 @@ Notes:
 
 `scripts/import_meteo_france_to_supabase.py` imports the **normalized project
 CSVs** (comma-separated, already aligned with `0002_core_tables.sql`), NOT the
-raw Météo-France downloads. It loads four tables in dependency order:
+raw Météo-France downloads. By default it pushes three tables in dependency
+order:
 
 1. `weather_stations` (builds the PostGIS `location` from `latitude`/`longitude`)
 2. `region_weather_stations`
-3. `daily_weather` (streamed in batches; never held fully in memory)
-4. `region_vintage_climate` (parses the `flags`/`monthly` JSON columns)
+3. `region_vintage_climate` (parses the `flags`/`monthly` JSON columns)
+
+`daily_weather` is **NOT pushed by default**. It is very large (millions of
+rows) and the frontend never reads it — the UI consumes the pre-computed
+`region_vintage_climate` aggregates instead (see
+[ADR 0005](../docs/decisions/0005-serve-monthly-climate-aggregates.md)). Daily
+data stays a **local computation source** used to derive the monthly rollup and
+indicators. It can still be pushed explicitly if it is ever (re)hosted in
+Supabase: `--only daily_weather` or an explicit `--daily PATH`.
 
 ```bash
-# Dry-run by default: reads every CSV in data/meteo-france and reports counts
+# Dry-run by default: reads the served CSVs in data/meteo-france and reports
+# counts (daily_weather is skipped — see note above).
 python scripts/import_meteo_france_to_supabase.py
 
-# Actually write (idempotent upsert)
+# Actually write (idempotent upsert), still without daily_weather
 python scripts/import_meteo_france_to_supabase.py --commit
+
+# Force-push daily_weather only (rarely needed; large table)
+python scripts/import_meteo_france_to_supabase.py --commit --only daily_weather
 ```
 
 Useful options:
@@ -93,7 +111,9 @@ Useful options:
 - `--data-dir DIR` — directory holding the CSVs (default `data/meteo-france`).
 - `--stations / --region-stations / --daily / --vintage PATH` — override a
   single file path.
-- `--only weather_stations daily_weather` — import a subset of tables.
+- `--only weather_stations region_vintage_climate` — import a subset of tables.
+  This is also the way to force the otherwise-skipped `daily_weather`
+  (`--only daily_weather`).
 - `--batch-size N` — upsert batch size (default 500).
 - `--allow-overwrite-synthetic` — required to overwrite existing `synthetic`
   rows; otherwise the importer aborts rather than mixing `real` and `synthetic`.

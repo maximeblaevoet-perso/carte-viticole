@@ -43,8 +43,15 @@
   - `geo.ts`: geographic contours (kept SEPARATE from the hierarchy), keyed by
     `geoJsonId`, plus the per-region colour palette.
   - `synthetic.ts`: deterministic daily generator → monthly + indicators.
+  - `climate.ts`: climate data-access seam. Reads `region_vintage_climate` from
+    Supabase when configured, falls back to synthetic. Returns the existing TS
+    types; never queries `daily_weather` (see ADR 0005).
   - `soils.ts`: synthetic region soils + finer area soils with fallback resolver.
   - `scores.ts`: generic scores (no protected source).
+- **`src/lib/supabase.ts`** — minimal client factory + `shouldUseSupabase()`
+  gate (needs `NEXT_PUBLIC_SUPABASE_*` and `NEXT_PUBLIC_DATA_SOURCE=real`).
+- **`src/hooks`** — client hooks (`useClimate.ts`) that seed interactive client
+  components with synthetic data instantly, then upgrade to Supabase async.
 - **`src/components`** — React UI (client where stateful/interactive).
 - **`src/app`** — routes.
 - **`supabase/migrations`** — append-only SQL (PostGIS + 7 core tables).
@@ -52,10 +59,12 @@
 
 ## V1 data flow
 
-The frontend imports the synthetic engine directly (pure TS). No database or
-network is required to run the demo. When wiring real data, replace the data
-accessors (`getRegionVintages`, `getVintage`, …) with Supabase queries that read
-`region_vintage_climate`, keeping the same return types.
+The frontend reads climate through `src/data/climate.ts`
+(`getVintageClimate`, `getRegionVintageClimates`). When Supabase is configured
+for real data it queries `region_vintage_climate` (including the `monthly`
+rollup for charts); otherwise it falls back to the synthetic engine. No database
+or network is required to run the demo. The frontend never reads `daily_weather`
+— that table is the ingestion/computation source only (ADRs 0002 and 0005).
 
 ## Why these choices
 
@@ -64,6 +73,7 @@ See `docs/decisions/` (ADRs):
 - 0002 — daily weather first
 - 0003 — side panel on desktop
 - 0004 — hierarchical wine areas (see also `docs/wine-hierarchy.md`)
+- 0005 — serve monthly climate aggregates to the frontend
 
 ## Conventions
 

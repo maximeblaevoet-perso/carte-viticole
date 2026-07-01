@@ -20,10 +20,14 @@ data to a region.
 **The source granularity.** One row per `(station_id, obs_date)`.
 Priority columns: `t_min_c`, `t_max_c`, `t_mean_c`, `precip_mm`.
 Secondary (optional): `humidity_pct`, `wind_ms`, `sunshine_h`, `radiation_mj`.
-`source_type` per row.
+`source_type` per row. **Not pushed to Supabase by default** (huge, UI never
+reads it): kept as a LOCAL computation source feeding `region_vintage_climate`.
+See ADR 0005.
 
 ### `region_vintage_climate`
-Computed indicators per `(region_id, vintage_year)`:
+**The only climate table the frontend reads** (via `src/data/climate.ts`; daily
+stays ingestion-only — see ADR 0005). Computed indicators per
+`(region_id, vintage_year)`:
 `growing_season_temp_c`, `gdd`, `days_above_30`, `days_above_35`,
 `spring_frost_days`, `rain_apr_sep_mm`, `rain_jul_aug_mm`, `rain_sep_mm`,
 `longest_dry_spell_days`, `water_stress_index`, `harvest_rain_risk_index`.
@@ -80,3 +84,11 @@ reuse the existing region ids, so climate/soils/scores keep working.
 | `vintage_scores`          | `VintageScore`         |
 
 `source_type` ⇄ `SourceType` (`'synthetic' | 'real' | 'manual'`).
+
+## Frontend data access
+
+The UI does not import the synthetic engine directly anymore. It goes through
+`src/data/climate.ts` (`getVintageClimate`, `getRegionVintageClimates`), which
+reads `region_vintage_climate` from Supabase when configured and otherwise falls
+back to synthetic. The frontend **never** queries `daily_weather`; monthly charts
+come from `region_vintage_climate.monthly`. See ADR 0005.

@@ -10,7 +10,10 @@ import {
   REGION_TYPE_LABELS,
 } from "@/data/areas";
 import { getSoilsForArea } from "@/data/soils";
-import { getRegionVintages, getVintage } from "@/data/synthetic";
+import {
+  useRegionVintageClimates,
+  useVintageClimate,
+} from "@/hooks/useClimate";
 import { FlagChips } from "@/components/FlagChips";
 import { KeyIndicators } from "@/components/KeyIndicators";
 import { SourceBadge } from "@/components/SourceBadge";
@@ -48,7 +51,8 @@ export function RegionPanelContent({
   const area = getArea(areaId);
   const rootRegionId = area?.rootRegionId;
   const region = rootRegionId ? getRegion(rootRegionId) : undefined;
-  const vintage = rootRegionId ? getVintage(rootRegionId, year) : undefined;
+  const vintage = useVintageClimate(rootRegionId, year);
+  const regionVintages = useRegionVintageClimates(rootRegionId);
 
   const ancestors = area ? getAncestors(area.id) : [];
   const children = area ? getChildren(area.id) : [];
@@ -56,8 +60,7 @@ export function RegionPanelContent({
 
   // Per-year warmth intensities for the timeline tint (regional series).
   const intensities = useMemo(() => {
-    if (!rootRegionId) return undefined;
-    const vintages = getRegionVintages(rootRegionId);
+    const vintages = regionVintages;
     if (vintages.length === 0) return undefined;
     const temps = vintages.map((v) => v.indicators.growingSeasonTempC);
     const min = Math.min(...temps);
@@ -69,7 +72,7 @@ export function RegionPanelContent({
         (v.indicators.growingSeasonTempC - min) / span,
       ])
     ) as Record<number, number>;
-  }, [rootRegionId]);
+  }, [regionVintages]);
 
   if (!area || !region) {
     return (

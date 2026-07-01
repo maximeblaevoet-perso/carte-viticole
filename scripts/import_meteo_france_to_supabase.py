@@ -14,11 +14,19 @@ Inputs (default ``data/meteo-france``):
 
 Tables are imported in dependency order. The importer runs in dry-run mode by
 default; pass ``--commit`` to write through the PostgREST API with the service
-role key. Upserts are idempotent and streamed in batches, so the large
-``daily_weather`` file is never held fully in memory. Imported rows are tagged
-``source_type=real`` and the importer refuses to silently overwrite existing
-``synthetic`` rows (use ``--allow-overwrite-synthetic`` to override). Nothing is
-ever deleted.
+role key. Upserts are idempotent and streamed in batches.
+
+``daily_weather`` is NOT pushed to Supabase by default: it is a very large
+table (millions of rows) and the frontend never reads it — it only consumes the
+pre-computed aggregates in ``region_vintage_climate`` (see
+``docs/decisions/0005-serve-monthly-climate-aggregates.md``). Daily data stays a
+LOCAL computation source used to derive the monthly rollup and indicators. It
+can still be pushed explicitly with ``--only daily_weather`` or by passing an
+explicit ``--daily PATH`` (e.g. if daily is ever (re)hosted in Supabase).
+
+Imported rows are tagged ``source_type=real`` and the importer refuses to
+silently overwrite existing ``synthetic`` rows (use
+``--allow-overwrite-synthetic`` to override). Nothing is ever deleted.
 """
 
 from __future__ import annotations
@@ -39,6 +47,12 @@ CSV_DELIMITER = ","
 DEFAULT_BATCH_SIZE = 500
 DEFAULT_DATA_DIR = os.path.join("data", "meteo-france")
 SOURCE_TYPE = "real"
+
+# Tables that are NOT pushed to Supabase by default. daily_weather is huge and
+# the frontend never reads it (it consumes region_vintage_climate instead — see
+# ADR 0005). It stays a local computation source and must be requested
+# explicitly (via --only daily_weather or an explicit --daily PATH) to import.
+DEFAULT_SKIP = {"daily_weather"}
 
 # Allow CSV files to span very large daily exports.
 csv.field_size_limit(10 * 1024 * 1024)
@@ -123,16 +137,17 @@ def parse_weather_stations(path: str, stats: Stats) -> Iterator[dict[str, object
             if station_id is None or name is None or lat is None or lon is None:
                 stats.error += 1
                 continue
+            # PostgREST bulk upsert requires every object in a batch to share
+            # the same keys, so always emit the full column set (null when
+            # missing) instead of conditionally adding keys.
             payload: dict[str, object] = {
                 "id": station_id,
                 "name": name,
                 # PostgreSQL casts EWKT text to geometry(Point, 4326).
                 "location": f"SRID=4326;POINT({lon} {lat})",
+                "elevation_m": _to_float(row.get("altitude_m") or row.get("elevation_m")),
                 "source_type": SOURCE_TYPE,
             }
-            elevation = _to_float(row.get("altitude_m") or row.get("elevation_m"))
-            if elevation is not None:
-                payload["elevation_m"] = elevation
             yield payload
 
 
@@ -148,13 +163,13 @@ def parse_region_weather_stations(
             if region_id is None or station_id is None:
                 stats.error += 1
                 continue
+            weight = _to_float(row.get("weight"))
             payload: dict[str, object] = {
                 "region_id": region_id,
                 "station_id": station_id,
+                # weight is NOT NULL DEFAULT 1.0; never send null.
+                "weight": weight if weight is not None else 1.0,
             }
-            weight = _to_float(row.get("weight"))
-            if weight is not None:
-                payload["weight"] = weight
             yield payload
 
 
@@ -191,10 +206,10 @@ def parse_daily_weather(path: str, stats: Stats) -> Iterator[dict[str, object]]:
                 "obs_date": obs_date,
                 "source_type": SOURCE_TYPE,
             }
+            # Always include every measurement column (null when missing) so all
+            # objects in a PostgREST batch share the same keys (avoids PGRST102).
             for col in numeric_cols:
-                value = _to_float(row.get(col))
-                if value is not None:
-                    payload[col] = value
+                payload[col] = _to_float(row.get(col))
             yield payload
 
 
@@ -230,32 +245,27 @@ def parse_region_vintage_climate(
             if row_source is not None and row_source != SOURCE_TYPE:
                 stats.error += 1
                 continue
-            payload: dict[str, object] = {
-                "region_id": region_id,
-                "vintage_year": year,
-                "source_type": SOURCE_TYPE,
-            }
-            for col in numeric_cols:
-                value = _to_float(row.get(col))
-                if value is not None:
-                    payload[col] = value
-            for col in int_cols:
-                value = _to_int(row.get(col))
-                if value is not None:
-                    payload[col] = value
-            summary = _clean_text(row.get("summary"))
-            if summary is not None:
-                payload["summary"] = summary
             try:
                 flags = _to_json(row.get("flags"))
                 monthly = _to_json(row.get("monthly"))
             except json.JSONDecodeError:
                 stats.error += 1
                 continue
-            if flags is not None:
-                payload["flags"] = flags
-            if monthly is not None:
-                payload["monthly"] = monthly
+            # Uniform key set per batch (avoids PGRST102). Nullable columns get
+            # null when missing; flags/monthly are NOT NULL so fall back to their
+            # empty-collection defaults.
+            payload: dict[str, object] = {
+                "region_id": region_id,
+                "vintage_year": year,
+                "source_type": SOURCE_TYPE,
+                "summary": _clean_text(row.get("summary")),
+                "flags": flags if flags is not None else {},
+                "monthly": monthly if monthly is not None else [],
+            }
+            for col in numeric_cols:
+                payload[col] = _to_float(row.get(col))
+            for col in int_cols:
+                payload[col] = _to_int(row.get(col))
             yield payload
 
 
@@ -305,8 +315,23 @@ def _chunked(items: list, size: int) -> Iterator[list]:
         yield items[start : start + size]
 
 
+def _load_project_env() -> None:
+    """Load env from project root (.env, else .env.example)."""
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    env_path = os.path.join(root, ".env")
+    example_path = os.path.join(root, ".env.example")
+    if os.path.isfile(env_path):
+        load_dotenv(env_path)
+    elif os.path.isfile(example_path):
+        load_dotenv(example_path)
+    else:
+        load_dotenv()
+
+
 def _resolve_env() -> tuple[Optional[str], Optional[str]]:
-    url = os.environ.get("SUPABASE_URL")
+    url = os.environ.get("SUPABASE_URL") or os.environ.get(
+        "NEXT_PUBLIC_SUPABASE_URL"
+    )
     key = (
         os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
         or os.environ.get("SUPABASE_SERVICE_KEY")
@@ -443,6 +468,18 @@ def _resolve_paths(args: argparse.Namespace) -> Optional[list[tuple[TableSpec, s
         if selected is not None and spec.name not in selected:
             continue
         override = overrides[spec.filename]
+        explicitly_requested = (
+            selected is not None and spec.name in selected
+        ) or bool(override)
+        # Skip the bulky daily_weather table unless explicitly requested: it is
+        # a local computation source, not served to the frontend (ADR 0005).
+        if spec.name in DEFAULT_SKIP and not explicitly_requested:
+            print(
+                f"table={spec.name} skipped (not pushed to Supabase by default; "
+                "local computation source only — see ADR 0005). "
+                f"Use --only {spec.name} to force."
+            )
+            continue
         path = override or os.path.join(args.data_dir, spec.filename)
         if not os.path.exists(path):
             if selected is not None or override:
@@ -455,7 +492,7 @@ def _resolve_paths(args: argparse.Namespace) -> Optional[list[tuple[TableSpec, s
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    load_dotenv()
+    _load_project_env()
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -516,7 +553,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     supabase_url, service_key = _resolve_env()
     if not supabase_url or not service_key:
         print(
-            "ERROR: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set.",
+            "ERROR: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set "
+            "(copy .env.example to .env or export them in your shell).",
             file=sys.stderr,
         )
         return 1

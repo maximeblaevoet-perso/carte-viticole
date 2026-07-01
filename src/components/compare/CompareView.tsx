@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { WINE_REGIONS, getRegion } from "@/data/regions";
-import { getVintage, YEARS } from "@/data/synthetic";
+import { YEARS } from "@/data/synthetic";
+import { useVintageClimate } from "@/hooks/useClimate";
 import { INDICATOR_META } from "@/lib/indicators";
 import { fmtWithUnit } from "@/lib/format";
 import type { ClimateIndicators } from "@/lib/types";
@@ -35,8 +36,8 @@ export function CompareView({
   const [yearB, setYearB] = useState(initialB);
 
   const region = getRegion(regionId);
-  const a = useMemo(() => getVintage(regionId, yearA), [regionId, yearA]);
-  const b = useMemo(() => getVintage(regionId, yearB), [regionId, yearB]);
+  const a = useVintageClimate(regionId, yearA);
+  const b = useVintageClimate(regionId, yearB);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
