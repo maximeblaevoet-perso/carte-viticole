@@ -64,7 +64,7 @@ export async function getRegionVintageClimates(
       .order("vintage_year", { ascending: true });
 
     if (error || !data || data.length === 0) return fallback();
-    return data.map(mapRow);
+    return (data as unknown as ClimateRow[]).map(mapRow);
   } catch {
     return fallback();
   }
@@ -93,7 +93,7 @@ export async function getVintageClimate(
       .maybeSingle();
 
     if (error || !data) return fallback();
-    return mapRow(data);
+    return mapRow(data as unknown as ClimateRow);
   } catch {
     return fallback();
   }

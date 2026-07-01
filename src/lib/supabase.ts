@@ -10,6 +10,24 @@
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+/** Minimal schema so `.from("region_vintage_climate")` is typed (no generated types yet). */
+export interface Database {
+  public: {
+    Tables: {
+      region_vintage_climate: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
+}
+
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const dataSource = process.env.NEXT_PUBLIC_DATA_SOURCE ?? "synthetic";
@@ -23,11 +41,11 @@ export function shouldUseSupabase(): boolean {
   return Boolean(url && anonKey) && dataSource === "real";
 }
 
-let _client: SupabaseClient | null | undefined;
+let _client: SupabaseClient<Database> | null | undefined;
 
 /** Memoized browser/server client, or `null` when Supabase is not configured. */
-export function getSupabaseClient(): SupabaseClient | null {
+export function getSupabaseClient(): SupabaseClient<Database> | null {
   if (_client !== undefined) return _client;
-  _client = url && anonKey ? createClient(url, anonKey) : null;
+  _client = url && anonKey ? createClient<Database>(url, anonKey) : null;
   return _client;
 }
