@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Temperature & rainfall chart, in monthly (default) or weekly resolution.
+ *
+ * Both rollups come pre-computed from the data layer (`monthly` / `weekly` on
+ * `region_vintage_climate`); this component never derives one from the other.
+ * When a record has no weekly rollup the toggle is disabled rather than
+ * fabricating weeks out of monthly means.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
@@ -11,14 +20,22 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { MONTH_LABELS_SHORT } from "@/lib/format";
-import type { MonthlyClimate } from "@/lib/types";
+import {
+  axisTickInterval,
+  hasWeeklyData,
+  toClimateSeries,
+  type ClimateMetricKey,
+} from "@/lib/climate-series";
+import type {
+  ClimateGranularity,
+  MonthlyClimate,
+  WeeklyClimate,
+} from "@/lib/types";
 
 type ChartMode = "temperature" | "moisture";
-type MonthlyMetricKey = "tMaxC" | "tMeanC" | "tMinC" | "precipMm";
 
 type SeriesDefinition = {
-  key: MonthlyMetricKey;
+  key: ClimateMetricKey;
   label: string;
   color: string;
   defaultVisible: boolean;
@@ -27,11 +44,13 @@ type SeriesDefinition = {
 type VintageSeries = {
   year: number;
   monthly: MonthlyClimate[];
+  weekly?: WeeklyClimate[];
 };
 
-type MonthlyChartProps =
+type ClimateChartProps =
   | {
       monthly: MonthlyClimate[];
+      weekly?: WeeklyClimate[];
       height?: number;
     }
   | {
@@ -57,13 +76,24 @@ const MOISTURE_SERIES: SeriesDefinition[] = [
   },
 ];
 
-export function MonthlyClimateChart(props: MonthlyChartProps) {
+const GRANULARITY_OPTIONS: { value: ClimateGranularity; label: string }[] = [
+  { value: "monthly", label: "Mensuel" },
+  { value: "weekly", label: "Hebdo" },
+];
+
+export function ClimateChart(props: ClimateChartProps) {
   if ("monthly" in props) {
-    return <SingleMonthlyChart monthly={props.monthly} height={props.height} />;
+    return (
+      <SingleClimateChart
+        monthly={props.monthly}
+        weekly={props.weekly}
+        height={props.height}
+      />
+    );
   }
 
   return (
-    <ComparisonMonthlyChart
+    <ComparisonClimateChart
       title={props.title}
       subtitle={props.subtitle}
       mode={props.mode}
@@ -73,32 +103,99 @@ export function MonthlyClimateChart(props: MonthlyChartProps) {
   );
 }
 
-function SingleMonthlyChart({
+/**
+ * Segmented monthly/weekly control. Weekly is disabled (with an explicit
+ * reason) when the record carries no weekly rollup.
+ */
+function GranularityToggle({
+  value,
+  onChange,
+  weeklyAvailable,
+}: {
+  value: ClimateGranularity;
+  onChange: (granularity: ClimateGranularity) => void;
+  weeklyAvailable: boolean;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Granularité du graphique"
+      className="inline-flex overflow-hidden rounded-full border border-slate-200"
+    >
+      {GRANULARITY_OPTIONS.map((option) => {
+        const active = option.value === value;
+        const disabled = option.value === "weekly" && !weeklyAvailable;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={active}
+            disabled={disabled}
+            title={
+              disabled ? "Données hebdomadaires indisponibles" : undefined
+            }
+            onClick={() => onChange(option.value)}
+            className={`px-2.5 py-1 text-xs font-medium transition ${
+              active
+                ? "bg-slate-800 text-white"
+                : disabled
+                  ? "cursor-not-allowed bg-white text-slate-300"
+                  : "bg-white text-slate-500 hover:bg-slate-50"
+            }`}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Keeps the selection valid when the selected record has no weekly rollup. */
+function useGranularity(weeklyAvailable: boolean) {
+  const [granularity, setGranularity] =
+    useState<ClimateGranularity>("monthly");
+  const effective: ClimateGranularity =
+    granularity === "weekly" && !weeklyAvailable ? "monthly" : granularity;
+  return { granularity: effective, setGranularity };
+}
+
+function SingleClimateChart({
   monthly,
+  weekly,
   height = 260,
 }: {
   monthly: MonthlyClimate[];
+  weekly?: WeeklyClimate[];
   height?: number;
 }) {
+  const weeklyAvailable = hasWeeklyData(weekly);
+  const { granularity, setGranularity } = useGranularity(weeklyAvailable);
+
   const data = useMemo(
-    () =>
-      monthly.map((m) => ({
-        month: MONTH_LABELS_SHORT[m.month - 1],
-        tMean: m.tMeanC,
-        tMax: m.tMaxC,
-        tMin: m.tMinC,
-        precip: m.precipMm,
-      })),
-    [monthly]
+    () => toClimateSeries(granularity, monthly, weekly),
+    [granularity, monthly, weekly]
   );
 
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-3">
+      <div className="flex justify-end">
+        <GranularityToggle
+          value={granularity}
+          onChange={setGranularity}
+          weeklyAvailable={weeklyAvailable}
+        />
+      </div>
       <div className="mt-3">
         <ResponsiveContainer width="100%" height={height}>
           <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#94a3b8" />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 11 }}
+              stroke="#94a3b8"
+              interval={axisTickInterval(granularity)}
+            />
             <YAxis yAxisId="temp" tick={{ fontSize: 11 }} stroke="#94a3b8" unit="°" />
             <YAxis
               yAxisId="rain"
@@ -109,14 +206,39 @@ function SingleMonthlyChart({
             />
             <Tooltip
               contentStyle={{ fontSize: 12, borderRadius: 8 }}
-              formatter={(value: number, name: string) => {
-                if (name === "Pluie") return [`${value} mm`, name];
-                return [`${value} °C`, name];
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const point = payload[0]?.payload as
+                  | { detailLabel?: string; label?: string }
+                  | undefined;
+                return (
+                  <div className="rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
+                    <p className="mb-1 text-xs font-medium text-slate-600">
+                      {point?.detailLabel ?? point?.label}
+                    </p>
+                    <div className="space-y-1 text-xs">
+                      {payload.map((entry: any) => (
+                        <div key={entry.dataKey} className="flex items-center gap-2">
+                          <span
+                            className="inline-block h-2 w-2 shrink-0 rounded-full"
+                            style={{ backgroundColor: entry.stroke ?? entry.fill ?? "#64748b" }}
+                          />
+                          <span className="text-slate-700">{entry.name}:</span>
+                          <span className="font-medium text-slate-900">
+                            {entry.dataKey === "precipMm"
+                              ? `${Math.round(Number(entry.value))} mm`
+                              : `${Number(entry.value).toFixed(1)} °C`}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
               }}
             />
             <Bar
               yAxisId="rain"
-              dataKey="precip"
+              dataKey="precipMm"
               name="Pluie"
               fill="#60a5fa"
               radius={[3, 3, 0, 0]}
@@ -125,30 +247,33 @@ function SingleMonthlyChart({
             <Line
               yAxisId="temp"
               type="monotone"
-              dataKey="tMax"
+              dataKey="tMaxC"
               name="T max"
               stroke="#dc2626"
               strokeWidth={2}
               dot={false}
+              connectNulls
             />
             <Line
               yAxisId="temp"
               type="monotone"
-              dataKey="tMean"
+              dataKey="tMeanC"
               name="T moy"
               stroke="#9d2f44"
               strokeWidth={2}
               dot={false}
+              connectNulls
             />
             <Line
               yAxisId="temp"
               type="monotone"
-              dataKey="tMin"
+              dataKey="tMinC"
               name="T min"
               stroke="#2563eb"
               strokeWidth={1.5}
               strokeDasharray="4 3"
               dot={false}
+              connectNulls
             />
           </ComposedChart>
         </ResponsiveContainer>
@@ -157,7 +282,7 @@ function SingleMonthlyChart({
   );
 }
 
-function ComparisonMonthlyChart({
+function ComparisonClimateChart({
   title,
   subtitle,
   mode,
@@ -174,7 +299,7 @@ function ComparisonMonthlyChart({
     () => (mode === "temperature" ? TEMPERATURE_SERIES : MOISTURE_SERIES),
     [mode]
   );
-  const [visibleSeries, setVisibleSeries] = useState<Set<MonthlyMetricKey>>(
+  const [visibleSeries, setVisibleSeries] = useState<Set<ClimateMetricKey>>(
     () => new Set(series.filter((item) => item.defaultVisible).map((item) => item.key))
   );
 
@@ -184,23 +309,36 @@ function ComparisonMonthlyChart({
     );
   }, [series]);
 
-  const data = useMemo(
-    () =>
-      MONTH_LABELS_SHORT.map((month, monthIndex) => {
-        const row: Record<string, string | number | null> = { month };
-        vintages.forEach((vintage, vintageIndex) => {
-          const monthlyRow = vintage.monthly[monthIndex];
-          if (!monthlyRow) return;
-          series.forEach((item) => {
-            row[`${vintageIndex}-${item.key}`] = monthlyRow[item.key];
-          });
-        });
-        return row;
-      }),
-    [series, vintages]
-  );
+  // Weekly is only offered when BOTH vintages have it, otherwise the two
+  // curves would not cover the same buckets.
+  const weeklyAvailable =
+    vintages.length > 0 && vintages.every((v) => hasWeeklyData(v.weekly));
+  const { granularity, setGranularity } = useGranularity(weeklyAvailable);
 
-  const toggleSeries = (key: MonthlyMetricKey) => {
+  const data = useMemo(() => {
+    const perVintage = vintages.map((vintage) =>
+      toClimateSeries(granularity, vintage.monthly, vintage.weekly)
+    );
+    const length = perVintage.reduce((max, points) => Math.max(max, points.length), 0);
+
+    return Array.from({ length }, (_, index) => {
+      const row: Record<string, string | number | null> = { label: "", detailLabel: "" };
+      perVintage.forEach((points, vintageIndex) => {
+        const point = points[index];
+        if (!point) return;
+        if (!row.label) {
+          row.label = point.label;
+          row.detailLabel = point.detailLabel;
+        }
+        series.forEach((item) => {
+          row[`${vintageIndex}-${item.key}`] = point[item.key];
+        });
+      });
+      return row;
+    });
+  }, [granularity, series, vintages]);
+
+  const toggleSeries = (key: ClimateMetricKey) => {
     setVisibleSeries((current) => {
       const next = new Set(current);
       if (next.has(key)) next.delete(key);
@@ -220,7 +358,7 @@ function ComparisonMonthlyChart({
             </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           {series.map((item) => {
             const active = visibleSeries.has(item.key);
             return (
@@ -243,6 +381,11 @@ function ComparisonMonthlyChart({
               </button>
             );
           })}
+          <GranularityToggle
+            value={granularity}
+            onChange={setGranularity}
+            weeklyAvailable={weeklyAvailable}
+          />
         </div>
       </div>
 
@@ -265,15 +408,25 @@ function ComparisonMonthlyChart({
         <ResponsiveContainer width="100%" height={height}>
           <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#94a3b8" />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 11 }}
+              stroke="#94a3b8"
+              interval={axisTickInterval(granularity)}
+            />
             <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" unit={mode === "temperature" ? "°C" : "mm"} />
             <Tooltip
               contentStyle={{ fontSize: 12, borderRadius: 8 }}
-              content={({ active, label, payload }) => {
+              content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
+                const point = payload[0]?.payload as
+                  | { detailLabel?: string; label?: string }
+                  | undefined;
                 return (
                   <div className="rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
-                    <p className="mb-1 text-xs font-medium text-slate-600">{label}</p>
+                    <p className="mb-1 text-xs font-medium text-slate-600">
+                      {point?.detailLabel ?? point?.label}
+                    </p>
                     <div className="space-y-1">
                       {payload.map((entry: any) => {
                         const stroke = entry.stroke ?? "#64748b";

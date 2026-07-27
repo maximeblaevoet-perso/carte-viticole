@@ -10,7 +10,7 @@ import { fmtWithUnit } from "@/lib/format";
 import type { ClimateIndicators } from "@/lib/types";
 import { FlagChips } from "@/components/FlagChips";
 import { SourceBadge } from "@/components/SourceBadge";
-import { MonthlyClimateChart } from "@/components/charts/MonthlyClimateChart";
+import { ClimateChart } from "@/components/charts/ClimateChart";
 
 /** Indicators surfaced in the comparison table (per the brief). */
 const COMPARE_KEYS: (keyof ClimateIndicators)[] = [
@@ -126,23 +126,23 @@ export function CompareView({
           </div>
 
           <div className="mt-6 grid gap-6">
-            <MonthlyClimateChart
+            <ClimateChart
               title="Températures"
               subtitle="Max, moyenne et min sur le même graphe. Les séries peuvent être désactivées."
               mode="temperature"
               vintages={[
-                { year: yearA, monthly: a.monthly },
-                { year: yearB, monthly: b.monthly },
+                { year: yearA, monthly: a.monthly, weekly: a.weekly },
+                { year: yearB, monthly: b.monthly, weekly: b.weekly },
               ]}
               height={240}
             />
-            <MonthlyClimateChart
+            <ClimateChart
               title="Hygrométrie"
-              subtitle="Comparaison basée sur les précipitations mensuelles disponibles."
+              subtitle="Comparaison des précipitations, au mois ou à la semaine."
               mode="moisture"
               vintages={[
-                { year: yearA, monthly: a.monthly },
-                { year: yearB, monthly: b.monthly },
+                { year: yearA, monthly: a.monthly, weekly: a.weekly },
+                { year: yearB, monthly: b.monthly, weekly: b.weekly },
               ]}
               height={240}
             />

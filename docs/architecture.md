@@ -35,6 +35,8 @@
 - **`src/lib`** — pure, framework-free domain logic. No React, no I/O.
   - `types.ts`: the domain types (mirror the SQL model).
   - `indicators.ts`: flag derivation, summaries, metadata, thresholds.
+  - `climate-series.ts`: turns the `monthly` / `weekly` rollups into one
+    chart-ready series (labels + nullable values) so the UI is granularity-blind.
   - `format.ts`: presentation helpers.
 - **`src/data`** — data access for V1.
   - `regions.ts`: region metadata, baselines, GeoJSON footprints (level 1).
@@ -43,7 +45,8 @@
     `wine_lieux_dits` with seed fallback (ADR 0006).
   - `geo.ts`: geographic contours (kept SEPARATE from the hierarchy), keyed by
     `geoJsonId`, plus the per-region colour palette.
-  - `synthetic.ts`: deterministic daily generator → monthly + indicators.
+  - `synthetic.ts`: deterministic daily generator → monthly + weekly rollups +
+    indicators.
   - `climate.ts`: climate data-access seam. Reads `region_vintage_climate` from
     Supabase when configured, falls back to synthetic. Returns the existing TS
     types; never queries `daily_weather` (see ADR 0005).
@@ -57,7 +60,7 @@
 - **`src/app`** — routes, including the vector-tile endpoint
   `api/tiles/wine/[z]/[x]/[y]` (server-side MVT proxy, see below).
 - **`supabase/migrations`** — append-only SQL (PostGIS + core tables + the
-  `wine_mvt(z,x,y)` tile function in `0007`).
+  `wine_mvt(z,x,y)` tile function in `0007` + the `weekly` rollup in `0008`).
 - **`scripts`** — Python ingestion/computation.
 
 ## Map geodata flow (real vs synthetic)
@@ -84,10 +87,11 @@ If Supabase is off, the route returns `204` and only the synthetic base shows.
 
 The frontend reads climate through `src/data/climate.ts`
 (`getVintageClimate`, `getRegionVintageClimates`). When Supabase is configured
-for real data it queries `region_vintage_climate` (including the `monthly`
-rollup for charts); otherwise it falls back to the synthetic engine. No database
-or network is required to run the demo. The frontend never reads `daily_weather`
-— that table is the ingestion/computation source only (ADRs 0002 and 0005).
+for real data it queries `region_vintage_climate` (including both the `monthly`
+and `weekly` rollups, so the chart toggle needs no extra request); otherwise it
+falls back to the synthetic engine. No database or network is required to run the
+demo. The frontend never reads `daily_weather` — that table is the
+ingestion/computation source only (ADRs 0002, 0005 and 0008).
 
 ## Runtime configuration
 
@@ -117,6 +121,7 @@ See `docs/decisions/` (ADRs):
 - 0005 — serve monthly climate aggregates to the frontend
 - 0006 — hybrid PostGIS wine geodata (`wine_areas` + `wine_parcels`)
 - 0007 — serve wine geodata as MVT vector tiles (`wine_mvt` + `/api/tiles/wine`)
+- 0008 — add a weekly climate rollup next to the monthly one
 
 ## Conventions
 

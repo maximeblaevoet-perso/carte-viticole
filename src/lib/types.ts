@@ -223,13 +223,47 @@ export interface MonthlyClimate {
   month: MonthIndex;
   /** Mean of daily mean temperature (deg C). */
   tMeanC: number;
-  /** Mean of daily max temperature (deg C). */
+  /** Highest daily max temperature in the month (deg C). */
   tMaxC: number;
-  /** Mean of daily min temperature (deg C). */
+  /** Lowest daily min temperature in the month (deg C). */
   tMinC: number;
   /** Total precipitation for the month (mm). */
   precipMm: number;
 }
+
+/**
+ * Week index 1..53 of a fixed 7-day binning anchored on 1 January: week `w`
+ * covers days-of-year 7(w-1)+1 .. 7w, so week 53 holds the remaining 1-2 days.
+ * These are NOT ISO 8601 weeks — bins are aligned across vintages so two years
+ * can be compared week by week. See `docs/climate-methodology.md`.
+ */
+export type WeekIndex = number;
+
+/**
+ * Weekly aggregate derived from the same daily source data as
+ * {@link MonthlyClimate}. Temperatures can be `null` when the bin has no
+ * observation (real data with gaps); `days` exposes the actual coverage.
+ */
+export interface WeeklyClimate {
+  week: WeekIndex;
+  /** First day of the bin, ISO `YYYY-MM-DD`. */
+  startDate: string;
+  /** Last day of the bin, ISO `YYYY-MM-DD` (inclusive). */
+  endDate: string;
+  /** Number of days with at least one observation in the bin. */
+  days: number;
+  /** Mean of daily mean temperature (deg C), null when uncovered. */
+  tMeanC: number | null;
+  /** Highest daily max temperature in the bin (deg C), null when uncovered. */
+  tMaxC: number | null;
+  /** Lowest daily min temperature in the bin (deg C), null when uncovered. */
+  tMinC: number | null;
+  /** Total precipitation for the bin (mm), null when uncovered. */
+  precipMm: number | null;
+}
+
+/** Time resolution of the temperature / rainfall charts. Monthly is the default. */
+export type ClimateGranularity = "monthly" | "weekly";
 
 /**
  * The headline indicators computed per region x vintage. Each one is a climate
@@ -277,6 +311,8 @@ export interface RegionVintageClimate {
   regionId: string;
   year: number;
   monthly: MonthlyClimate[];
+  /** Weekly rollup. Empty when the row predates the weekly backfill. */
+  weekly: WeeklyClimate[];
   indicators: ClimateIndicators;
   flags: VintageProfileFlags;
   /** One-paragraph auto-generated, human-readable summary. */

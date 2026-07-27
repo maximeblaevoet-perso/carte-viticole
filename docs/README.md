@@ -11,7 +11,7 @@ matches the change you intend to make.
 | Product scope or user-visible features | [`product-spec.md`](product-spec.md) | [`ux-wireframes.md`](ux-wireframes.md) and the relevant ADR |
 | Layout, navigation, map interactions, or responsive behaviour | [`ux-wireframes.md`](ux-wireframes.md) | [`architecture.md`](architecture.md) and ADR 0003/0004/0007 |
 | TypeScript or SQL data shapes | [`data-model.md`](data-model.md) | `src/lib/types.ts` and `supabase/migrations/` |
-| Climate indicators, flags, or confidence | [`climate-methodology.md`](climate-methodology.md) | `src/lib/indicators.ts`, the Python computation, and ADR 0002/0005 |
+| Climate indicators, flags, confidence, or chart granularity | [`climate-methodology.md`](climate-methodology.md) | `src/lib/indicators.ts`, the Python computation, and ADR 0002/0005/0008 |
 | Weather or geographic provenance | [`data-sources.md`](data-sources.md) | `scripts/README.md` and the ingestion scripts |
 | Wine-area levels or map geometry | [`wine-hierarchy.md`](wine-hierarchy.md) | `src/data/areas.ts`, `src/data/geo.ts`, and ADR 0004/0006/0007 |
 | Application boundaries or data flow | [`architecture.md`](architecture.md) | the relevant data-access module and ADR |
@@ -49,6 +49,7 @@ for exact implementation details:
 | Domain types | `src/lib/types.ts` and the append-only SQL migrations |
 | Indicator formulas and thresholds | `src/lib/indicators.ts` and `src/data/synthetic.ts` |
 | Climate reads and fallback | `src/data/climate.ts` and `src/hooks/useClimate.ts` |
+| Chart granularity (monthly / weekly) | `src/lib/climate-series.ts` and `src/components/charts/ClimateChart.tsx` |
 | Wine hierarchy and seed geometry | `src/data/areas.ts` and `src/data/geo.ts` |
 | Real geodata delivery | migration `0007` and `/api/tiles/wine/[z]/[x]/[y]` |
 | Ingestion commands | `scripts/README.md` and each script's `--help` output |

@@ -34,7 +34,7 @@ wine region + vintage + historical weather + soil type
 - Region fiche and region × vintage fiche.
 - Desktop right-side panel; mobile bottom sheet.
 - Vintage-selection timeline.
-- Monthly charts (temperature + rainfall).
+- Temperature + rainfall charts, monthly by default with a weekly mode on demand.
 - Comparison of two vintages in the same region.
 - Demo data clearly marked **synthetic**.
 - Pipeline prepared to import real Météo-France data.
@@ -47,7 +47,7 @@ Explicitly **out of V1**: hardcoding Parker or any protected critic. A generic
 - Auto-generated summary
 - Climate profile (flags)
 - Key indicators
-- Temperature & rainfall charts (monthly)
+- Temperature & rainfall charts (monthly by default, weekly on demand)
 - Tabs: Climat, Sols, Notes, Sources, Methodologie
 
 ## Comparison (V1)
@@ -65,6 +65,8 @@ and the auto profile for each.
 - Climate reads go through `src/data/climate.ts`: real
   `region_vintage_climate` rows are used when Supabase is explicitly enabled,
   with a per-row synthetic fallback when data is absent or unavailable.
+- Charts can be switched between the monthly and weekly rollups; monthly stays
+  the default and weekly is disabled when a record has none (ADR 0008).
 - The map supports a non-uniform hierarchy of wine areas. Provisional editorial
   GeoJSON is always available; sourced PostGIS geometry can be overlaid as
   zoom-gated MVT through `/api/tiles/wine/[z]/[x]/[y]`.
@@ -75,7 +77,9 @@ and the auto profile for each.
 
 ### Prepared but data-dependent
 
-- Real climate display requires populated `region_vintage_climate` rows.
+- Real climate display requires populated `region_vintage_climate` rows. The
+  weekly mode additionally needs those rows re-exported and re-imported after
+  migration 0008 so their `weekly` rollup is filled.
 - Real geographic overlays require populated PostGIS geodata tables plus the
   MVT migration and server-side Supabase configuration.
 - Detailed coverage is intentionally uneven: Alsace and Champagne are the first
@@ -87,4 +91,4 @@ and the auto profile for each.
   indicators.
 - Complete sourced geometry and fine-grained soil/climate coverage across all
   twelve regions.
-- Weekly charts and comparisons beyond two vintages in the same region.
+- Comparisons beyond two vintages in the same region.

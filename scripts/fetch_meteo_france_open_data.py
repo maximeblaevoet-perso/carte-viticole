@@ -25,6 +25,7 @@ import math
 import os
 import re
 import shutil
+import ssl
 import sys
 import tempfile
 import urllib.error
@@ -40,6 +41,8 @@ DATA_GOUV_DATASET_SLUG = "donnees-climatologiques-de-base-quotidiennes"
 DATA_GOUV_API_URL = "https://www.data.gouv.fr/api/1/datasets/{slug}/"
 SOURCE_TYPE = "real"
 SOURCE_NAME = "Meteo-France donnees climatologiques de base quotidiennes"
+
+_URL_OPENER: Optional[urllib.request.OpenerDirector] = None
 
 # Approximate department coverage for the V1 macro wine regions.
 # For production, prefer a curated station map with: region_id,station_id,weight.
@@ -125,6 +128,7 @@ REGION_CLIMATE_COLUMNS = [
     "flags",
     "summary",
     "monthly",
+    "weekly",
     "source_type",
     "confidence",
 ]
@@ -237,9 +241,31 @@ def parse_args() -> argparse.Namespace:
         help="Rebuild project CSVs from the existing raw/ directory without downloading anything.",
     )
     parser.add_argument(
+        "--climate-from-daily",
+        action="store_true",
+        help=(
+            "Rebuild region_weather_stations.csv and region_vintage_climate.csv from an existing "
+            "daily_weather.csv (and patch weather_stations departments). Does not rewrite daily_weather "
+            "or re-read raw gz files."
+        ),
+    )
+    parser.add_argument(
         "--skip-region-climate",
         action="store_true",
         help="Only write station and daily_weather CSV files; skip regional indicators.",
+    )
+    parser.add_argument(
+        "--ca-bundle",
+        default="",
+        help=(
+            "Path to a CA certificate bundle for HTTPS verification. "
+            "Defaults to certifi's bundle when installed, otherwise Python's built-in store."
+        ),
+    )
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        help="Disable HTTPS certificate verification (not recommended).",
     )
     return parser.parse_args()
 
@@ -257,6 +283,16 @@ def normalize_department(dep: str) -> str:
     return dep
 
 
+def department_from_station_id(station_id: str) -> Optional[str]:
+    """Derive the INSEE department from a Météo-France NUM_POSTE (e.g. 33063001 -> 33)."""
+    s = str(station_id).strip().upper()
+    if len(s) >= 2 and s[:2] in {"2A", "2B"}:
+        return s[:2]
+    if len(s) >= 2 and s[:2].isdigit():
+        return normalize_department(s[:2])
+    return None
+
+
 def safe_filename(value: str) -> str:
     parsed = urllib.parse.urlparse(value)
     base = Path(parsed.path).name or value
@@ -264,9 +300,49 @@ def safe_filename(value: str) -> str:
     return base[:180] or "resource.csv.gz"
 
 
+def default_ca_bundle() -> Optional[str]:
+    try:
+        import certifi
+    except ImportError:
+        return None
+    return certifi.where()
+
+
+def build_ssl_context(ca_bundle: Optional[str], insecure: bool) -> ssl.SSLContext:
+    if insecure:
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        return context
+    if ca_bundle:
+        return ssl.create_default_context(cafile=ca_bundle)
+    return ssl.create_default_context()
+
+
+def configure_http(ca_bundle: str = "", insecure: bool = False) -> None:
+    global _URL_OPENER
+    bundle = ca_bundle or default_ca_bundle()
+    context = build_ssl_context(bundle, insecure)
+    _URL_OPENER = urllib.request.build_opener(urllib.request.HTTPSHandler(context=context))
+
+
+def http_open(req: urllib.request.Request, timeout: int):
+    opener = _URL_OPENER or urllib.request.build_opener()
+    try:
+        return opener.open(req, timeout=timeout)
+    except urllib.error.URLError as exc:
+        if isinstance(exc.reason, ssl.SSLError):
+            hint = (
+                "SSL certificate verification failed. "
+                "Install certifi (`pip install certifi`) or pass --ca-bundle PATH."
+            )
+            raise urllib.error.URLError(f"{hint} Original error: {exc.reason}") from exc
+        raise
+
+
 def fetch_json(url: str) -> Dict[str, Any]:
     req = urllib.request.Request(url, headers={"User-Agent": "wine-climate-ingestion/1.0"})
-    with urllib.request.urlopen(req, timeout=60) as response:
+    with http_open(req, timeout=60) as response:
         data = response.read().decode("utf-8")
     return json.loads(data)
 
@@ -285,15 +361,17 @@ def dataset_slug_from_url(url: str) -> Optional[str]:
 
 
 def parse_department_from_text(text: str) -> Optional[str]:
+    # Filenames are typically Q_33_previous-1950-2024_RR-T-Vent.csv.gz;
+    # dataset URLs may include /Q_33_... or departement_33.
     patterns = [
         r"departement[_-]([0-9]{2,3}|2A|2B)",
-        r"/Q[_-]([0-9]{2,3}|2A|2B)[_-]",
+        r"(?:^|/)Q[_-]([0-9]{2,3}|2A|2B)[_-]",
         r"_Q[_-]?([0-9]{2,3}|2A|2B)[_-]",
         r"QUOT[^A-Za-z0-9]+([0-9]{2,3}|2A|2B)[^A-Za-z0-9]",
     ]
     upper = text.upper()
     for pattern in patterns:
-        match = re.search(pattern, upper)
+        match = re.search(pattern, upper, flags=re.IGNORECASE)
         if match:
             return normalize_department(match.group(1))
     return None
@@ -389,7 +467,7 @@ def download_resource(resource: Resource, raw_dir: Path, force: bool = False) ->
     tmp_fd, tmp_name = tempfile.mkstemp(prefix="meteo_", suffix=".download", dir=str(raw_dir))
     os.close(tmp_fd)
     try:
-        with urllib.request.urlopen(req, timeout=300) as response, open(tmp_name, "wb") as dst:
+        with http_open(req, timeout=300) as response, open(tmp_name, "wb") as dst:
             shutil.copyfileobj(response, dst)
         os.replace(tmp_name, target)
     except Exception:
@@ -608,7 +686,9 @@ def process_resource(
                 continue
 
             info = update_station_info(stations, row, department)
-            row_department = info.department or department
+            row_department = info.department or department or department_from_station_id(station_id)
+            if row_department and not info.department:
+                info.department = row_department
             daily = normalize_daily_row(row, accepted_quality)
 
             output = {
@@ -723,6 +803,20 @@ def mean(values: Iterable[Optional[float]]) -> Optional[float]:
     return sum(clean) / len(clean)
 
 
+def maximum(values: Iterable[Optional[float]]) -> Optional[float]:
+    clean = [v for v in values if v is not None]
+    if not clean:
+        return None
+    return max(clean)
+
+
+def minimum(values: Iterable[Optional[float]]) -> Optional[float]:
+    clean = [v for v in values if v is not None]
+    if not clean:
+        return None
+    return min(clean)
+
+
 def total(values: Iterable[Optional[float]]) -> Optional[float]:
     clean = [v for v in values if v is not None]
     if not clean:
@@ -773,6 +867,8 @@ def build_monthly(year_days: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     by_month: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
     for day in year_days:
         by_month[day["date"].month].append(day)
+    # t_mean_c = mean of daily means; t_max_c / t_min_c = true extremes of
+    # daily TX / TN over the bin (not the mean of daily maxes/mins).
     monthly: List[Dict[str, Any]] = []
     for month in range(1, 13):
         days = by_month.get(month, [])
@@ -780,12 +876,51 @@ def build_monthly(year_days: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             {
                 "month": month,
                 "t_mean_c": round_or_none(mean(day.get("t_mean_c") for day in days), 1),
-                "t_max_c": round_or_none(mean(day.get("t_max_c") for day in days), 1),
-                "t_min_c": round_or_none(mean(day.get("t_min_c") for day in days), 1),
+                "t_max_c": round_or_none(maximum(day.get("t_max_c") for day in days), 1),
+                "t_min_c": round_or_none(minimum(day.get("t_min_c") for day in days), 1),
                 "precip_mm": round_or_none(total(day.get("precip_mm") for day in days), 1),
             }
         )
     return monthly
+
+
+WEEKS_PER_YEAR = 53
+
+
+def build_weekly(year: int, year_days: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    # Fixed 7-day bins anchored on 1 January (week w = days-of-year 7(w-1)+1 .. 7w,
+    # week 53 keeping the remaining 1-2 days). NOT ISO 8601 weeks: aligned bins let
+    # two vintages be compared week by week. Keys MUST match the schema/TS contract
+    # (WeeklyClimate -> week, start_date, end_date, days, t_mean_c, t_max_c,
+    # t_min_c, precip_mm). See migration 0008, src/lib/types.ts and the mapper in
+    # src/data/climate.ts.
+    last_day = dt.date(year, 12, 31)
+    by_week: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
+    for day in year_days:
+        doy = day["date"].timetuple().tm_yday
+        by_week[min(WEEKS_PER_YEAR, (doy - 1) // 7 + 1)].append(day)
+
+    weekly: List[Dict[str, Any]] = []
+    for week in range(1, WEEKS_PER_YEAR + 1):
+        days = by_week.get(week, [])
+        start = dt.date(year, 1, 1) + dt.timedelta(days=7 * (week - 1))
+        end = min(last_day, start + dt.timedelta(days=6))
+        if week == WEEKS_PER_YEAR:
+            # Absorb the leap day so no observation falls outside the bins.
+            end = last_day
+        weekly.append(
+            {
+                "week": week,
+                "start_date": start.isoformat(),
+                "end_date": end.isoformat(),
+                "days": len(days),
+                "t_mean_c": round_or_none(mean(day.get("t_mean_c") for day in days), 1),
+                "t_max_c": round_or_none(maximum(day.get("t_max_c") for day in days), 1),
+                "t_min_c": round_or_none(minimum(day.get("t_min_c") for day in days), 1),
+                "precip_mm": round_or_none(total(day.get("precip_mm") for day in days), 1),
+            }
+        )
+    return weekly
 
 
 def expected_days_for_window(year: int, start_month: int, end_month: int) -> int:
@@ -865,6 +1000,7 @@ def compute_base_region_rows(
                     "water_stress_index": round_or_none(water_stress, 0),
                     "harvest_rain_risk_index": round_or_none(harvest_risk, 0),
                     "monthly": build_monthly(year_days),
+                    "weekly": build_weekly(year, year_days),
                     "coverage": coverage,
                 }
             )
@@ -996,12 +1132,101 @@ def write_region_climate(path: Path, rows: List[Dict[str, Any]]) -> None:
             out = {column: row.get(column, "") for column in REGION_CLIMATE_COLUMNS}
             out["flags"] = json.dumps(row.get("flags", {}), ensure_ascii=False, separators=(",", ":"))
             out["monthly"] = json.dumps(row.get("monthly", []), ensure_ascii=False, separators=(",", ":"))
+            out["weekly"] = json.dumps(row.get("weekly", []), ensure_ascii=False, separators=(",", ":"))
             out["source_type"] = SOURCE_TYPE
             writer.writerow(out)
 
 
+def rebuild_climate_from_daily(
+    out_dir: Path,
+    regions: List[str],
+    start_year: int,
+    end_year: int,
+    station_map: Dict[str, List[Tuple[str, float]]],
+    dep_to_regions: Dict[str, List[str]],
+) -> int:
+    """Rebuild regional climate CSVs from daily_weather.csv without touching that file."""
+    daily_path = out_dir / "daily_weather.csv"
+    if not daily_path.exists():
+        raise SystemExit(f"Missing {daily_path}; run a full transform first.")
+
+    region_daily: Dict[Tuple[str, dt.date], DayAccum] = defaultdict(DayAccum)
+    region_stations: Dict[str, set[str]] = defaultdict(set)
+    station_departments: Dict[str, str] = {}
+    rows_read = 0
+    mapped_rows = 0
+
+    with open(daily_path, "r", encoding="utf-8-sig", newline="") as src:
+        reader = csv.DictReader(src)
+        for row in reader:
+            rows_read += 1
+            station_id = str(row.get("station_id", "")).strip()
+            raw_date = str(row.get("obs_date", "")).strip()
+            try:
+                obs_date = dt.date.fromisoformat(raw_date)
+            except ValueError:
+                obs_date = parse_date_yyyymmdd(raw_date.replace("-", ""))
+            if not station_id or obs_date is None:
+                continue
+            if obs_date.year < start_year or obs_date.year > end_year:
+                continue
+
+            if station_map:
+                mappings = station_map.get(station_id, [])
+            else:
+                department = department_from_station_id(station_id)
+                if department:
+                    station_departments[station_id] = department
+                mappings = [(region_id, 1.0) for region_id in dep_to_regions.get(department or "", [])]
+
+            if not mappings:
+                continue
+
+            daily = {
+                "t_min_c": parse_float(row.get("t_min_c")),
+                "t_max_c": parse_float(row.get("t_max_c")),
+                "t_mean_c": parse_float(row.get("t_mean_c")),
+                "precip_mm": parse_float(row.get("precip_mm")),
+            }
+            for region_id, weight in mappings:
+                region_daily[(region_id, obs_date)].add(daily, weight)
+                region_stations[region_id].add(station_id)
+            mapped_rows += 1
+
+            if rows_read % 2_000_000 == 0:
+                print(f"  scanned {rows_read} daily rows ({mapped_rows} mapped)", file=sys.stderr)
+
+    write_region_stations(out_dir / "region_weather_stations.csv", region_stations, station_map)
+    climate_rows = compute_base_region_rows(region_daily, regions, start_year, end_year)
+    write_region_climate(out_dir / "region_vintage_climate.csv", climate_rows)
+
+    # Patch empty department fields on weather_stations without rewriting other columns.
+    stations_path = out_dir / "weather_stations.csv"
+    if stations_path.exists() and station_departments:
+        with open(stations_path, "r", encoding="utf-8-sig", newline="") as src:
+            reader = csv.DictReader(src)
+            fieldnames = list(reader.fieldnames or WEATHER_STATION_COLUMNS)
+            station_rows = list(reader)
+        patched = 0
+        for row in station_rows:
+            if not (row.get("department") or "").strip():
+                dep = station_departments.get(str(row.get("id", "")).strip())
+                if dep:
+                    row["department"] = dep
+                    patched += 1
+        with atomic_csv_writer(stations_path, fieldnames) as writer:
+            for row in station_rows:
+                writer.writerow({key: row.get(key, "") for key in fieldnames})
+        print(f"Patched weather_stations departments: {patched}", file=sys.stderr)
+
+    print(f"Daily rows scanned: {rows_read} (mapped to a region: {mapped_rows})", file=sys.stderr)
+    print(f"Region vintage rows: {len(climate_rows)}", file=sys.stderr)
+    return len(climate_rows)
+
+
 def main() -> int:
     args = parse_args()
+    configure_http(ca_bundle=args.ca_bundle, insecure=args.insecure)
     regions = split_csv_arg(args.regions)
     unknown_regions = [region for region in regions if region not in REGION_DEPARTMENTS]
     if unknown_regions:
@@ -1028,6 +1253,22 @@ def main() -> int:
     print(f"Regions: {', '.join(regions)}", file=sys.stderr)
     print(f"Departments: {', '.join(departments)}", file=sys.stderr)
     stations: Dict[str, StationInfo] = {}
+
+    if args.climate_from_daily:
+        if args.skip_region_climate:
+            raise SystemExit("--climate-from-daily cannot be combined with --skip-region-climate")
+        rebuild_climate_from_daily(
+            out_dir=out_dir,
+            regions=regions,
+            start_year=args.start_year,
+            end_year=args.end_year,
+            station_map=station_map,
+            dep_to_regions=dep_to_regions,
+        )
+        validate_outputs(out_dir, skip_region_climate=False)
+        print(f"Output directory: {out_dir}", file=sys.stderr)
+        return 0
+
     if args.transform_only:
         raw_inputs = raw_resources_from_dir(raw_dir)
         if not raw_inputs:

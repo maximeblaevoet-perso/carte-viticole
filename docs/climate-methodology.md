@@ -8,7 +8,34 @@ The canonical implementation is `src/lib/indicators.ts` and
 
 - Source = **daily** observations (Tmin, Tmax, Tmean, precip).
 - Monthly aggregates are a rollup of daily data, used for the **default charts**.
-- Weekly charts are a later addition.
+- Weekly aggregates are a second rollup of the same daily data, available behind
+  a chart toggle (ADR 0008).
+
+Both rollups aggregate the same way: `t_mean_c` is the **mean** of daily means,
+`t_max_c` / `t_min_c` are the **true extremes** of daily TX / TN over the bin
+(not the mean of daily maxes/mins), and precipitation is **summed**. A bin with
+no observation stores `null`, never `0`, so a gap is never read as a dry, cold
+week.
+
+## Weekly bins
+
+Weeks are **fixed 7-day bins anchored on 1 January**: week `w` covers
+days-of-year 7(w−1)+1 … 7w, giving 53 bins where the last one holds the
+remaining 1–2 days (including the leap day). Each bin records `start_date`,
+`end_date` and `days` (the number of days actually observed).
+
+These are deliberately **not ISO 8601 weeks**. ISO weeks drift across the year
+boundary, which produces partial bins and misaligns two vintages plotted on the
+same axis; fixed bins always cover the same days-of-year, so a week-by-week
+comparison of two years is meaningful. The trade-off is the short week 53, made
+explicit by `days`.
+
+Canonical implementations: `rollupWeekly` in `src/data/synthetic.ts` and
+`build_weekly` in `scripts/fetch_meteo_france_open_data.py`. Both must stay in
+sync.
+
+Indicator definitions below are unchanged by the weekly rollup: **indicators are
+always computed from daily data**, never from a rollup.
 
 ## Seasons
 

@@ -27,6 +27,10 @@ explicit ``--daily PATH`` (e.g. if daily is ever (re)hosted in Supabase).
 Imported rows are tagged ``source_type=real`` and the importer refuses to
 silently overwrite existing ``synthetic`` rows (use
 ``--allow-overwrite-synthetic`` to override). Nothing is ever deleted.
+
+``region_vintage_climate`` carries both the ``monthly`` rollup (default chart
+granularity) and the ``weekly`` rollup (optional weekly mode, migration 0008).
+Both are JSON columns produced by ``scripts/fetch_meteo_france_open_data.py``.
 """
 
 from __future__ import annotations
@@ -248,12 +252,14 @@ def parse_region_vintage_climate(
             try:
                 flags = _to_json(row.get("flags"))
                 monthly = _to_json(row.get("monthly"))
+                weekly = _to_json(row.get("weekly"))
             except json.JSONDecodeError:
                 stats.error += 1
                 continue
             # Uniform key set per batch (avoids PGRST102). Nullable columns get
-            # null when missing; flags/monthly are NOT NULL so fall back to their
-            # empty-collection defaults.
+            # null when missing; flags/monthly/weekly are NOT NULL so fall back
+            # to their empty-collection defaults. An older CSV without a weekly
+            # column simply keeps the empty array (weekly mode stays hidden).
             payload: dict[str, object] = {
                 "region_id": region_id,
                 "vintage_year": year,
@@ -261,6 +267,7 @@ def parse_region_vintage_climate(
                 "summary": _clean_text(row.get("summary")),
                 "flags": flags if flags is not None else {},
                 "monthly": monthly if monthly is not None else [],
+                "weekly": weekly if weekly is not None else [],
             }
             for col in numeric_cols:
                 payload[col] = _to_float(row.get(col))
@@ -316,16 +323,14 @@ def _chunked(items: list, size: int) -> Iterator[list]:
 
 
 def _load_project_env() -> None:
-    """Load env from project root (.env, else .env.example)."""
+    """Load env from project root (.env, else .env.local, else .env.example)."""
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    env_path = os.path.join(root, ".env")
-    example_path = os.path.join(root, ".env.example")
-    if os.path.isfile(env_path):
-        load_dotenv(env_path)
-    elif os.path.isfile(example_path):
-        load_dotenv(example_path)
-    else:
-        load_dotenv()
+    for name in (".env", ".env.local", ".env.example"):
+        path = os.path.join(root, name)
+        if os.path.isfile(path):
+            load_dotenv(path)
+            return
+    load_dotenv()
 
 
 def _resolve_env() -> tuple[Optional[str], Optional[str]]:
@@ -338,6 +343,17 @@ def _resolve_env() -> tuple[Optional[str], Optional[str]]:
         or os.environ.get("SUPABASE_KEY")
     )
     return url, key
+
+
+def _validate_supabase_url(url: str) -> Optional[str]:
+    """Return an error message when the URL looks like a placeholder."""
+    if "your-project" in url or "your_project" in url:
+        return (
+            "SUPABASE_URL still uses the placeholder host (your-project). "
+            "Copy .env.example to .env or .env.local and set your real "
+            "Supabase project URL."
+        )
+    return None
 
 
 def _headers(service_key: str) -> dict[str, str]:
@@ -386,6 +402,11 @@ def find_synthetic_collisions(
             raise RuntimeError(
                 f"Synthetic-guard query failed on {spec.name} ({exc.code}): "
                 f"{body or exc.reason}"
+            ) from exc
+        except error.URLError as exc:
+            raise RuntimeError(
+                f"Cannot reach Supabase at {supabase_url!r}: {exc.reason}. "
+                "Check SUPABASE_URL in .env / .env.local and your network."
             ) from exc
         for row in rows:
             value = row.get(spec.guard_column)
@@ -554,9 +575,13 @@ def main(argv: Optional[list[str]] = None) -> int:
     if not supabase_url or not service_key:
         print(
             "ERROR: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set "
-            "(copy .env.example to .env or export them in your shell).",
+            "(copy .env.example to .env or .env.local, or export them in your shell).",
             file=sys.stderr,
         )
+        return 1
+    url_error = _validate_supabase_url(supabase_url)
+    if url_error:
+        print(f"ERROR: {url_error}", file=sys.stderr)
         return 1
 
     # Synthetic-overwrite guard: never silently flip synthetic -> real.

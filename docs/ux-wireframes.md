@@ -10,7 +10,8 @@
 │ (MapLibre, 12 regions + niveaux disponibles)  │ - Aire selectionnee           │
 │                                               │ - Profil du millesime + badge │
 │                                               │ - Indicateurs cles            │
-│                                               │ - Climat mensuel (chart)      │
+│                                               │ - Temperatures & pluie (chart │
+│                                               │   + toggle Mensuel / Hebdo)   │
 │                                               │ - Timeline annees             │
 │                                               │ - Boutons Detail / Comparer   │
 └───────────────────────────────────────────────┴──────────────────────────────┘
@@ -41,17 +42,29 @@ Region YYYY                                  [badge source] [Comparer]
 │ summary + flag chips                                            │
 └─────────────────────────────────────────────────────────────────┘
 [ Climat | Sols | Notes | Sources | Methodologie ]
-  Climat: indicateurs cles + chart mensuel (temp + pluie)
+  Climat: indicateurs cles + chart temp + pluie (Mensuel / Hebdo)
   Sols:   liste des sols (type, part %, source)
   Notes:  table generique vintage_scores
   Sources / Methodologie: provenance + definitions
 ```
 
+## Chart granularity
+
+Every temperature/rainfall chart carries a segmented **Mensuel / Hebdo** control
+in its top-right corner. Monthly is always the initial state (AGENTS.md §4).
+Weekly reads the pre-computed 53-bin rollup and relabels the X axis `S1…S53`
+(one tick in four), with the covered date range in the tooltip. The Hebdo option
+is **disabled**, with a "Données hebdomadaires indisponibles" hint, when the
+record has no weekly rollup — in the comparison view, when either vintage lacks
+it. Weeks are never derived from monthly means. See ADR 0008.
+
 ## Comparison (`/compare?region=&a=&b=`)
 
 - Region select + two year selects.
 - A difference table for the headline indicators (A, B, écart).
-- Two cards side by side (flags + monthly chart + summary) for A and B.
+- A temperature chart and a rainfall chart, each overlaying both vintages, with
+  their own series toggles and granularity control.
+- Two cards side by side (flags + summary) for A and B.
 
 ## Component map
 
@@ -67,6 +80,6 @@ Region YYYY                                  [badge source] [Comparer]
 | Indicators grid    | `components/KeyIndicators.tsx`              |
 | Flags              | `components/FlagChips.tsx`                  |
 | Source badge       | `components/SourceBadge.tsx`                |
-| Monthly chart      | `components/charts/MonthlyClimateChart.tsx` |
+| Climate chart      | `components/charts/ClimateChart.tsx`        |
 | Fiche              | `components/vintage/VintageDetail.tsx`      |
 | Comparison         | `components/compare/CompareView.tsx`        |

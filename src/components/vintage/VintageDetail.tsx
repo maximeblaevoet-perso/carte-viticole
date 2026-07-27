@@ -13,7 +13,7 @@ import type {
 import { FlagChips } from "@/components/FlagChips";
 import { KeyIndicators } from "@/components/KeyIndicators";
 import { SourceBadge } from "@/components/SourceBadge";
-import { MonthlyClimateChart } from "@/components/charts/MonthlyClimateChart";
+import { ClimateChart } from "@/components/charts/ClimateChart";
 
 const TABS = ["Climat", "Sols", "Notes", "Sources", "Methodologie"] as const;
 type Tab = (typeof TABS)[number];
@@ -102,12 +102,16 @@ export function VintageDetail({
             </div>
             <div>
               <h3 className="mb-2 text-sm font-semibold text-slate-700">
-                Temperature & pluie (mensuel)
+                Temperature & pluie
               </h3>
-              <MonthlyClimateChart monthly={vintage.monthly} height={320} />
+              <ClimateChart
+                monthly={vintage.monthly}
+                weekly={vintage.weekly}
+                height={320}
+              />
               <p className="mt-1 text-xs text-slate-400">
-                Affichage mensuel par defaut. Les indicateurs sont calcules a
-                partir de donnees quotidiennes.
+                Affichage mensuel par defaut, hebdomadaire au choix. Les
+                indicateurs sont calcules a partir de donnees quotidiennes.
               </p>
             </div>
           </div>

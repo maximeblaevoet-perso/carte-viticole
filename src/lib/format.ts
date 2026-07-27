@@ -17,6 +17,20 @@ export const MONTH_LABELS_SHORT = [
   "Jul", "Aou", "Sep", "Oct", "Nov", "Dec",
 ];
 
+export const MONTH_LABELS_LONG = [
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
+
+/** `2018-04-23` -> `23 avril`. Returns the raw input if it is not an ISO date. */
+export function fmtDayMonth(isoDate: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
+  if (!match) return isoDate;
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  return `${day} ${MONTH_LABELS_LONG[month - 1] ?? ""}`.trim();
+}
+
 /** Map a source_type to a short French badge label. */
 export function sourceBadge(sourceType: string): { label: string; tone: string } {
   switch (sourceType) {

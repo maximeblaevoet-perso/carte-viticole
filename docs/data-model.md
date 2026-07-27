@@ -31,8 +31,20 @@ stays ingestion-only — see ADR 0005). Computed indicators per
 `growing_season_temp_c`, `gdd`, `days_above_30`, `days_above_35`,
 `spring_frost_days`, `rain_apr_sep_mm`, `rain_jul_aug_mm`, `rain_sep_mm`,
 `longest_dry_spell_days`, `water_stress_index`, `harvest_rain_risk_index`.
-Plus `flags` (jsonb), `summary` (text), `monthly` (jsonb rollup),
-`source_type`, `confidence`.
+Plus `flags` (jsonb), `summary` (text), `source_type`, `confidence`, and two
+rollups of the same daily source:
+
+- `monthly` (jsonb) — 12 bins, the **default** chart granularity:
+  `{ month, t_mean_c, t_max_c, t_min_c, precip_mm }`.
+  `t_mean_c` is the mean of daily means; `t_max_c` / `t_min_c` are the true
+  extremes of daily TX / TN over the month (ADR 0009).
+- `weekly` (jsonb, migration 0008) — 53 bins for the optional weekly mode:
+  `{ week, start_date, end_date, days, t_mean_c, t_max_c, t_min_c, precip_mm }`.
+  Same aggregation rules as monthly. Weeks are **fixed 7-day bins anchored on
+  1 January** (week 53 keeps the remaining 1–2 days), **not ISO 8601 weeks**,
+  so bins align across vintages. Values are `null` when a bin has no
+  observation; `days` gives its coverage. An empty array means weekly was not
+  computed for that row. See ADR 0008.
 
 ### `region_soils`
 Soil descriptions per region: `soil_type`, `description`, `share_percent`,
@@ -122,6 +134,7 @@ reuse the existing region ids, so climate/soils/scores keep working.
 | `daily_weather`           | (ingestion only)       |
 | `region_vintage_climate`  | `RegionVintageClimate` |
 | (monthly jsonb)           | `MonthlyClimate[]`     |
+| (weekly jsonb)            | `WeeklyClimate[]`      |
 | (indicator columns)       | `ClimateIndicators`    |
 | (flags jsonb)             | `VintageProfileFlags`  |
 | `region_soils`            | `RegionSoil`           |
@@ -136,5 +149,6 @@ id, licence, attribution).
 The UI does not import the synthetic engine directly anymore. It goes through
 `src/data/climate.ts` (`getVintageClimate`, `getRegionVintageClimates`), which
 reads `region_vintage_climate` from Supabase when configured and otherwise falls
-back to synthetic. The frontend **never** queries `daily_weather`; monthly charts
-come from `region_vintage_climate.monthly`. See ADR 0005.
+back to synthetic. The frontend **never** queries `daily_weather`; charts come
+from `region_vintage_climate.monthly` (default) and `.weekly` (user toggle), both
+fetched on the same row. See ADR 0005 and ADR 0008.

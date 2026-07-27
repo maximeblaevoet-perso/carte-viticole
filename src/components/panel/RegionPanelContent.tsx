@@ -18,7 +18,7 @@ import { FlagChips } from "@/components/FlagChips";
 import { KeyIndicators } from "@/components/KeyIndicators";
 import { SourceBadge } from "@/components/SourceBadge";
 import { VintageTimeline } from "@/components/VintageTimeline";
-import { MonthlyClimateChart } from "@/components/charts/MonthlyClimateChart";
+import { ClimateChart } from "@/components/charts/ClimateChart";
 import { GeoProvenanceCard } from "@/components/panel/GeoProvenanceCard";
 import type {
   RegionType,
@@ -226,9 +226,13 @@ export function RegionPanelContent({
 
           <section>
             <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Climat mensuel
+              Températures &amp; pluie
             </h3>
-            <MonthlyClimateChart monthly={vintage.monthly} height={200} />
+            <ClimateChart
+              monthly={vintage.monthly}
+              weekly={vintage.weekly}
+              height={200}
+            />
           </section>
         </>
       )}

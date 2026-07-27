@@ -8,7 +8,8 @@
  * Behaviour:
  * - When Supabase is configured for real data (see `shouldUseSupabase`), it
  *   reads pre-computed aggregates from `region_vintage_climate` — including the
- *   `monthly` rollup that powers the default charts.
+ *   `monthly` rollup that powers the default charts and the `weekly` rollup
+ *   behind the optional weekly mode.
  * - Otherwise (or on any error / missing row) it falls back to the synthetic
  *   engine.
  *
@@ -23,6 +24,7 @@ import type {
   RegionVintageClimate,
   SourceType,
   VintageProfileFlags,
+  WeeklyClimate,
 } from "@/lib/types";
 import { getSupabaseClient, shouldUseSupabase } from "@/lib/supabase";
 import {
@@ -35,7 +37,8 @@ const CLIMATE_COLUMNS =
   "region_id, vintage_year, growing_season_temp_c, gdd, days_above_30, " +
   "days_above_35, spring_frost_days, rain_apr_sep_mm, rain_jul_aug_mm, " +
   "rain_sep_mm, longest_dry_spell_days, water_stress_index, " +
-  "harvest_rain_risk_index, flags, summary, monthly, source_type, confidence";
+  "harvest_rain_risk_index, flags, summary, monthly, weekly, source_type, " +
+  "confidence";
 
 /** Synchronous synthetic accessors, re-exported for use as an instant seed. */
 export {
@@ -109,6 +112,13 @@ function num(value: unknown): number {
   return typeof value === "number" ? value : Number(value ?? 0);
 }
 
+/** Keeps missing weekly observations as `null` instead of collapsing them to 0. */
+function numOrNull(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function mapMonthly(raw: unknown): MonthlyClimate[] {
   if (!Array.isArray(raw)) return [];
   return raw.map((m) => {
@@ -119,6 +129,23 @@ function mapMonthly(raw: unknown): MonthlyClimate[] {
       tMaxC: num(r.t_max_c ?? r.tMaxC),
       tMinC: num(r.t_min_c ?? r.tMinC),
       precipMm: num(r.precip_mm ?? r.precipMm),
+    };
+  });
+}
+
+function mapWeekly(raw: unknown): WeeklyClimate[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((w) => {
+    const r = w as Record<string, unknown>;
+    return {
+      week: num(r.week),
+      startDate: String(r.start_date ?? r.startDate ?? ""),
+      endDate: String(r.end_date ?? r.endDate ?? ""),
+      days: num(r.days),
+      tMeanC: numOrNull(r.t_mean_c ?? r.tMeanC),
+      tMaxC: numOrNull(r.t_max_c ?? r.tMaxC),
+      tMinC: numOrNull(r.t_min_c ?? r.tMinC),
+      precipMm: numOrNull(r.precip_mm ?? r.precipMm),
     };
   });
 }
@@ -142,6 +169,7 @@ function mapRow(row: ClimateRow): RegionVintageClimate {
     regionId: String(row.region_id),
     year: num(row.vintage_year),
     monthly: mapMonthly(row.monthly),
+    weekly: mapWeekly(row.weekly),
     indicators: {
       growingSeasonTempC: num(row.growing_season_temp_c),
       gdd: num(row.gdd),

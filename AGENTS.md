@@ -23,7 +23,7 @@ Product principles, in order: **climate facts first**, interpretation second,
 - Next.js (App Router) + TypeScript
 - Tailwind CSS
 - MapLibre GL (interactive map)
-- Recharts (monthly charts)
+- Recharts (monthly / weekly climate charts)
 - Supabase (PostgreSQL + PostGIS) — target backend
 - Python for ingestion/computation scripts
 
@@ -49,7 +49,9 @@ Do not change the stack without adding a decision in `docs/decisions/`.
 - **Desktop = right-side panel**; **mobile = bottom sheet** (peek + swipe up).
 - A **vintage timeline** selects the year.
 - **Default charts are monthly.** Daily data is for computation, not default
-  display. Weekly charts come later.
+  display. A **monthly / weekly toggle** on the chart lets the user switch to the
+  weekly rollup; weekly is never the default and is disabled when a record has no
+  weekly data (ADR 0008).
 - Comparison starts with **two vintages in the same region**.
 - The vintage fiche has tabs: Climat, Sols, Notes, Sources, Methodologie.
 
@@ -58,7 +60,9 @@ Do not change the stack without adding a decision in `docs/decisions/`.
 - **Daily weather is the source granularity** for V1.
 - Region × vintage indicators are **computed** from (station) daily data.
 - Every computed indicator carries a `source_type` and a `confidence` score.
-- Monthly aggregates are a rollup of daily data, stored for fast display.
+- Monthly and weekly aggregates are rollups of daily data, stored for fast
+  display. Weeks are fixed 7-day bins anchored on 1 January, not ISO weeks.
+- A rollup bin with no observation stores `null`, never `0`.
 - Never remove source/provenance fields.
 
 ## 6. Real vs synthetic vs manual

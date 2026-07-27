@@ -1,6 +1,7 @@
 # Python dependencies for the ingestion/computation scripts.
 # Standard library covers the CSV parsing skeleton; the DB driver is only
 # needed when running with --commit.
+certifi>=2024.0
 psycopg[binary]>=3.1
 python-dotenv>=1.0
 geopandas>=1.0

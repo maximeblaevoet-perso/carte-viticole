@@ -19,11 +19,13 @@ import {
   median,
   type RegionReference,
 } from "@/lib/indicators";
+import { WEEKS_PER_YEAR } from "@/lib/climate-series";
 import type {
   ClimateIndicators,
   MonthIndex,
   MonthlyClimate,
   RegionVintageClimate,
+  WeeklyClimate,
 } from "@/lib/types";
 import { REGION_BASELINES, type RegionBaseline } from "./regions";
 
@@ -68,6 +70,8 @@ function gauss(rng: () => number): number {
 // --- daily series -----------------------------------------------------------
 
 interface DayRecord {
+  /** Day of year 1..365 (this generator ignores leap days on purpose). */
+  doy: number;
   month: MonthIndex;
   tMin: number;
   tMax: number;
@@ -84,6 +88,26 @@ function monthForDoy(doy: number): MonthIndex {
     if (doy <= acc) return (m + 1) as MonthIndex;
   }
   return 12;
+}
+
+/**
+ * ISO date for a day-of-year, using the same fixed 365-day calendar as the
+ * generated series so week labels stay consistent with the values they label.
+ */
+function isoDateForDoy(year: number, doy: number): string {
+  const clamped = Math.min(365, Math.max(1, doy));
+  let remaining = clamped;
+  for (let m = 0; m < 12; m++) {
+    if (remaining <= DAYS_IN_MONTH[m]) {
+      return `${year}-${pad2(m + 1)}-${pad2(remaining)}`;
+    }
+    remaining -= DAYS_IN_MONTH[m];
+  }
+  return `${year}-12-31`;
+}
+
+function pad2(value: number): string {
+  return String(value).padStart(2, "0");
 }
 
 /**
@@ -130,7 +154,7 @@ export function generateDailySeries(
       precipMm = -Math.log(1 - rng()) * meanIntensity;
     }
 
-    days.push({ month, tMin, tMax, tMean, precipMm });
+    days.push({ doy, month, tMin, tMax, tMean, precipMm });
   }
 
   return days;
@@ -146,12 +170,39 @@ function rollupMonthly(days: DayRecord[]): MonthlyClimate[] {
     monthly.push({
       month: m as MonthIndex,
       tMeanC: round1(ds.reduce((s, d) => s + d.tMean, 0) / n),
-      tMaxC: round1(ds.reduce((s, d) => s + d.tMax, 0) / n),
-      tMinC: round1(ds.reduce((s, d) => s + d.tMin, 0) / n),
+      // True extremes of daily TX / TN over the bin (not mean of daily maxes/mins).
+      tMaxC: ds.length ? round1(Math.max(...ds.map((d) => d.tMax))) : 0,
+      tMinC: ds.length ? round1(Math.min(...ds.map((d) => d.tMin))) : 0,
       precipMm: Math.round(ds.reduce((s, d) => s + d.precipMm, 0)),
     });
   }
   return monthly;
+}
+
+/**
+ * Daily -> weekly rollup on fixed 7-day bins anchored on 1 January (week 53
+ * holds the leftover day). Same aggregation rules as the monthly rollup:
+ * tMean averaged, tMax/tMin = true extremes, precipitation summed.
+ */
+function rollupWeekly(days: DayRecord[], year: number): WeeklyClimate[] {
+  const weekly: WeeklyClimate[] = [];
+  for (let w = 1; w <= WEEKS_PER_YEAR; w++) {
+    const firstDoy = (w - 1) * 7 + 1;
+    const lastDoy = Math.min(365, w * 7);
+    const ds = days.filter((d) => d.doy >= firstDoy && d.doy <= lastDoy);
+    const n = ds.length || 1;
+    weekly.push({
+      week: w,
+      startDate: isoDateForDoy(year, firstDoy),
+      endDate: isoDateForDoy(year, lastDoy),
+      days: ds.length,
+      tMeanC: round1(ds.reduce((s, d) => s + d.tMean, 0) / n),
+      tMaxC: ds.length ? round1(Math.max(...ds.map((d) => d.tMax))) : 0,
+      tMinC: ds.length ? round1(Math.min(...ds.map((d) => d.tMin))) : 0,
+      precipMm: round1(ds.reduce((s, d) => s + d.precipMm, 0)),
+    });
+  }
+  return weekly;
 }
 
 function computeIndicators(days: DayRecord[]): ClimateIndicators {
@@ -232,6 +283,7 @@ interface RawVintage {
   regionId: string;
   year: number;
   monthly: MonthlyClimate[];
+  weekly: WeeklyClimate[];
   indicators: ClimateIndicators;
 }
 
@@ -241,6 +293,7 @@ function buildRawVintage(base: RegionBaseline, year: number): RawVintage {
     regionId: base.id,
     year,
     monthly: rollupMonthly(days),
+    weekly: rollupWeekly(days, year),
     indicators: computeIndicators(days),
   };
 }
@@ -260,6 +313,7 @@ function buildRegionVintages(base: RegionBaseline): RegionVintageClimate[] {
       regionId: r.regionId,
       year: r.year,
       monthly: r.monthly,
+      weekly: r.weekly,
       indicators: r.indicators,
       flags,
       summary: generateSummary(

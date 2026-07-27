@@ -44,9 +44,10 @@ columns against `supabase/migrations/0002_core_tables.sql` before importing.
 `daily_weather` remains the **source granularity** for reliable computation, but
 it is **not pushed to Supabase by default**: the table is very large (millions
 of rows) and the frontend never reads it. Daily CSVs are kept locally and used
-to derive the monthly rollup + indicators stored in `region_vintage_climate`,
-which is what the UI serves (monthly charts included). See ADR 0005. The import
-script skips `daily_weather` unless explicitly requested (`--only daily_weather`).
+to derive the monthly and weekly rollups + indicators stored in
+`region_vintage_climate`, which is what the UI serves (both chart granularities
+included). See ADR 0005 and ADR 0008. The import script skips `daily_weather`
+unless explicitly requested (`--only daily_weather`).
 
 ### Priority V1 variables
 

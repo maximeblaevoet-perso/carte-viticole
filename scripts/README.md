@@ -13,8 +13,8 @@ pip install -r requirements.txt
 ```
 
 For `--commit`, the importer loads `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
-from `.env` at the project root (or `.env.example` if `.env` is missing).
-`SUPABASE_URL` falls back to `NEXT_PUBLIC_SUPABASE_URL` when unset.
+from `.env` at the project root (or `.env.local`, then `.env.example` if neither
+exists). `SUPABASE_URL` falls back to `NEXT_PUBLIC_SUPABASE_URL` when unset.
 
 ## Générer les CSV depuis l'open data Météo-France
 
@@ -41,7 +41,10 @@ python scripts/fetch_meteo_france_open_data.py --transform-only --out-dir data/m
 
 Notes:
 
-- The script uses only the Python standard library.
+- The script uses only the Python standard library, except for HTTPS: install
+  `certifi` (included in `scripts/requirements.txt`) so certificate verification
+  works on Windows/Python 3.14+. You can also pass `--ca-bundle PATH` or
+  `--insecure` as a last resort.
 - Daily temperatures and rain come from Météo-France columns **TN**, **TX**,
   **TM**, and **RR**. Published QUOT CSV files already use °C and mm with one
   decimal (the official descriptor « en °C et 1/10 » means 0.1 precision, not
@@ -72,8 +75,19 @@ Notes:
   fields stay blank unless the source provides them.
 - `region_vintage_climate.csv` matches `region_vintage_climate` except for
   `computed_at`, which is left to the database default during import.
+- That CSV carries **two rollups** of the same daily data: `monthly` (12 bins,
+  the default chart granularity) and `weekly` (53 fixed 7-day bins anchored on
+  1 January, NOT ISO weeks — see
+  [ADR 0008](../docs/decisions/0008-add-weekly-climate-rollup.md)). Apply
+  migration `0008_weekly_climate_rollup.sql` before importing a CSV with
+  `weekly`; existing rows keep an empty array and the UI simply hides the weekly
+  mode until they are re-imported.
 - `--transform-only` rebuilds the project CSVs from existing files in
   `data/meteo-france/raw/` without fetching the source again.
+- `--climate-from-daily` rebuilds only `region_weather_stations.csv` and
+  `region_vintage_climate.csv` from an existing `daily_weather.csv` (no raw gz
+  re-read, daily file left untouched). Use this after a transform that wrote
+  daily rows but produced 0 region vintage rows.
 
 ## Importer les CSV projet dans Supabase
 
@@ -84,7 +98,7 @@ order:
 
 1. `weather_stations` (builds the PostGIS `location` from `latitude`/`longitude`)
 2. `region_weather_stations`
-3. `region_vintage_climate` (parses the `flags`/`monthly` JSON columns)
+3. `region_vintage_climate` (parses the `flags`/`monthly`/`weekly` JSON columns)
 
 `daily_weather` is **NOT pushed by default**. It is very large (millions of
 rows) and the frontend never reads it — the UI consumes the pre-computed

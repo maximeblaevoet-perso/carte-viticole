@@ -964,14 +964,12 @@ def run_scope(
 # ---------------------------------------------------------------------------
 def _load_project_env() -> None:
     root = Path(__file__).resolve().parent.parent
-    env_path = root / ".env"
-    example_path = root / ".env.example"
-    if env_path.is_file():
-        load_dotenv(env_path)
-    elif example_path.is_file():
-        load_dotenv(example_path)
-    else:
-        load_dotenv()
+    for name in (".env", ".env.local", ".env.example"):
+        path = root / name
+        if path.is_file():
+            load_dotenv(path)
+            return
+    load_dotenv()
 
 
 def _resolve_env() -> tuple[Optional[str], Optional[str]]:
