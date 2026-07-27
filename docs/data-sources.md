@@ -60,6 +60,42 @@ script skips `daily_weather` unless explicitly requested (`--only daily_weather`
 Humidity, wind, sunshine, radiation are modelled in the schema but **not**
 prioritised in the V1 UI.
 
+## Wine geodata (target real sources)
+
+Hierarchical map geometry and fine parcels will be ingested from public French
+open data. Every row carries `source_type` plus `source_datasets` metadata.
+**Never** present informative INAO contours as official boundaries.
+
+| Dataset id | Source | Role |
+| ---------- | ------ | ---- |
+| `inao-siqo` | [SIQO INAO](https://www.data.gouv.fr/datasets/referentiel-des-produits-sous-signe-officiel-didentification-de-la-qualite-et-de-lorigine-siqo) | Product/appellation referential (CSV, no geom) |
+| `inao-aires-produits` | [Aires AOC/AOP/IGP](https://www.data.gouv.fr/datasets/aires-et-produits-aoc-aop-et-igp) | Tabular aires ↔ produits (CSV) |
+| `inao-aires-geo` | [Aires géographiques SIQO](https://www.data.gouv.fr/datasets/delimitation-des-aires-geographiques-des-siqo) | Appellation area polygons (`is_informative`) |
+| `inao-parcellaire` | [Parcellaire INAO](https://www.data.gouv.fr/datasets/delimitation-parcellaire-des-aoc-viticoles-de-linao) | Fine AOC parcels → `wine_parcels` |
+| `ign-rpg` | [RPG IGN](https://cartes.gouv.fr/aide/fr/partenaires/ign/referentiels-description-territoire/vegetation-agriculture/rpg/) | Declared vine plots — enrichment only |
+| `etalab-cadastre` | [Cadastre Etalab](https://cadastre.data.gouv.fr/datasets) | Parcel refs + `wine_lieux_dits` |
+
+### Regional scope (initial)
+
+- **Alsace:** 51 Alsace Grand Cru as `wine_areas` (level 3–4, `region_type =
+  grand-cru`), geometry from INAO when imported.
+- **Champagne:** Grand Cru / Premier Cru = **communes** in `wine_areas`; fine
+  display uses `wine_parcels` + `wine_lieux_dits` (cadastre), not nested hierarchy.
+- **Bourgogne:** schema ready (climats, 1ers crus); full import deferred.
+
+### V1 status (geodata)
+
+Seed contours in `src/data/geo.ts` remain `source_type = synthetic` /
+`provisional`. Migration `0005_wine_geodata.sql` creates tables and catalogs
+sources only — **no geometry imported yet**. Frontend reads via
+`src/data/wine-geodata.ts` with seed fallback until real rows exist.
+
+Ingestion script: `scripts/ingest_wine_geodata.py` (dry-run on fixtures or
+local raw files; `--commit` for Supabase write). See `scripts/README.md`.
+
+Methodology inspiration: [open-wine-map](https://github.com/devloed-com/open-wine-map/)
+(future Python ingest scripts — not part of this change).
+
 ## External scores
 
 The `vintage_scores` table is a **generic** container. V1 does not integrate any

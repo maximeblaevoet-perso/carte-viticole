@@ -58,6 +58,33 @@ and the auto profile for each.
 
 ## Status (current)
 
-Frontend is implemented on synthetic data. SQL migrations, docs, and a Python
-ingestion skeleton are in place. Real-data ingestion and server-side indicator
-computation are the next milestones.
+### Implemented
+
+- The complete frontend flow runs without a database on deterministic,
+  visibly-labelled synthetic climate data.
+- Climate reads go through `src/data/climate.ts`: real
+  `region_vintage_climate` rows are used when Supabase is explicitly enabled,
+  with a per-row synthetic fallback when data is absent or unavailable.
+- The map supports a non-uniform hierarchy of wine areas. Provisional editorial
+  GeoJSON is always available; sourced PostGIS geometry can be overlaid as
+  zoom-gated MVT through `/api/tiles/wine/[z]/[x]/[y]`.
+- SQL migrations define the climate, provenance, hierarchical wine-area,
+  parcel, lieu-dit, and MVT contracts.
+- Python tooling downloads and normalizes Météo-France data, imports project
+  climate CSVs, and dry-runs or commits wine geodata from fixtures/local files.
+
+### Prepared but data-dependent
+
+- Real climate display requires populated `region_vintage_climate` rows.
+- Real geographic overlays require populated PostGIS geodata tables plus the
+  MVT migration and server-side Supabase configuration.
+- Detailed coverage is intentionally uneven: Alsace and Champagne are the first
+  geodata targets; Bourgogne's structure exists but its full import is deferred.
+
+### Not yet complete
+
+- A production-grade, scheduled computation/backfill pipeline for real climate
+  indicators.
+- Complete sourced geometry and fine-grained soil/climate coverage across all
+  twelve regions.
+- Weekly charts and comparisons beyond two vintages in the same region.

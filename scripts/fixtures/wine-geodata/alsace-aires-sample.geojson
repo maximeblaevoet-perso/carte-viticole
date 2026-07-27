@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id_app": "A0123",
+        "app": "Alsace",
+        "id_denom": "D0456",
+        "denom": "Altenberg de Bergheim",
+        "type_prod": "AOC",
+        "signe": "AOC"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [7.34, 48.20],
+            [7.37, 48.20],
+            [7.37, 48.23],
+            [7.34, 48.23],
+            [7.34, 48.20]
+          ]
+        ]
+      }
+    }
+  ]
+}

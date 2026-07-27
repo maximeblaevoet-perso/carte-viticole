@@ -11,6 +11,8 @@
  *
  * See `docs/wine-hierarchy.md` for how to add a region / sous-région / village
  * / cru / parcelle and where to plug fine soils, météo and parcellaire later.
+ *
+ * Supabase geodata access: `src/data/wine-geodata.ts` (ADR 0006).
  */
 
 import type { AreaLevel, RegionType, WineArea } from "@/lib/types";

@@ -42,6 +42,38 @@ Soil descriptions per region: `soil_type`, `description`, `share_percent`,
 Generic external-scores container: `source_name`, `score_value`, `score_scale`,
 `note`, `source_type`. No proprietary critic hardcoded in V1.
 
+### `source_datasets`
+Catalog of public geodata providers (INAO, Etalab, IGN…). Stores URL, licence,
+attribution, disclaimer and `source_updated_at`. Seeded in migration 0005 with
+planned sources — no geometry.
+
+### `wine_areas`
+Hierarchical navigation layer (NOT every cadastral parcel). Self-referencing
+`parent_id`, links to `wine_regions` via `root_region_id`. PostGIS `center`
+(Point) and `geom` (MultiPolygon). Mirrors the TS `WineArea` type plus INAO/INSEE
+ingest keys (`inao_id_app`, `inao_id_denom`, `insee_commune`). Provenance:
+`source_dataset_id`, `source_type`, `is_official`, `is_informative`,
+`source_updated_at`, `license`, `attribution`. GIST indexes on `geom` and
+`center`.
+
+Stores: régions fines, appellations AOC/AOP/IGP, communes Grand/Premier Cru
+(Champagne), 51 Alsace Grands Crus, climats/1ers crus (Bourgogne, structure
+ready). Levels 1–5; zoom bands `zoom_min` / `zoom_max`.
+
+### `wine_parcels`
+Fine parcel polygons shown only at high zoom (`zoom_min` default 14). Separate
+table to avoid hierarchy volume explosion. Cadastral refs, INAO `id_aire`, optional
+RPG plot id. Same provenance columns as `wine_areas`. GIST on `geom` and `center`.
+
+### `wine_area_parcels`
+Many-to-many link `wine_area_id` ↔ `wine_parcel_id` with `relationship`
+(e.g. `contains`). Lets a cru/climat reference many parcels without nesting them
+in `wine_areas`.
+
+### `wine_lieux_dits`
+Cadastral lieux-dits (especially Champagne: parcel label at high zoom). Optional
+`wine_area_id` parent. PostGIS `center` + `geom`. Provenance columns as above.
+
 ## Relationships
 
 ```
@@ -50,6 +82,11 @@ weather_stations 1───* daily_weather
 wine_regions 1───* region_vintage_climate   (computed from daily_weather)
 wine_regions 1───* region_soils
 wine_regions 1───* vintage_scores
+wine_regions 1───* wine_areas               (via root_region_id)
+wine_areas   1───* wine_areas               (parent_id, self-ref)
+source_datasets 1───* wine_areas | wine_parcels | wine_lieux_dits
+wine_areas   *───* wine_parcels             (via wine_area_parcels)
+wine_areas   1───* wine_lieux_dits          (optional wine_area_id)
 ```
 
 ## Hierarchical wine areas (map navigation)
@@ -59,22 +96,29 @@ The map navigates a NON-uniform hierarchy (région → sous-région → village 
 reuse the existing region ids, so climate/soils/scores keep working.
 
 - TS type: `WineArea` (`src/lib/types.ts`); seed tree + helpers in
-  `src/data/areas.ts`; contours kept SEPARATE in `src/data/geo.ts` (keyed by
-  `geoJsonId`).
+  `src/data/areas.ts`; Supabase seam in `src/data/wine-geodata.ts`; contours
+  kept SEPARATE in `src/data/geo.ts` (keyed by `geoJsonId`) until PostGIS geom
+  is wired to the map.
+- **Hybrid storage (ADR 0006):** `wine_areas` = hierarchy; `wine_parcels` =
+  fine polygons at high zoom; `wine_area_parcels` = links; `wine_lieux_dits` =
+  cadastral names (Champagne). `source_datasets` = provenance catalog.
 - Climate stays macro: sub-areas inherit it via `rootRegionId`. Soils can be
   finer (`AREA_SOILS` + `getSoilsForArea` fallback). Missing data → "donnée
   indisponible" (never invented).
-- Future SQL: a self-referencing `wine_areas` table (`id`, `name`, `level`,
-  `parent_id`, `root_region_id`, `region_type`, `geom`/`center`, `zoom_min`,
-  `zoom_max`, `available_data_scopes`) would mirror `WineArea`. Not yet migrated
-  (V1 is frontend-only). See `docs/wine-hierarchy.md` and ADR 0004.
+- Initial import scope: **Alsace** (51 Grands Crus), **Champagne** (GC/PC
+  communes + lieux-dits), structure extensible **Bourgogne**. No geometry in
+  migration 0005 — schema + source catalog only.
 
 ## TypeScript ↔ SQL mapping
 
 | SQL table                 | TS type                |
 | ------------------------- | ---------------------- |
 | `wine_regions`            | `WineRegion`           |
-| (planned) `wine_areas`    | `WineArea`             |
+| `source_datasets`         | `SourceDataset`        |
+| `wine_areas`              | `WineArea`             |
+| `wine_parcels`            | `WineParcel`           |
+| `wine_area_parcels`       | `WineAreaParcel`       |
+| `wine_lieux_dits`         | `WineLieuDit`          |
 | `daily_weather`           | (ingestion only)       |
 | `region_vintage_climate`  | `RegionVintageClimate` |
 | (monthly jsonb)           | `MonthlyClimate[]`     |
@@ -83,7 +127,9 @@ reuse the existing region ids, so climate/soils/scores keep working.
 | `region_soils`            | `RegionSoil`           |
 | `vintage_scores`          | `VintageScore`         |
 
-`source_type` ⇄ `SourceType` (`'synthetic' | 'real' | 'manual'`).
+`source_type` ⇄ `SourceType` (`'synthetic' | 'real' | 'manual'`). Geographic
+entities also carry `GeoDataProvenance` (`isOfficial`, `isInformative`, dataset
+id, licence, attribution).
 
 ## Frontend data access
 

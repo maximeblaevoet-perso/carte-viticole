@@ -19,6 +19,13 @@ import { KeyIndicators } from "@/components/KeyIndicators";
 import { SourceBadge } from "@/components/SourceBadge";
 import { VintageTimeline } from "@/components/VintageTimeline";
 import { MonthlyClimateChart } from "@/components/charts/MonthlyClimateChart";
+import { GeoProvenanceCard } from "@/components/panel/GeoProvenanceCard";
+import type {
+  RegionType,
+  RegionVintageClimate,
+  SelectedGeoFeature,
+  WineRegion,
+} from "@/lib/types";
 
 /** Small, consistent "donnée indisponible" fallback. */
 function DataUnavailable({ children }: { children: React.ReactNode }) {
@@ -39,17 +46,21 @@ function DataUnavailable({ children }: { children: React.ReactNode }) {
  */
 export function RegionPanelContent({
   areaId,
+  feature,
   year,
   onYearChange,
   onSelectArea,
 }: {
   areaId: string | null;
+  /** Rich selection for a REAL (PostGIS) feature not in the seed tree. */
+  feature?: SelectedGeoFeature | null;
   year: number;
   onYearChange: (year: number) => void;
   onSelectArea: (areaId: string) => void;
 }) {
   const area = getArea(areaId);
-  const rootRegionId = area?.rootRegionId;
+  // Root region resolves from the seed tree first, then the real feature.
+  const rootRegionId = area?.rootRegionId ?? feature?.rootRegionId;
   const region = rootRegionId ? getRegion(rootRegionId) : undefined;
   const vintage = useVintageClimate(rootRegionId, year);
   const regionVintages = useRegionVintageClimates(rootRegionId);
@@ -73,6 +84,22 @@ export function RegionPanelContent({
       ])
     ) as Record<number, number>;
   }, [regionVintages]);
+
+  // Real feature that is not part of the seed tree (real appellation/cru, fine
+  // parcel, lieu-dit): render a dedicated view with source/provenance.
+  if (!area && feature) {
+    return (
+      <RealFeaturePanel
+        feature={feature}
+        region={region}
+        vintage={vintage}
+        year={year}
+        onYearChange={onYearChange}
+        onSelectArea={onSelectArea}
+        intensities={intensities}
+      />
+    );
+  }
 
   if (!area || !region) {
     return (
@@ -272,6 +299,209 @@ export function RegionPanelContent({
           Comparer
         </Link>
       </div>
+    </div>
+  );
+}
+
+/** Human label for a region-type slug (falls back to the raw value). */
+function typeLabel(rt?: string | null): string {
+  if (!rt) return "Aire";
+  return REGION_TYPE_LABELS[rt as RegionType] ?? rt;
+}
+
+/** Champagne GC/PC label from a lieu-dit's parent commune classification. */
+function cruLabel(rt?: string | null): string | null {
+  if (rt === "grand-cru") return "Grand Cru";
+  if (rt === "premier-cru") return "Premier Cru";
+  return null;
+}
+
+function IdRow({ label, value }: { label: string; value: string | null }) {
+  if (!value) return null;
+  return (
+    <div className="flex justify-between gap-2 text-xs">
+      <span className="text-slate-400">{label}</span>
+      <span className="text-right font-medium text-slate-700">{value}</span>
+    </div>
+  );
+}
+
+/**
+ * Panel for a REAL (PostGIS) map feature that is not part of the synthetic seed
+ * tree: real appellations/crus, fine INAO parcels, and cadastral lieux-dits.
+ * Always surfaces the source/provenance; shows regional climate for context.
+ */
+function RealFeaturePanel({
+  feature,
+  region,
+  vintage,
+  year,
+  onYearChange,
+  onSelectArea,
+  intensities,
+}: {
+  feature: SelectedGeoFeature;
+  region: WineRegion | undefined;
+  vintage: RegionVintageClimate | undefined;
+  year: number;
+  onYearChange: (year: number) => void;
+  onSelectArea: (areaId: string) => void;
+  intensities?: Record<number, number>;
+}) {
+  const kindLabel =
+    feature.kind === "parcel"
+      ? "Parcelle"
+      : feature.kind === "lieu-dit"
+      ? "Lieu-dit"
+      : typeLabel(feature.regionType);
+  const cru = cruLabel(feature.areaRegionType);
+
+  return (
+    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
+      {/* Breadcrumb back to the region */}
+      {region && (
+        <nav className="flex flex-wrap items-center gap-1 text-[11px] text-slate-400">
+          <button
+            type="button"
+            onClick={() => onSelectArea(region.id)}
+            className="hover:text-wine-700 hover:underline"
+          >
+            {region.name}
+          </button>
+          <span aria-hidden>›</span>
+          <span className="text-slate-600">{feature.name}</span>
+        </nav>
+      )}
+
+      <div>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {feature.name}
+            </h2>
+            <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-500">
+                {kindLabel}
+                {feature.kind === "area" && feature.level
+                  ? ` · niveau ${feature.level}`
+                  : ""}
+              </span>
+              {cru && (
+                <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700">
+                  {cru}
+                </span>
+              )}
+            </div>
+          </div>
+          <span className="rounded-md bg-wine-600 px-2.5 py-1 text-sm font-semibold text-white">
+            {year}
+          </span>
+        </div>
+        {feature.kind === "lieu-dit" && feature.areaName && (
+          <p className="mt-2 text-xs leading-relaxed text-slate-600">
+            Rattaché à {feature.areaName}
+            {cru ? ` (${cru})` : ""}.
+          </p>
+        )}
+      </div>
+
+      {/* Identifiers for fine geometries */}
+      {(feature.kind === "parcel" || feature.kind === "lieu-dit") && (
+        <section>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Références
+          </h3>
+          <div className="space-y-1 rounded-lg border border-slate-200 p-2.5">
+            <IdRow label="Commune (INSEE)" value={feature.communeInsee ?? null} />
+            <IdRow label="Réf. parcelle" value={feature.parcelRef ?? null} />
+            <IdRow label="Section" value={feature.cadastreSection ?? null} />
+            <IdRow label="Numéro" value={feature.cadastreNumero ?? null} />
+            <IdRow
+              label="Réf. cadastre"
+              value={feature.cadastreSourceRef ?? null}
+            />
+            <IdRow label="Id. aire INAO" value={feature.inaoIdAire ?? null} />
+            <IdRow
+              label="Surface"
+              value={
+                feature.areaHa != null ? `${feature.areaHa.toFixed(2)} ha` : null
+              }
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Source / provenance — always shown */}
+      <section>
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Source
+        </h3>
+        <GeoProvenanceCard provenance={feature.provenance} />
+      </section>
+
+      {/* Regional climate context */}
+      {region && (
+        <section>
+          <div className="mb-1.5 flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Profil du millésime
+            </h3>
+            {vintage && (
+              <SourceBadge
+                sourceType={vintage.sourceType}
+                confidence={vintage.confidence}
+              />
+            )}
+          </div>
+          <p className="mb-2 text-[11px] italic text-slate-400">
+            Climat affiché au niveau régional ({region.name}).
+          </p>
+          {vintage ? (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <p className="text-sm leading-relaxed text-slate-700">
+                {vintage.summary}
+              </p>
+              <div className="mt-2.5">
+                <FlagChips flags={vintage.flags} />
+              </div>
+            </div>
+          ) : (
+            <DataUnavailable>
+              Donnée climatique indisponible pour {region.name} {year}.
+            </DataUnavailable>
+          )}
+        </section>
+      )}
+
+      {region && (
+        <section>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Millésimes
+          </h3>
+          <VintageTimeline
+            year={year}
+            onChange={onYearChange}
+            intensities={intensities}
+          />
+        </section>
+      )}
+
+      {region && (
+        <div className="mt-auto flex gap-2 pt-2">
+          <Link
+            href={`/regions/${region.id}/vintage/${year}`}
+            className="flex-1 rounded-md bg-wine-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-wine-700"
+          >
+            Voir le détail
+          </Link>
+          <Link
+            href={`/compare?region=${region.id}&a=${year}`}
+            className="flex-1 rounded-md border border-wine-600 px-3 py-2 text-center text-sm font-medium text-wine-700 hover:bg-wine-50"
+          >
+            Comparer
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "insee": "51592",
+        "nom_com": "Verzenay",
+        "section": "AB",
+        "numero": "12",
+        "lieudit": "Les Crayères",
+        "id": "51592-AB-12"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [4.141, 49.081],
+            [4.142, 49.081],
+            [4.142, 49.082],
+            [4.141, 49.082],
+            [4.141, 49.081]
+          ]
+        ]
+      }
+    }
+  ]
+}

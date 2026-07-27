@@ -101,6 +101,118 @@ export interface WineArea {
   blurb?: string;
   /** Marks seed/placeholder nodes that are not yet validated data. */
   provisional?: boolean;
+  /** Provenance fields (populated when loaded from Supabase). */
+  provenance?: GeoDataProvenance;
+  /** INAO appellation id (ingest key). */
+  inaoIdApp?: string | null;
+  /** INAO denomination id (ingest key). */
+  inaoIdDenom?: string | null;
+  /** INSEE commune code when the area maps to a commune (e.g. Champagne GC/PC). */
+  inseeCommune?: string | null;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Wine geodata (PostGIS mirror — see migration 0005, ADR 0006)               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Provenance carried by geographic entities (`wine_areas`, `wine_parcels`,
+ * `wine_lieux_dits`). Mirrors SQL columns on those tables.
+ */
+export interface GeoDataProvenance {
+  sourceDatasetId: string | null;
+  sourceType: SourceType;
+  isOfficial: boolean;
+  isInformative: boolean;
+  sourceUpdatedAt: string | null;
+  license: string | null;
+  attribution: string | null;
+}
+
+/** Public dataset catalog (`source_datasets`). */
+export interface SourceDataset {
+  id: string;
+  name: string;
+  provider: string | null;
+  sourceUrl: string | null;
+  license: string | null;
+  attribution: string | null;
+  disclaimer: string | null;
+  updateNotes: string | null;
+  sourceUpdatedAt: string | null;
+}
+
+/**
+ * Fine parcel geometry (`wine_parcels`). Shown at high zoom only — not part of
+ * the hierarchical `WineArea` tree.
+ */
+export interface WineParcel {
+  id: string;
+  communeInsee: string | null;
+  parcelRef: string | null;
+  name: string | null;
+  center: [number, number] | null;
+  zoomMin: number;
+  areaHa: number | null;
+  inaoIdAire: string | null;
+  rpgPlotId: string | null;
+  cadastreSection: string | null;
+  cadastreNumero: string | null;
+  provenance: GeoDataProvenance;
+}
+
+/** Link between a hierarchical area and a fine parcel (`wine_area_parcels`). */
+export interface WineAreaParcel {
+  wineAreaId: string;
+  wineParcelId: string;
+  relationship: string;
+  sourceType: SourceType;
+}
+
+/** Cadastral lieu-dit (`wine_lieux_dits`), especially for Champagne labelling. */
+export interface WineLieuDit {
+  id: string;
+  name: string;
+  communeInsee: string | null;
+  wineAreaId: string | null;
+  center: [number, number] | null;
+  cadastreSourceRef: string | null;
+  provenance: GeoDataProvenance;
+}
+
+/**
+ * What kind of geographic feature the user selected on the map. `area` is a
+ * node of the hierarchical tree (region → appellation → cru); `parcel` and
+ * `lieu-dit` are fine PostGIS geometries shown only at high zoom.
+ */
+export type SelectedGeoKind = "area" | "parcel" | "lieu-dit";
+
+/**
+ * A selection coming from a REAL (PostGIS/MVT) map feature. Synthetic seed
+ * areas are still selected by id alone (resolved via `getArea`); this payload
+ * carries everything the panel needs for features that are not in the seed
+ * tree, plus provenance so the source is always shown.
+ */
+export interface SelectedGeoFeature {
+  kind: SelectedGeoKind;
+  id: string;
+  name: string;
+  level?: AreaLevel;
+  regionType?: RegionType | string;
+  rootRegionId?: string;
+  parentId?: string | null;
+  /** Parent area name/type for a lieu-dit (Champagne GC/PC at commune level). */
+  areaName?: string | null;
+  areaRegionType?: string | null;
+  /** Fine-parcel / lieu-dit identifiers. */
+  communeInsee?: string | null;
+  parcelRef?: string | null;
+  areaHa?: number | null;
+  cadastreSection?: string | null;
+  cadastreNumero?: string | null;
+  cadastreSourceRef?: string | null;
+  inaoIdAire?: string | null;
+  provenance: GeoDataProvenance;
 }
 
 /** Calendar month index 1..12. */

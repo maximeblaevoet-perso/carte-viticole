@@ -1,0 +1,53 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id_app": "C0100",
+        "app": "Champagne",
+        "id_denom": "C0100",
+        "denom": "Champagne",
+        "insee": "51592",
+        "nomcom": "Verzenay",
+        "id_aire": "CHAMP-VERZ-001"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [4.14, 49.08],
+            [4.15, 49.08],
+            [4.15, 49.09],
+            [4.14, 49.09],
+            [4.14, 49.08]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id_app": "C0100",
+        "app": "Champagne",
+        "id_denom": "C0100",
+        "denom": "Champagne",
+        "insee": "51190",
+        "nomcom": "Épernay",
+        "id_aire": "CHAMP-EPE-002"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [3.95, 49.04],
+            [3.96, 49.04],
+            [3.96, 49.05],
+            [3.95, 49.05],
+            [3.95, 49.04]
+          ]
+        ]
+      }
+    }
+  ]
+}

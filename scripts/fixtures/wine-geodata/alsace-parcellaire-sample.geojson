@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id_app": "A0123",
+        "app": "Alsace",
+        "id_denom": "D0456",
+        "denom": "Altenberg de Bergheim",
+        "type_denom": "Grand Cru",
+        "insee": "68004",
+        "nomcom": "Bergheim",
+        "id_aire": "AIRE-ALTENBERG-001"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [7.35, 48.21],
+            [7.36, 48.21],
+            [7.36, 48.22],
+            [7.35, 48.22],
+            [7.35, 48.21]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id_app": "A0123",
+        "app": "Alsace",
+        "id_denom": "D0789",
+        "denom": "Alsace",
+        "type_denom": "AOC",
+        "insee": "68066",
+        "nomcom": "Riquewihr",
+        "id_aire": "AIRE-RIQUEWIHR-002"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [7.29, 48.16],
+            [7.30, 48.16],
+            [7.30, 48.17],
+            [7.29, 48.17],
+            [7.29, 48.16]
+          ]
+        ]
+      }
+    }
+  ]
+}

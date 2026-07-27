@@ -131,3 +131,62 @@ Behaviour:
   `SUPABASE_SERVICE_ROLE_KEY` (falls back to `SUPABASE_SERVICE_KEY` /
   `SUPABASE_KEY` if present).
 - Logs stay short, one line per table: `lues=… importées=… erreurs=…`.
+
+## Ingérer la géodata viticole (INAO, cadastre)
+
+`scripts/ingest_wine_geodata.py` + `scripts/wine_geodata_download.py` téléchargent
+et importent les données vers les tables PostGIS de `0005_wine_geodata.sql`.
+
+### Sources et APIs
+
+| ID interne | Source | API / URL | Contenu |
+| ---------- | ------ | --------- | ------- |
+| `inao-siqo` | data.gouv.fr | `/api/1/datasets/referentiel-…-siqo/` | CSV référentiel produits |
+| `inao-aires-produits` | data.gouv.fr | `/api/1/datasets/aires-et-produits-aoc-aop-et-igp/` | CSV aires ↔ produits |
+| `inao-aires-geo` | data.gouv.fr | `/api/1/datasets/delimitation-des-aires-geographiques-des-siqo/` | Shapefile national (~85 Mo) |
+| `inao-parcellaire` | data.gouv.fr | `/api/1/datasets/delimitation-parcellaire-des-aoc-viticoles-de-linao/` | Shapefile national (~255 Mo) |
+| `etalab-cadastre` | cadastre.data.gouv.fr | bundler + départements GeoJSON | Lieux-dits |
+
+Le téléchargement passe par l'API data.gouv.fr (métadonnées + URL `static.data.gouv.fr`)
+et le bundler Etalab (`cadastre.data.gouv.fr/bundler/...` ou fichiers département).
+
+### Télécharger (sans import)
+
+```bash
+# Léger : CSV INAO + lieux-dits cadastre par département (Champagne)
+python scripts/ingest_wine_geodata.py --allow-download --download-only --scope champagne
+
+# Complet : + archives INAO nationales shapefile
+python scripts/ingest_wine_geodata.py --allow-download --include-national-geo --download-only --scope all-initial
+
+# Cadastre par commune GC/PC (37 requêtes, plus fin)
+python scripts/ingest_wine_geodata.py --allow-download --download-only --scope champagne --cadastre-mode commune
+```
+
+Fichiers écrits sous `data/raw/wine-geodata/` + `download-manifest.json`.
+
+### Ingérer
+
+```bash
+# Dry-run hors-ligne sur les fixtures
+python scripts/ingest_wine_geodata.py --fixture-dir scripts/fixtures/wine-geodata --scope all-initial
+
+# Dry-run sur fichiers locaux déjà téléchargés
+python scripts/ingest_wine_geodata.py --skip-download --scope alsace
+
+# Tests
+python scripts/test_ingest_wine_geodata.py
+python scripts/test_wine_geodata_download.py
+
+# Import réel
+python scripts/ingest_wine_geodata.py --skip-download --scope all-initial --commit
+```
+
+**Champagne** : le shapefile national INAO parcellaire ne contient pas de lignes
+Champagne (0 commune 08/10/51/52). L'import `--scope champagne` crée les
+communes GC/PC (`wine_areas`) + lieux-dits cadastre (`wine_lieux_dits`), pas de
+`wine_parcels`. Voir `docs/wine-hierarchy.md`.
+
+Options : `--scope`, `--raw-dir`, `--skip-download`, `--allow-download`,
+`--download-only`, `--include-national-geo`, `--cadastre-mode`, `--force-download`,
+`--commit`, `--allow-overwrite-synthetic`.
