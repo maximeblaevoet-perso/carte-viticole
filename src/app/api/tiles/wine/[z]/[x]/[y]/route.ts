@@ -90,7 +90,9 @@ export async function GET(
   const buf = decodePostgrestBytea(payload);
   if (!buf || buf.byteLength === 0) return empty();
 
-  return new Response(buf, {
+  // Buffer satisfies BodyInit under stricter TS lib.dom typings (Uint8Array
+  // ArrayBufferLike is not assignable to BodyInit on recent TypeScript).
+  return new Response(Buffer.from(buf), {
     status: 200,
     headers: {
       "content-type": MVT_CONTENT_TYPE,
