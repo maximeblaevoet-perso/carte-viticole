@@ -82,6 +82,8 @@ footer: *“famille de roche, pas la formation exacte ni sa profondeur”*.
 
 - The subsoil is readable from the imagery, which is how plots are identified.
 - The card is understandable without a geology background.
-- Soil depth remains an open need. `docs/data-sources.md` records the one
-  candidate found so far (ISRIC SoilGrids) and its granularity, for a later
-  decision.
+- Soil **texture** is now answered; soil **depth** remains an open need, and no
+  free national source for it has been found. `docs/data-sources.md` records the
+  search so it does not have to be redone.
+- SoilGrids is an external dependency on every map click. It is not on the
+  critical path: the map and the BRGM half work without it.

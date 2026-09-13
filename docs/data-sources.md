@@ -88,7 +88,8 @@ MapLibre source (ADR 0011).
 | IGN Géoplateforme (WMTS) | `ORTHOIMAGERY.ORTHOPHOTOS` | "Aérien" basemap, **default** (20 cm/px, to z19) | © IGN / Géoplateforme |
 | IGN Géoplateforme (WMTS) | `GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2` | "Plan" basemap (already shaded) | © IGN / Géoplateforme |
 | BRGM (**WMS only**) | `GEOLOGIE` | "Géologie" basemap (scale-adaptive 1/1 M → 1/50 000) | © BRGM |
-| BRGM (**WMS only**) | `LITHO_1M_SIMPLIFIEE` | Click-to-read subsoil, all basemaps (`GetFeatureInfo`) | © BRGM |
+| BRGM (**WMS only**) | `LITHO_1M_SIMPLIFIEE` | Click-to-read subsoil rock, all basemaps (`GetFeatureInfo`) | © BRGM |
+| ISRIC SoilGrids (REST) | `properties/query` | Click-to-read topsoil texture 0–30 cm (250 m) | © ISRIC SoilGrids (CC-BY 4.0) |
 
 Coverage is France métropolitaine; outside it these layers are empty. The BRGM
 WMTS endpoint returns a MapServer error — WMS with `{bbox-epsg-3857}` is the
@@ -128,9 +129,12 @@ No other queryable layer on the BRGM service carries a depth. BSS boreholes
 drillings, the field is frequently empty, and a borehole's total depth is not
 the soil depth over a plot.
 
-#### Candidate kept for later: ISRIC SoilGrids
+#### ISRIC SoilGrids — integrated, alongside BRGM
 
-Not integrated — recorded so the option does not have to be rediscovered.
+Texture is **not** depth, and does not close the gap above: SoilGrids answers
+what the first 30 cm are *made of*, never how deep the rock lies. It is shown as
+a second, clearly separate half of the subsoil card, with its own provenance
+line (`src/lib/soil-texture.ts`, ADR 0013).
 
 SoilGrids v2.0 (ISRIC, CC-BY 4.0) is a global soil-property model with a
 key-free REST API. Point query, no registration:
@@ -151,10 +155,23 @@ enough to resolve variation *within* one. It is also a global machine-learning
 prediction from a worldwide profile database, not a French field survey — it
 will not reproduce the soil boundaries that define a climat.
 
-Verdict: usable as an indicative "terre argilo-sableuse" label at cru level;
-not a substitute for a soil map, and it answers texture, never depth to rock.
-For finer French data the route would be the Référentiel Régional Pédologique /
-DoneSol (INRAE, 1/250 000), which is not served as a key-free public API.
+`mean` is `null` over masked pixels — towns and water, which is most village
+centres: Épernay, Pauillac and Chablis all return nothing while the surrounding
+vineyard returns values. The card degrades to the BRGM half alone.
+
+Sanity check over real vineyards (weighted 0–30 cm), all plausible:
+
+| Point | argile | limon | sable | pH |
+|---|---|---|---|---|
+| Ribeauvillé (Alsace) | 25 % | 41 % | 34 % | 5.2 |
+| Côte des Blancs | 31 % | 52 % | 18 % | 6.0 |
+| Médoc | 22 % | 30 % | 48 % | 6.5 |
+| Chablis | 36 % | 49 % | 16 % | 7.3 |
+
+Verdict: usable as an indicative texture at cru level; not a substitute for a
+soil map, and it answers texture, never depth to rock. For finer French data the
+route would be the Référentiel Régional Pédologique / DoneSol (INRAE,
+1/250 000), which is not served as a key-free public API.
 
 ### Regional scope (initial)
 
