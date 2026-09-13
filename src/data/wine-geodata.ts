@@ -25,13 +25,13 @@ import {
 
 const WINE_AREA_COLUMNS =
   "id, name, level, parent_id, root_region_id, region_type, " +
-  "zoom_min, zoom_max, available_data_scopes, blurb, provisional, " +
+  "zoom_min, zoom_max, map_visible, available_data_scopes, blurb, provisional, " +
   "inao_id_app, inao_id_denom, insee_commune, " +
   "source_dataset_id, source_type, is_official, is_informative, " +
   "source_updated_at, license, attribution";
 
 const WINE_PARCEL_COLUMNS =
-  "id, commune_insee, parcel_ref, name, zoom_min, area_ha, " +
+  "id, commune_insee, parcel_ref, name, zoom_min, map_visible, area_ha, " +
   "inao_id_aire, rpg_plot_id, cadastre_section, cadastre_numero, " +
   "source_dataset_id, source_type, is_official, is_informative, " +
   "source_updated_at, license, attribution";
@@ -50,6 +50,7 @@ type WineAreaRow = {
   region_type: string;
   zoom_min: number;
   zoom_max: number;
+  map_visible: boolean;
   available_data_scopes: string[];
   blurb: string | null;
   provisional: boolean;
@@ -71,6 +72,7 @@ type WineParcelRow = {
   parcel_ref: string | null;
   name: string | null;
   zoom_min: number;
+  map_visible: boolean;
   area_ha: number | null;
   inao_id_aire: string | null;
   rpg_plot_id: string | null;
@@ -132,6 +134,7 @@ function mapWineAreaRow(row: WineAreaRow): WineArea {
     center: [0, 0],
     zoomMin: Number(row.zoom_min),
     zoomMax: Number(row.zoom_max),
+    mapVisible: row.map_visible !== false,
     availableDataScopes: row.available_data_scopes as DataScope[],
     blurb: row.blurb ?? undefined,
     provisional: row.provisional,
@@ -150,6 +153,7 @@ function mapWineParcelRow(row: WineParcelRow): WineParcel {
     name: row.name,
     center: null,
     zoomMin: Number(row.zoom_min),
+    mapVisible: row.map_visible !== false,
     areaHa: row.area_ha != null ? Number(row.area_ha) : null,
     inaoIdAire: row.inao_id_aire,
     rpgPlotId: row.rpg_plot_id,

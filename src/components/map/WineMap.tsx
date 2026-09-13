@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl, { Map as MlMap, MapGeoJSONFeature, Popup } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type {
@@ -12,6 +12,13 @@ import type {
 import { WINE_AREAS, LEVEL_ZOOM, REGION_TYPE_LABELS, getArea } from "@/data/areas";
 import { AREA_GEOMETRIES, DEFAULT_AREA_COLOR, REGION_COLORS } from "@/data/geo";
 import { shouldUseSupabase } from "@/lib/supabase";
+import { WINE_TILES_VERSION } from "@/lib/wine-tiles";
+import { BASEMAPS, DEFAULT_BASEMAP } from "@/lib/basemaps";
+import type { BasemapId, WineLayerTheme } from "@/lib/basemaps";
+import { geologyInfoUrl, parseGeologyInfo } from "@/lib/geology-info";
+import { BasemapSwitcher } from "@/components/map/BasemapSwitcher";
+import { GeologyReadout } from "@/components/map/GeologyReadout";
+import type { GeologyReadoutState } from "@/components/map/GeologyReadout";
 import type {
   AreaLevel,
   GeoDataProvenance,
@@ -20,6 +27,12 @@ import type {
 } from "@/lib/types";
 
 const FRANCE_CENTER: [number, number] = [2.6, 46.3];
+
+/** Ids owned by the basemap machinery — everything else is a wine layer. */
+const BG_LAYER = "bg";
+const BASEMAP_LAYER = "basemap";
+const BASEMAP_SOURCE = "basemap-src";
+const BASE_LAYER_IDS = new Set([BG_LAYER, BASEMAP_LAYER]);
 
 /** True when real PostGIS vector tiles should be layered on top (ADR 0007). */
 const USE_REAL = shouldUseSupabase();
@@ -31,12 +44,45 @@ interface AreaFeatureProps {
   level: AreaLevel;
   parentName: string;
   regionType: string;
+  /** Level-1 region this feature belongs to — drives synthetic suppression. */
+  rootRegionId: string;
   color: string;
   dataNote: string;
   hasContour: boolean;
 }
 
+/**
+ * Cru colours. Grands crus are the only hierarchy level that reads as a
+ * *quality* tier rather than a place, so they get one colour across every
+ * region instead of inheriting the root-region hue (ADR 0012).
+ */
+const GRAND_CRU_COLOR = "#c0202f";
+const PREMIER_CRU_COLOR = "#d9736f";
+
+/**
+ * Grands crus need more than a hue to read over satellite imagery: at the
+ * shared 0.22 fill opacity a red wash is indistinguishable from the greens
+ * around it. Give the tier a heavier fill and a thicker outline (ADR 0012).
+ */
+const CRU_OPACITY_BOOST = 0.18;
+const CRU_WIDTH_BOOST = 1.2;
+
+/** `+boost` on a grand cru, unchanged otherwise. Works on MVT properties. */
+function cruBoost(
+  base: maplibregl.ExpressionSpecification | number,
+  boost: number
+): maplibregl.ExpressionSpecification {
+  return [
+    "case",
+    ["==", ["get", "region_type"], "grand-cru"],
+    ["+", base, boost],
+    base,
+  ] as unknown as maplibregl.ExpressionSpecification;
+}
+
 function colorFor(area: WineArea): string {
+  if (area.regionType === "grand-cru") return GRAND_CRU_COLOR;
+  if (area.regionType === "premier-cru") return PREMIER_CRU_COLOR;
   return REGION_COLORS[area.rootRegionId] ?? DEFAULT_AREA_COLOR;
 }
 
@@ -67,6 +113,7 @@ function buildCollections(): {
       level: area.level,
       parentName: parent?.name ?? "—",
       regionType: REGION_TYPE_LABELS[area.regionType],
+      rootRegionId: area.rootRegionId,
       color: colorFor(area),
       dataNote: dataNoteFor(area),
       hasContour: Boolean(geom),
@@ -101,6 +148,46 @@ function buildCollections(): {
 const POLYGON_LEVELS: AreaLevel[] = [1, 2, 3];
 const POINT_LEVELS: AreaLevel[] = [2, 3, 4];
 
+/**
+ * Filter for a synthetic layer: the requested level, minus every region that
+ * already has real PostGIS contours. Without this, the rough editorial
+ * footprint of e.g. Alsace (a near-rectangle) is painted right next to — and
+ * on top of — the accurate INAO outline streamed from the tiles (ADR 0012).
+ */
+function syntheticFilter(
+  level: AreaLevel,
+  coveredRegions: string[]
+): maplibregl.FilterSpecification {
+  const levelMatch = ["==", ["get", "level"], level];
+  if (coveredRegions.length === 0) {
+    return levelMatch as maplibregl.FilterSpecification;
+  }
+  return [
+    "all",
+    levelMatch,
+    ["!", ["in", ["get", "rootRegionId"], ["literal", coveredRegions]]],
+  ] as unknown as maplibregl.FilterSpecification;
+}
+
+/** Every synthetic layer id that carries a level filter. */
+function syntheticLayerIds(): { id: string; level: AreaLevel }[] {
+  const ids: { id: string; level: AreaLevel }[] = [];
+  for (const level of POLYGON_LEVELS) {
+    ids.push(
+      { id: `areas-fill-${level}`, level },
+      { id: `areas-line-${level}`, level },
+      { id: `areas-label-${level}`, level }
+    );
+  }
+  for (const level of POINT_LEVELS) {
+    ids.push(
+      { id: `points-circle-${level}`, level },
+      { id: `points-label-${level}`, level }
+    );
+  }
+  return ids;
+}
+
 /** Zoom we ease to after selecting an area of a given level (reveals children). */
 const SELECT_ZOOM: Record<AreaLevel, number> = {
   1: 8.2,
@@ -132,7 +219,10 @@ const SRC = {
   lieux: "wine-lieux-dits",
 } as const;
 
-/** Fill colour keyed by root region, matching the synthetic palette. */
+/**
+ * Fill colour for a real (MVT) area: cru tier first, root region otherwise.
+ * Mirrors {@link colorFor} so synthetic and real features never disagree.
+ */
 function regionColorExpression(): maplibregl.ExpressionSpecification {
   const pairs: string[] = [];
   for (const [id, color] of Object.entries(REGION_COLORS)) {
@@ -140,9 +230,17 @@ function regionColorExpression(): maplibregl.ExpressionSpecification {
   }
   return [
     "match",
-    ["get", "root_region_id"],
-    ...pairs,
-    DEFAULT_AREA_COLOR,
+    ["get", "region_type"],
+    "grand-cru",
+    GRAND_CRU_COLOR,
+    "premier-cru",
+    PREMIER_CRU_COLOR,
+    [
+      "match",
+      ["get", "root_region_id"],
+      ...pairs,
+      DEFAULT_AREA_COLOR,
+    ],
   ] as unknown as maplibregl.ExpressionSpecification;
 }
 
@@ -173,6 +271,32 @@ export function WineMap({
   const onSelectRef = useRef(onSelectArea);
   onSelectRef.current = onSelectArea;
 
+  /**
+   * Root regions that already have real contours — their synthetic footprints
+   * are filtered out so the two never stack (ADR 0012). Empty until the
+   * coverage fetch resolves, and permanently empty on synthetic-only setups.
+   */
+  const [coveredRegions, setCoveredRegions] = useState<string[]>([]);
+  const coveredRef = useRef<string[]>(coveredRegions);
+  coveredRef.current = coveredRegions;
+
+  const [basemap, setBasemap] = useState<BasemapId>(DEFAULT_BASEMAP);
+  /** Subsoil readout for the last click, on every basemap (ADR 0013). */
+  const [geology, setGeology] = useState<GeologyReadoutState>({ status: "idle" });
+  /** In-flight GetFeatureInfo request, aborted when a newer click lands. */
+  const geologyReqRef = useRef<AbortController | null>(null);
+  /**
+   * Set once the `load` handler has built every wine layer. `isStyleLoaded()`
+   * is NOT a substitute: it also reports false while tiles are still streaming,
+   * and `map.once("load", …)` after `load` has fired never runs — which made a
+   * basemap switch during tile loading silently do nothing.
+   */
+  const mapReadyRef = useRef(false);
+  /** Basemap currently installed in the style (avoids a no-op reinstall). */
+  const installedBasemapRef = useRef<BasemapId>(DEFAULT_BASEMAP);
+  /** Original `line-*` paint, captured once so themes stay reversible. */
+  const basePaintRef = useRef(new Map<string, { color: unknown; width: unknown }>());
+
   const collections = useMemo(buildCollections, []);
 
   useEffect(() => {
@@ -184,22 +308,23 @@ export function WineMap({
         version: 8,
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
         sources: {
-          // Soft, low-saturation light basemap (key-free) for a premium feel.
-          carto: {
+          // Default basemap (IGN Orthophotos, key-free). Swapped in place by
+          // the basemap effect below — the wine layers never move (ADR 0011).
+          [BASEMAP_SOURCE]: {
             type: "raster",
-            tiles: [
-              "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-              "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-              "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-            ],
+            tiles: BASEMAPS[DEFAULT_BASEMAP].tiles,
             tileSize: 256,
-            attribution:
-              "© OpenStreetMap contributors, © CARTO",
+            attribution: BASEMAPS[DEFAULT_BASEMAP].attribution,
           },
         },
         layers: [
-          { id: "bg", type: "background", paint: { "background-color": "#f6f1e7" } },
-          { id: "carto", type: "raster", source: "carto", paint: { "raster-opacity": 0.85 } },
+          { id: BG_LAYER, type: "background", paint: { "background-color": "#f6f1e7" } },
+          {
+            id: BASEMAP_LAYER,
+            type: "raster",
+            source: BASEMAP_SOURCE,
+            paint: { "raster-opacity": BASEMAPS[DEFAULT_BASEMAP].opacity },
+          },
         ],
       },
       center: FRANCE_CENTER,
@@ -243,7 +368,7 @@ export function WineMap({
         const fillId = `areas-fill-${level}`;
         const lineId = `areas-line-${level}`;
         const labelId = `areas-label-${level}`;
-        const filter = ["==", ["get", "level"], level] as maplibregl.FilterSpecification;
+        const filter = syntheticFilter(level, coveredRef.current);
         const baseOpacity = level === 1 ? 0.16 : level === 2 ? 0.26 : 0.36;
 
         map.addLayer({
@@ -317,7 +442,7 @@ export function WineMap({
         const band = LEVEL_ZOOM[level];
         const circleId = `points-circle-${level}`;
         const labelId = `points-label-${level}`;
-        const filter = ["==", ["get", "level"], level] as maplibregl.FilterSpecification;
+        const filter = syntheticFilter(level, coveredRef.current);
 
         map.addLayer({
           id: circleId,
@@ -451,15 +576,54 @@ export function WineMap({
       }
 
       applySelection(map, selectedAreaId);
+      mapReadyRef.current = true;
     });
 
     return () => {
       popup.remove();
+      mapReadyRef.current = false;
       map.remove();
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collections]);
+
+  // --- real-contour coverage -------------------------------------------------
+  // Fetched once. A failure leaves the list empty, i.e. the synthetic layers
+  // stay on — never the other way round, so the map is never left blank.
+  useEffect(() => {
+    if (!USE_REAL) return;
+    const ctrl = new AbortController();
+    fetch("/api/wine/coverage", { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : { regions: [] }))
+      .then((body: { regions?: unknown }) => {
+        const regions = Array.isArray(body.regions)
+          ? body.regions.filter((r): r is string => typeof r === "string")
+          : [];
+        if (regions.length) setCoveredRegions(regions);
+      })
+      .catch(() => {
+        /* synthetic layers stay visible */
+      });
+    return () => ctrl.abort();
+  }, []);
+
+  // Re-filter the synthetic layers whenever coverage changes.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const apply = () => {
+      for (const { id, level } of syntheticLayerIds()) {
+        if (map.getLayer(id)) {
+          map.setFilter(id, syntheticFilter(level, coveredRegions));
+        }
+      }
+    };
+
+    if (mapReadyRef.current) apply();
+    else map.once("load", apply);
+  }, [coveredRegions]);
 
   // Reflect selection + ease toward the selected area to reveal its children.
   useEffect(() => {
@@ -475,11 +639,172 @@ export function WineMap({
       }
     };
 
-    if (map.isStyleLoaded() && map.getSource("areas")) run();
+    if (mapReadyRef.current) run();
     else map.once("idle", run);
   }, [selectedAreaId]);
 
-  return <div ref={containerRef} className="h-full w-full" />;
+  // --- basemap switching -----------------------------------------------------
+  // Only the raster basemap layer is replaced, always *below* the wine layers:
+  // the GeoJSON / MVT sources are never touched, so nothing reloads (ADR 0011).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const def = BASEMAPS[basemap];
+
+    const install = () => {
+      if (installedBasemapRef.current !== basemap) {
+        installBasemap(map, basemap);
+        installedBasemapRef.current = basemap;
+      }
+      applyWineTheme(map, def.theme, basePaintRef.current);
+    };
+
+    if (mapReadyRef.current) install();
+    else map.once("load", install);
+  }, [basemap]);
+
+  // --- click-to-read the subsoil (every basemap, ADR 0013) -------------------
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const onClick = (e: maplibregl.MapMouseEvent) => {
+      geologyReqRef.current?.abort();
+      const ctrl = new AbortController();
+      geologyReqRef.current = ctrl;
+      setGeology({ status: "loading" });
+
+      const m = maplibregl.MercatorCoordinate.fromLngLat(e.lngLat);
+      const WORLD = 40075016.686;
+      const url = geologyInfoUrl((m.x - 0.5) * WORLD, (0.5 - m.y) * WORLD);
+
+      fetch(url, { signal: ctrl.signal })
+        .then((r) => r.text())
+        .then((body) => {
+          const info = parseGeologyInfo(body);
+          setGeology(info ? { status: "ready", info } : { status: "empty" });
+        })
+        .catch((err) => {
+          if ((err as Error).name === "AbortError") return;
+          setGeology({ status: "error" });
+        });
+    };
+
+    map.on("click", onClick);
+    return () => {
+      map.off("click", onClick);
+    };
+  }, []);
+
+  return (
+    <div className="relative h-full w-full">
+      <div ref={containerRef} className="h-full w-full" />
+      <BasemapSwitcher basemap={basemap} onBasemapChange={setBasemap} />
+      <GeologyReadout state={geology} />
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Basemap + relief plumbing                                                  */
+/* -------------------------------------------------------------------------- */
+
+/** Id of the lowest wine layer — everything basemap-ish is inserted before it. */
+function firstWineLayerId(map: MlMap): string | undefined {
+  return map.getStyle().layers?.find((l) => !BASE_LAYER_IDS.has(l.id))?.id;
+}
+
+/** Replace the raster basemap in place, keeping it under every wine layer. */
+function installBasemap(map: MlMap, id: BasemapId) {
+  const def = BASEMAPS[id];
+
+  if (map.getLayer(BASEMAP_LAYER)) map.removeLayer(BASEMAP_LAYER);
+  if (map.getSource(BASEMAP_SOURCE)) map.removeSource(BASEMAP_SOURCE);
+
+  map.addSource(BASEMAP_SOURCE, {
+    type: "raster",
+    tiles: def.tiles,
+    tileSize: 256,
+    attribution: def.attribution,
+  });
+  map.addLayer(
+    {
+      id: BASEMAP_LAYER,
+      type: "raster",
+      source: BASEMAP_SOURCE,
+      paint: { "raster-opacity": def.opacity },
+    },
+    firstWineLayerId(map)
+  );
+}
+
+/**
+ * Repaint the wine layers for the active basemap. Geometry, sources and
+ * zoom bands are untouched — only outline / label / marker colours, which are
+ * what becomes unreadable over imagery or the geological map.
+ */
+function applyWineTheme(
+  map: MlMap,
+  theme: WineLayerTheme,
+  basePaint: Map<string, { color: unknown; width: unknown }>
+) {
+  for (const layer of map.getStyle().layers ?? []) {
+    if (BASE_LAYER_IDS.has(layer.id)) continue;
+
+    if (layer.type === "line") {
+      let base = basePaint.get(layer.id);
+      if (!base) {
+        base = {
+          color: map.getPaintProperty(layer.id, "line-color"),
+          width: map.getPaintProperty(layer.id, "line-width"),
+        };
+        basePaint.set(layer.id, base);
+      }
+      // The theme repaints every outline one colour so it survives imagery.
+      // Grands crus keep their tier colour: it is the only cue that separates
+      // them from the appellations they sit inside (ADR 0012).
+      map.setPaintProperty(
+        layer.id,
+        "line-color",
+        (theme.lineColor
+          ? [
+              "match",
+              ["get", "region_type"],
+              "grand-cru",
+              GRAND_CRU_COLOR,
+              "premier-cru",
+              PREMIER_CRU_COLOR,
+              theme.lineColor,
+            ]
+          : base.color) as never
+      );
+      map.setPaintProperty(
+        layer.id,
+        "line-width",
+        theme.lineWidthBoost === 0
+          ? (base.width as never)
+          : (["+", base.width, theme.lineWidthBoost] as never)
+      );
+      map.setPaintProperty(layer.id, "line-opacity", theme.lineOpacity);
+      continue;
+    }
+
+    if (layer.type === "symbol") {
+      map.setPaintProperty(layer.id, "text-color", theme.labelColor);
+      map.setPaintProperty(layer.id, "text-halo-color", theme.labelHaloColor);
+      map.setPaintProperty(layer.id, "text-halo-width", theme.labelHaloWidth);
+      continue;
+    }
+
+    if (layer.type === "circle") {
+      map.setPaintProperty(
+        layer.id,
+        "circle-stroke-color",
+        theme.circleStrokeColor
+      );
+    }
+  }
 }
 
 /** Apply the `selected` feature-state to the right feature across both sources. */
@@ -582,9 +907,13 @@ function featureFromProps(
 function popupHtml(sourceLayer: string, f: SelectedGeoFeature): string {
   const badge = f.provenance.isOfficial ? "Limite officielle" : "Contour informatif";
   if (sourceLayer === SRC.parcels) {
+    // INAO "parcellaire" is an aire délimitée per commune x denomination, not a
+    // cadastral plot: `name` is the appellation. Say so instead of letting the
+    // user read "Crémant d'Alsace" as a parcel name (ADR 0012).
+    const ref = f.parcelRef ?? f.communeInsee;
     return (
       `<div class="wp-name">${f.name}</div>` +
-      `<div class="wp-meta">Parcelle · ${f.communeInsee ?? "—"}</div>` +
+      `<div class="wp-meta">Aire délimitée INAO${ref ? ` · commune ${ref}` : ""}</div>` +
       (f.areaHa ? `<div class="wp-meta">${f.areaHa.toFixed(2)} ha</div>` : "") +
       `<div class="wp-data">${badge}</div>` +
       `<div class="wp-hint">Cliquer pour la fiche</div>`
@@ -622,7 +951,10 @@ function addRealLayers(
 ) {
   map.addSource("wine", {
     type: "vector",
-    tiles: [`${window.location.origin}/api/tiles/wine/{z}/{x}/{y}`],
+    // `v=` busts browser/CDN caches after geom ingest (hard refresh alone is not enough).
+    tiles: [
+      `${window.location.origin}/api/tiles/wine/{z}/{x}/{y}?v=${WINE_TILES_VERSION}`,
+    ],
     minzoom: 0,
     maxzoom: 14,
     // Use the string `id` property as the MapLibre feature id (feature-state).
@@ -641,6 +973,7 @@ function addRealLayers(
   const addAreaSet = (
     sourceLayer: string,
     minzoom: number,
+    maxzoom: number,
     baseOpacity: number,
     labelSize: number
   ) => {
@@ -654,16 +987,20 @@ function addRealLayers(
       source: "wine",
       "source-layer": sourceLayer,
       minzoom,
+      maxzoom,
       paint: {
         "fill-color": areaColor,
-        "fill-opacity": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false],
-          0.55,
-          ["boolean", ["feature-state", "hover"], false],
-          baseOpacity + 0.16,
-          baseOpacity,
-        ],
+        "fill-opacity": cruBoost(
+          [
+            "case",
+            ["boolean", ["feature-state", "selected"], false],
+            0.55,
+            ["boolean", ["feature-state", "hover"], false],
+            baseOpacity + 0.16,
+            baseOpacity,
+          ] as unknown as maplibregl.ExpressionSpecification,
+          CRU_OPACITY_BOOST
+        ),
       },
     });
     map.addLayer({
@@ -672,16 +1009,20 @@ function addRealLayers(
       source: "wine",
       "source-layer": sourceLayer,
       minzoom,
+      maxzoom,
       paint: {
         "line-color": areaColor,
-        "line-width": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false],
-          2.6,
-          ["boolean", ["feature-state", "hover"], false],
-          1.8,
-          1,
-        ],
+        "line-width": cruBoost(
+          [
+            "case",
+            ["boolean", ["feature-state", "selected"], false],
+            2.6,
+            ["boolean", ["feature-state", "hover"], false],
+            1.8,
+            1,
+          ] as unknown as maplibregl.ExpressionSpecification,
+          CRU_WIDTH_BOOST
+        ),
         "line-opacity": 0.9,
       },
     });
@@ -691,6 +1032,7 @@ function addRealLayers(
       source: "wine",
       "source-layer": sourceLayer,
       minzoom,
+      maxzoom,
       layout: {
         "text-field": ["get", "name"],
         "text-size": labelSize,
@@ -709,9 +1051,10 @@ function addRealLayers(
     interactive.push({ layerId: fillId, sourceLayer });
   };
 
-  addAreaSet(SRC.region, 0, 0.14, 14);
-  addAreaSet(SRC.appellation, 7, 0.22, 12);
-  addAreaSet(SRC.cru, 10, 0.3, 11);
+  // Zoom bands mirror LEVEL_ZOOM + wine_mvt hard gates (ADR 0010).
+  addAreaSet(SRC.region, LEVEL_ZOOM[1].min, LEVEL_ZOOM[1].max, 0.14, 14);
+  addAreaSet(SRC.appellation, LEVEL_ZOOM[2].min, LEVEL_ZOOM[2].max, 0.22, 12);
+  addAreaSet(SRC.cru, LEVEL_ZOOM[4].min, LEVEL_ZOOM[4].max, 0.3, 11);
 
   // Parcels (fine INAO parcellaire) — outline emphasis, high zoom only.
   map.addLayer({

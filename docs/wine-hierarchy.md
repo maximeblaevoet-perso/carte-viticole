@@ -38,6 +38,7 @@ Défini dans `src/lib/types.ts` :
 | `geoJsonId`           | clé de géométrie dans `geo.ts` (ou `null` si pas de contour)    |
 | `center`              | `[lon, lat]` (centrage, label, marqueur point)                 |
 | `zoomMin` / `zoomMax` | bande de zoom où l'aire est pertinente                          |
+| `mapVisible`          | si `false`, l'aire reste dans l'arbre mais n'est pas peinte sur la carte (ADR 0010) |
 | `availableDataScopes` | scopes pour lesquels le nœud a ses **propres** données          |
 | `provisional`         | marque les nœuds seed/non validés                              |
 | `provenance`          | provenance PostGIS (`GeoDataProvenance`) quand chargé depuis Supabase |
@@ -55,13 +56,20 @@ Ne pas mettre chaque parcelle cadastrale dans `wine_areas` (explosion de volume)
 | Navigation | `wine_areas` | zoom progressif (niveaux 1–4, parfois 5 lieu-dit) |
 | Parcellaire fin | `wine_parcels` | zoom élevé uniquement (`zoom_min` ≈ 14) |
 | Lien | `wine_area_parcels` | many-to-many cru/climat ↔ parcelle |
-| Lieu-dit | `wine_lieux_dits` | étiquette cadastrale (surtout Champagne) |
+| Lieu-dit | `wine_lieux_dits` | étiquette cadastrale nommée (Champagne + Alsace) |
 
 **Champagne :** Grand Cru / Premier Cru = communes (`wine_areas`, `insee_commune`).
 Les parcelles affichent le lieu-dit via `wine_lieux_dits`, pas un cru imbriqué.
 
-**Alsace :** les 51 Grands Crus = nœuds `wine_areas` (`region_type = grand-cru`),
-géométrie INAO quand importée.
+**Alsace :** L1 région + sous-appellations (Côtes de Barr, …) + 51 Grands Crus.
+Les AOC produit à empreinte régionale (Crémant, AOC « Alsace ») restent en base
+avec `map_visible=false`. Les contours GC distincts viennent du dissolve
+parcellaire, pas d’`inao-aires-geo` (ADR 0010). Le nœud niveau 2 « Alsace Grand
+Cru » est l’union dissoute des crus nommés (et non l’enveloppe INAO parente, qui
+couvre tout le vignoble) ; il porte `region_type = grand-cru`, donc la couleur
+« cru » rouge, comme chaque GC. Les noms de lieux visibles au zoom fort viennent
+du cadastre 67/68 découpé sur l’aire AOC Alsace (ADR 0012) — le `name` d’une
+ligne `inao-parcellaire` est une appellation, pas un lieu.
 
 **Bourgogne :** structure prête (climats / 1ers crus en `wine_areas` niveau 4) ;
 import complet plus tard.
@@ -71,12 +79,18 @@ Le niveau 1 est dérivé automatiquement de `REGION_BASELINES` (source unique).
 ## 3. Affichage progressif au zoom
 
 `LEVEL_ZOOM` (dans `areas.ts`) définit la bande de zoom par niveau. La carte
-(`WineMap.tsx`) crée une couche par niveau avec `minzoom`/`maxzoom` :
+(`WineMap.tsx`) crée une couche par niveau avec `minzoom`/`maxzoom` — y compris
+pour les couches MVT réelles :
 
-- zoom faible → niveau 1 (grandes régions)
-- zoom intermédiaire → niveau 2 (sous-régions)
-- zoom fort → niveaux 3/4 (villages, crus) si disponibles
+- zoom faible → niveau 1 (grandes régions), masqué au-delà de `zoom_max` ≈ 8
+- zoom intermédiaire → niveaux 2–3 (sous-régions / appellations), masqué avant
+  l’apparition des crus (`z < 11`)
+- zoom fort → niveaux 4/5 (crus) puis parcelles / lieux-dits (≥ 13)
 
+Les aires (`wine_areas`) et les parcelles (`wine_parcels`) avec
+`map_visible=false` ne sont jamais embarquées dans les tuiles. Les empreintes
+synthétiques de `geo.ts` sont masquées dès qu’une région possède de vrais
+contours (`/api/wine/coverage`), pour ne jamais superposer les deux.
 Cliquer une aire recentre et zoome (`SELECT_ZOOM`) pour révéler ses enfants.
 
 ## 4. Ajouter…

@@ -64,6 +64,8 @@ export async function GET(
   try {
     resp = await fetch(endpoint, {
       method: "POST",
+      // Never let Next.js Data Cache retain PostgREST MVT payloads.
+      cache: "no-store",
       headers: {
         apikey: SUPABASE_KEY,
         authorization: `Bearer ${SUPABASE_KEY}`,
@@ -96,7 +98,10 @@ export async function GET(
     status: 200,
     headers: {
       "content-type": MVT_CONTENT_TYPE,
-      "cache-control": "public, max-age=300, s-maxage=86400",
+      // Modest TTL is fine: MapLibre appends `?v=` (WINE_TILES_VERSION) so a
+      // post-ingest bump invalidates browser/CDN entries without waiting.
+      // Avoid long s-maxage — hard refresh does not bypass shared caches.
+      "cache-control": "public, max-age=120, s-maxage=120, must-revalidate",
     },
   });
 }

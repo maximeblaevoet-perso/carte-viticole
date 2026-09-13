@@ -77,11 +77,43 @@ The map has two stacked sources:
    only sees the relative tile URL. Layers: `wine-areas-region`,
    `wine-areas-appellation`, `wine-areas-cru`, `wine-parcels`,
    `wine-lieux-dits(-labels)`. Zoom-gated + zoom-simplified in SQL so no massive
-   GeoJSON ever reaches the browser. See ADR 0007.
+   GeoJSON ever reaches the browser. See ADR 0007. From migration `0009` /
+   ADR 0010, tiles also honour `map_visible` and per-row `zoom_min`/`zoom_max`,
+   and appellation layers fade before crus (`z < 11`, MapLibre `maxzoom`
+   aligned with `LEVEL_ZOOM`). Tile URLs include `?v=` from
+   `WINE_TILES_VERSION` / `NEXT_PUBLIC_WINE_TILES_VERSION` so a post-ingest
+   bump busts CDN/browser caches (hard refresh alone does not). Migration
+   `0010` / ADR 0012 adds `wine_parcels.map_visible` to the same filtering.
+
+The two families are mutually exclusive per region: `/api/wine/coverage` reads
+the `wine_real_coverage` view and `WineMap` filters its synthetic layers to the
+regions with no real contour, so a rough editorial footprint is never painted
+next to the accurate one (ADR 0012). A failed fetch keeps the synthetic layers
+on — the map degrades toward the placeholder, never toward nothing.
 
 Clicking a real feature produces a `SelectedGeoFeature` (area / parcel /
 lieu-dit + provenance) that the panel renders with a source/provenance card.
 If Supabase is off, the route returns `204` and only the synthetic base shows.
+
+### Basemaps (ADR 0011)
+
+Under those wine layers sits a **switchable raster basemap**, declared in
+`src/lib/basemaps.ts` and driven by `src/components/map/BasemapSwitcher.tsx`:
+`aerial` (IGN Orthophotos, default), `plan` (IGN Plan v2), `geology` (BRGM —
+WMS, loaded only when selected because it has no CDN). There is no relief
+overlay: Plan v2 is already shaded.
+
+In the geology view, clicking the map runs a BRGM WMS `GetFeatureInfo` against
+`LITHO_1M_SIMPLIFIEE` (`src/lib/geology-info.ts`, pure URL builder + parser) and
+`GeologyReadout.tsx` names the rock family under the point, with its 1/1 000 000
+precision stated on the card.
+
+Switching a basemap only removes/adds the `basemap` raster layer and its source,
+re-inserted *before* the lowest wine layer: the GeoJSON and MVT sources are never
+touched, so no tile refetch and no loss of hover/selection state. Each basemap
+carries a `theme` that repaints the wine layers' outlines and labels (white on
+imagery, near-black on geology) — colours only; geometry and zoom bands are
+untouched. Attribution is per source ("© IGN / Géoplateforme", "© BRGM").
 
 ## V1 data flow
 
@@ -122,6 +154,10 @@ See `docs/decisions/` (ADRs):
 - 0006 — hybrid PostGIS wine geodata (`wine_areas` + `wine_parcels`)
 - 0007 — serve wine geodata as MVT vector tiles (`wine_mvt` + `/api/tiles/wine`)
 - 0008 — add a weekly climate rollup next to the monthly one
+- 0010 — map visibility + progressive zoom for wine areas
+- 0011 — switchable public basemaps (IGN / BRGM)
+- 0012 — Alsace layers: no synthetic/real stacking, cru tier colour, named
+  lieux-dits
 
 ## Conventions
 

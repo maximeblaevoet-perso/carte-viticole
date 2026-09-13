@@ -70,12 +70,22 @@ ingest keys (`inao_id_app`, `inao_id_denom`, `insee_commune`). Provenance:
 
 Stores: régions fines, appellations AOC/AOP/IGP, communes Grand/Premier Cru
 (Champagne), 51 Alsace Grands Crus, climats/1ers crus (Bourgogne, structure
-ready). Levels 1–5; zoom bands `zoom_min` / `zoom_max`.
+ready). Levels 1–5; zoom bands `zoom_min` / `zoom_max`. Editorial flag
+`map_visible` (default true): when false, the row stays in the hierarchy but is
+omitted from MVT tiles (ADR 0010 — e.g. Crémant d’Alsace, AOC “Alsace”
+footprint duplicate).
 
 ### `wine_parcels`
 Fine parcel polygons shown only at high zoom (`zoom_min` default 14). Separate
 table to avoid hierarchy volume explosion. Cadastral refs, INAO `id_aire`, optional
 RPG plot id. Same provenance columns as `wine_areas`. GIST on `geom` and `center`.
+`map_visible` (default true) mirrors the `wine_areas` flag: false keeps the row
+queryable but out of the MVT tiles (ADR 0012 — Alsace regional/product aires and
+grand-cru aires already drawn as level-4 crus).
+
+Note: for `inao-parcellaire` a row is an **aire délimitée per commune ×
+denomination**, not a cadastral plot — `name` is the appellation. Place names
+come from `wine_lieux_dits`.
 
 ### `wine_area_parcels`
 Many-to-many link `wine_area_id` ↔ `wine_parcel_id` with `relationship`
@@ -83,8 +93,16 @@ Many-to-many link `wine_area_id` ↔ `wine_parcel_id` with `relationship`
 in `wine_areas`.
 
 ### `wine_lieux_dits`
-Cadastral lieux-dits (especially Champagne: parcel label at high zoom). Optional
-`wine_area_id` parent. PostGIS `center` + `geom`. Provenance columns as above.
+Cadastral lieux-dits — the only source of NAMED fine geometry (parcel label at
+high zoom). Optional `wine_area_id` parent. PostGIS `center` + `geom`.
+Provenance columns as above. Champagne rows are attached to their commune-level
+GC/PC area; Alsace rows (clipped to the delimited vineyard) are attached to the
+grand cru that geometrically contains them, or to nothing (ADR 0012).
+
+### `wine_real_coverage` (view)
+Root regions holding at least one real PostGIS contour. Read through
+`/api/wine/coverage` so the map can retire its rough synthetic footprints for
+those regions instead of stacking both (ADR 0012).
 
 ## Relationships
 

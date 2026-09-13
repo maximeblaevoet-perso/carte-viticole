@@ -46,7 +46,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator, Optional
+from typing import Any, Callable, Iterator, Optional
 from urllib import error, parse, request
 
 from dotenv import load_dotenv
@@ -95,8 +95,9 @@ ROOT_WINE_AREAS: dict[str, dict[str, object]] = {
         "parent_id": None,
         "root_region_id": "champagne",
         "region_type": "region",
-        "zoom_min": 5,
-        "zoom_max": 22,
+        "zoom_min": 0,
+        "zoom_max": 8,
+        "map_visible": True,
         "available_data_scopes": [],
         "provisional": False,
     },
@@ -107,8 +108,9 @@ ROOT_WINE_AREAS: dict[str, dict[str, object]] = {
         "parent_id": None,
         "root_region_id": "alsace",
         "region_type": "region",
-        "zoom_min": 5,
-        "zoom_max": 22,
+        "zoom_min": 0,
+        "zoom_max": 8,
+        "map_visible": True,
         "available_data_scopes": [],
         "provisional": False,
     },
@@ -119,12 +121,26 @@ ROOT_WINE_AREAS: dict[str, dict[str, object]] = {
         "parent_id": "alsace",
         "root_region_id": "alsace",
         "region_type": "appellation",
-        "zoom_min": 8,
-        "zoom_max": 22,
+        "zoom_min": 7,
+        "zoom_max": 10.5,
+        "map_visible": True,
         "available_data_scopes": [],
         "provisional": False,
     },
 }
+
+# Default zoom bands (mirrors src/data/areas.ts LEVEL_ZOOM).
+LEVEL_ZOOM: dict[int, tuple[float, float]] = {
+    1: (0, 8),
+    2: (7, 10.5),
+    3: (7, 10.5),
+    4: (10, 22),
+    5: (12, 22),
+}
+
+# Product AOCs whose aire covers (almost) the whole regional footprint — keep
+# in the hierarchy but hide on the map by default (ADR 0010).
+PRODUCT_AOC_NAME_MARKERS: tuple[str, ...] = ("cremant",)
 
 # data.gouv.fr dataset slugs — geometry vs tabular split (see wine_geodata_download).
 DATASET_SLUGS = {
@@ -163,6 +179,7 @@ COLUMN_ALIASES: dict[str, tuple[str, ...]] = {
     "denom": ("denom", "denomination", "nom_denom"),
     "type_denom": ("type_denom", "type_denomination", "typedenom"),
     "type_prod": ("type_prod", "type_produit", "typeprod"),
+    "categorie": ("categorie", "categorie_produit", "cat_prod"),
     "signe": ("signe", "sigle"),
     "insee": ("insee", "code_insee", "insee_com", "insee_commune", "commune"),
     "nomcom": ("nomcom", "nom_com", "nom_commune", "commune"),
@@ -367,6 +384,43 @@ def area_ha(geom: BaseGeometry) -> Optional[float]:
         return None
 
 
+def ascii_fold(text: str) -> str:
+    """Lowercase ASCII fold for denomination matching."""
+    folded = unicodedata.normalize("NFKD", text)
+    folded = "".join(c for c in folded if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", folded.lower()).strip()
+
+
+def classify_alsace_map_visibility(denom: str) -> tuple[bool, Optional[str]]:
+    """Decide whether an Alsace INAO aire should paint on the map.
+
+    INAO aires-geo lists every product denomination, including:
+    - the regional AOC "Alsace" (same footprint as L1),
+    - product AOCs like Crémant d'Alsace (near-identical regional footprint),
+    - the generic parent "Alsace grand cru" (envelope of all GCs).
+
+    Those stay in the hierarchy but default to map_visible=false (ADR 0010).
+    """
+    norm = ascii_fold(denom)
+    if norm == "alsace":
+        return False, "region-footprint-duplicate"
+    if any(marker in norm for marker in PRODUCT_AOC_NAME_MARKERS):
+        return False, "product-aoc-region-wide"
+    if norm == "alsace grand cru":
+        return False, "generic-parent-denomination"
+    return True, None
+
+
+def geom_fingerprint(geom: BaseGeometry) -> Optional[str]:
+    """Stable hash of a normalised multipolygon WKT (detect INAO clones)."""
+    mp = to_multipolygon(geom)
+    if mp is None:
+        return None
+    from shapely import wkt as shapely_wkt
+
+    return hashlib.sha1(shapely_wkt.dumps(mp, rounding_precision=6).encode()).hexdigest()
+
+
 # ---------------------------------------------------------------------------
 # Scope filters
 # ---------------------------------------------------------------------------
@@ -390,11 +444,32 @@ def appellation_in_scope(app: Optional[str], denom: Optional[str], scope: str) -
     return False
 
 
+def product_is_wine(row: Any, col_map: dict[str, str]) -> bool:
+    """True unless the row is a non-viticultural SIQO.
+
+    INAO aires-geo is a catalogue of every protected product, so a department
+    filter alone drags in Choucroute d'Alsace, Miel d'Alsace, Volailles
+    d'Alsace… The ``categorie`` field is the discriminator: wine categories all
+    start with "Vin" ("Vin tranquille", "Vin mousseux \"Crémant\"", "Vin de
+    sélection de grains nobles"…). Fruit eaux-de-vie and marc de raisin are
+    deliberately excluded — they are spirits, not wine.
+
+    A row with no ``categorie`` is kept: the column is absent from some
+    exports, and dropping rows on a missing field would silently lose data.
+    """
+    categorie = row_value(row, col_map, "categorie")
+    if not categorie or categorie.lower() == "nan":
+        return True
+    return _ascii_fold(categorie).lower().startswith("vin")
+
+
 def row_in_scope(
     row: Any,
     col_map: dict[str, str],
     scope: str,
 ) -> bool:
+    if not product_is_wine(row, col_map):
+        return False
     insee = row_value(row, col_map, "insee")
     if insee_in_scope(insee, scope):
         return True
@@ -585,6 +660,11 @@ def process_alsace_aires(
     ensure_root_wine_areas(bundle, "alsace", "alsace-grand-cru")
     col_map = inspect_columns(gdf, "alsace-aires")
     seen_areas: set[str] = set()
+    # Track geom fingerprints so cloned INAO parent envelopes under each named
+    # GC are hidden on the map (real GC contours come from parcellaire dissolve).
+    fingerprint_first_id: dict[str, str] = {}
+    by_id: dict[str, dict[str, object]] = {}
+
     for _, row in gdf.iterrows():
         stats.read += 1
         if not row_in_scope(row, col_map, "alsace"):
@@ -611,6 +691,36 @@ def process_alsace_aires(
             stats.skipped += 1
             continue
         seen_areas.add(area_id)
+
+        map_visible, hide_reason = classify_alsace_map_visibility(denom)
+        zmin, zmax = LEVEL_ZOOM[level]
+
+        # Promote useful footprints onto editorial parents, then hide the clone.
+        if hide_reason == "region-footprint-duplicate":
+            for root in bundle.wine_areas:
+                if root["id"] == "alsace" and root.get("geom") is None:
+                    root["geom"] = ewkt
+                    if center:
+                        root["center"] = geometry_to_ewkt(Point(center), kind="point")
+                    root.update(provenance_fields("inao-aires-geo"))
+        elif hide_reason == "generic-parent-denomination":
+            for root in bundle.wine_areas:
+                if root["id"] == "alsace-grand-cru" and root.get("geom") is None:
+                    root["geom"] = ewkt
+                    if center:
+                        root["center"] = geometry_to_ewkt(Point(center), kind="point")
+                    root.update(provenance_fields("inao-aires-geo"))
+
+        fp = geom_fingerprint(row.geometry)
+        if map_visible and fp and is_grand_cru:
+            first = fingerprint_first_id.get(fp)
+            if first and first != area_id:
+                # Same polygon as another GC / parent envelope → hide clone.
+                map_visible = False
+                hide_reason = "duplicate-aire-geo-envelope"
+            else:
+                fingerprint_first_id[fp] = area_id
+
         payload: dict[str, object] = {
             "id": area_id,
             "name": denom,
@@ -619,8 +729,9 @@ def process_alsace_aires(
             "root_region_id": "alsace",
             "region_type": region_type,
             "geom": ewkt,
-            "zoom_min": 9.5 if is_grand_cru else 8,
-            "zoom_max": 22,
+            "zoom_min": zmin,
+            "zoom_max": zmax,
+            "map_visible": map_visible,
             "available_data_scopes": ["soils"] if is_grand_cru else [],
             "provisional": False,
             "inao_id_app": id_app,
@@ -628,10 +739,154 @@ def process_alsace_aires(
             "insee_commune": row_value(row, col_map, "insee"),
             **provenance_fields("inao-aires-geo"),
         }
+        if hide_reason:
+            payload["blurb"] = f"map_hidden:{hide_reason}"
         if center:
             payload["center"] = geometry_to_ewkt(Point(center), kind="point")
         bundle.wine_areas.append(payload)
+        by_id[area_id] = payload
         stats.kept += 1
+
+    # If the generic GC envelope was seen first, hide every named GC that shares
+    # that exact fingerprint (common with INAO aires-geo for Alsace).
+    generic = by_id.get("alsace-alsace-grand-cru")
+    if generic and generic.get("geom"):
+        generic_fp = None
+        # Re-hash from stored areas that still claim map_visible.
+        for area in bundle.wine_areas:
+            if (
+                area.get("root_region_id") == "alsace"
+                and area.get("level") == 4
+                and area.get("id") != "alsace-alsace-grand-cru"
+                and area.get("map_visible")
+                and area.get("geom") == generic.get("geom")
+            ):
+                area["map_visible"] = False
+                area["blurb"] = "map_hidden:duplicate-aire-geo-envelope"
+
+
+def replace_alsace_gc_geoms_from_parcels(bundle: IngestBundle) -> int:
+    """Replace cloned GC aires-geo envelopes with dissolved parcellaire contours.
+
+    Returns the number of GC areas updated. Distinct per-cru polygons only exist
+    reliably in ``inao-parcellaire``; aires-geo often repeats the parent envelope.
+    """
+    from shapely import wkt as shapely_wkt
+    from shapely.ops import unary_union
+
+    parcels_by_id = {p["id"]: p for p in bundle.wine_parcels}
+    links: dict[str, list[str]] = {}
+    for link in bundle.wine_area_parcels:
+        links.setdefault(str(link["wine_area_id"]), []).append(str(link["wine_parcel_id"]))
+
+    updated = 0
+    for area in bundle.wine_areas:
+        if area.get("root_region_id") != "alsace" or area.get("level") != 4:
+            continue
+        if area.get("id") == "alsace-alsace-grand-cru":
+            continue
+        parcel_ids = links.get(str(area["id"]), [])
+        geoms: list[BaseGeometry] = []
+        for pid in parcel_ids:
+            parcel = parcels_by_id.get(pid)
+            if not parcel or not parcel.get("geom"):
+                continue
+            # EWKT → WKT
+            raw = str(parcel["geom"])
+            wkt = raw.split(";", 1)[-1]
+            try:
+                g = shapely_wkt.loads(wkt)
+            except Exception:
+                continue
+            mp = to_multipolygon(g)
+            if mp is not None:
+                geoms.append(mp)
+        if not geoms:
+            continue
+        dissolved = to_multipolygon(unary_union(geoms))
+        if dissolved is None:
+            continue
+        ewkt = geometry_to_ewkt(dissolved)
+        if not ewkt:
+            continue
+        center = centroid_lon_lat(dissolved)
+        area["geom"] = ewkt
+        area["map_visible"] = True
+        area["zoom_min"], area["zoom_max"] = LEVEL_ZOOM[4]
+        if center:
+            area["center"] = geometry_to_ewkt(Point(center), kind="point")
+        # Clear hide blurb once we have a real contour.
+        if isinstance(area.get("blurb"), str) and str(area["blurb"]).startswith("map_hidden:"):
+            area["blurb"] = None
+        updated += 1
+    return updated
+
+
+def rebuild_alsace_gc_envelope(bundle: IngestBundle) -> bool:
+    """Make the level-2 "Alsace Grand Cru" node the union of the named crus.
+
+    INAO ships a parent AOC polygon under the generic denomination, and that
+    polygon covers the whole region — so the level-2 node ended up claiming
+    every Alsatian vineyard as grand cru. What the label means is the union of
+    the 51 delimited crus, which is what we store instead (ADR 0012).
+    """
+    from shapely.ops import unary_union
+
+    geoms: list[BaseGeometry] = []
+    for area in bundle.wine_areas:
+        if area.get("root_region_id") != "alsace" or area.get("level") != 4:
+            continue
+        if area.get("id") == "alsace-alsace-grand-cru" or not area.get("map_visible"):
+            continue
+        g = _ewkt_to_shape(area.get("geom"))
+        if g is not None and not g.is_empty:
+            geoms.append(g)
+    if not geoms:
+        return False
+
+    dissolved = to_multipolygon(unary_union(geoms))
+    if dissolved is None:
+        return False
+    ewkt = geometry_to_ewkt(dissolved)
+    if not ewkt:
+        return False
+
+    for area in bundle.wine_areas:
+        if area.get("id") != "alsace-grand-cru":
+            continue
+        area["geom"] = ewkt
+        # RegionType is decoupled from AreaLevel on purpose: an Alsace grand cru
+        # sits at level 2, a Burgundy one at level 4. The map colours by tier.
+        area["region_type"] = "grand-cru"
+        center = centroid_lon_lat(dissolved)
+        if center:
+            area["center"] = geometry_to_ewkt(Point(center), kind="point")
+        return True
+    return False
+
+
+def hide_regional_product_parcels(bundle: IngestBundle) -> int:
+    """Drop redundant Alsace aires from the MAP (they stay in the database).
+
+    The INAO parcellaire is an aire délimitée per commune x denomination, not a
+    cadastral plot. Two of those denominations (AOC Alsace and Crémant
+    d'Alsace) repeat the whole vineyard footprint once per commune, and the
+    grand-cru ones repeat the level-4 contours dissolved from them — so at high
+    zoom the layer showed everything twice and named it after the appellation.
+    """
+    cru_names = {
+        str(a.get("name"))
+        for a in bundle.wine_areas
+        if a.get("level") == 4 and a.get("map_visible") and a.get("geom")
+    }
+    hidden = 0
+    for parcel in bundle.wine_parcels:
+        name = str(parcel.get("name") or "")
+        folded = _ascii_fold(name).lower()
+        if folded in ALSACE_VINEYARD_DENOMS or name in cru_names:
+            parcel["map_visible"] = False
+            hidden += 1
+    return hidden
 
 
 def process_parcellaire(
@@ -685,6 +940,7 @@ def process_parcellaire(
             "name": denom,
             "geom": ewkt,
             "zoom_min": 14,
+            "map_visible": True,
             "area_ha": area_ha(row.geometry),
             "inao_id_aire": id_aire,
             "cadastre_section": section,
@@ -743,6 +999,7 @@ def build_champagne_commune_areas(
                 "region_type": meta["region_type"],
                 "zoom_min": 10,
                 "zoom_max": 22,
+                "map_visible": True,
                 "available_data_scopes": [],
                 "provisional": False,
                 "insee_commune": insee,
@@ -760,7 +1017,15 @@ def process_cadastre_lieux_dits(
     bundle: IngestBundle,
     commune_area_index: dict[str, str],
     seen_features: Optional[set[tuple[str, str, str]]] = None,
+    area_resolver: Optional[Callable[[Optional[str], BaseGeometry], Optional[str]]] = None,
 ) -> None:
+    """Ingest named cadastral lieux-dits.
+
+    ``commune_area_index`` links a lieu-dit to its commune-level area (Champagne
+    GC/PC). Where the hierarchy is not commune-based (Alsace: the crus are
+    hillsides, not communes), pass ``area_resolver`` instead to attach a
+    lieu-dit to the cru that geometrically contains it.
+    """
     col_map = inspect_columns(gdf, f"{scope}-cadastre")
     if seen_features is None:
         seen_features = set()
@@ -794,7 +1059,11 @@ def process_cadastre_lieux_dits(
             "id": lieu_id,
             "name": name,
             "commune_insee": insee,
-            "wine_area_id": commune_area_index.get(insee or ""),
+            "wine_area_id": (
+                area_resolver(insee, row.geometry)
+                if area_resolver
+                else commune_area_index.get(insee or "")
+            ),
             "geom": ewkt,
             "cadastre_source_ref": cadastre_ref,
             **provenance_fields("etalab-cadastre"),
@@ -803,6 +1072,85 @@ def process_cadastre_lieux_dits(
             payload["center"] = geometry_to_ewkt(Point(center), kind="point")
         bundle.wine_lieux_dits.append(payload)
         stats.kept += 1
+
+
+# ---------------------------------------------------------------------------
+# Alsace lieux-dits (cadastre clipped to the vineyard)
+# ---------------------------------------------------------------------------
+# Departments 67/68 ship ~150 000 cadastral lieux-dits covering forests, towns
+# and farmland. Only those inside the delimited vineyard are wine data, so the
+# cadastre is clipped to the AOC "Alsace" aire before anything is ingested.
+ALSACE_VINEYARD_DENOMS = ("alsace", "cremant d'alsace", "cremant d’alsace")
+
+
+def _ewkt_to_shape(ewkt: object) -> Optional[BaseGeometry]:
+    from shapely import wkt as shapely_wkt
+
+    if not ewkt:
+        return None
+    try:
+        return shapely_wkt.loads(str(ewkt).split(";", 1)[-1])
+    except Exception:
+        return None
+
+
+def build_alsace_vineyard_clip(bundle: IngestBundle) -> Optional[BaseGeometry]:
+    """Union of the regional AOC aires — the delimited Alsace vineyard."""
+    from shapely.ops import unary_union
+
+    geoms: list[BaseGeometry] = []
+    for parcel in bundle.wine_parcels:
+        name = _ascii_fold(str(parcel.get("name") or "")).lower()
+        if name not in ALSACE_VINEYARD_DENOMS:
+            continue
+        g = _ewkt_to_shape(parcel.get("geom"))
+        if g is not None and not g.is_empty:
+            geoms.append(g)
+    if not geoms:
+        return None
+    return unary_union(geoms)
+
+
+def build_alsace_cru_resolver(
+    bundle: IngestBundle,
+) -> Callable[[Optional[str], BaseGeometry], Optional[str]]:
+    """Attach a lieu-dit to the Alsace grand cru whose contour contains it.
+
+    Alsace crus are hillsides that cut across communes, so the Champagne
+    commune -> area index does not apply. Returns ``None`` when the lieu-dit
+    sits in generic AOC Alsace — never guesses a cru.
+    """
+    crus: list[tuple[str, BaseGeometry]] = []
+    for area in bundle.wine_areas:
+        if area.get("root_region_id") != "alsace" or area.get("level") != 4:
+            continue
+        if area.get("id") == "alsace-alsace-grand-cru" or not area.get("map_visible"):
+            continue
+        g = _ewkt_to_shape(area.get("geom"))
+        if g is not None and not g.is_empty:
+            crus.append((str(area["id"]), g))
+
+    def resolve(_insee: Optional[str], geom: BaseGeometry) -> Optional[str]:
+        if geom is None or geom.is_empty:
+            return None
+        probe = geom.representative_point()
+        for area_id, cru in crus:
+            if cru.intersects(probe):
+                return area_id
+        return None
+
+    return resolve
+
+
+def clip_lieux_dits_to_vineyard(
+    gdf: gpd.GeoDataFrame,
+    clip: Optional[BaseGeometry],
+) -> gpd.GeoDataFrame:
+    """Keep only the rows intersecting the vineyard (spatial index, no reshape)."""
+    if clip is None or clip.is_empty:
+        return gdf
+    idx = list(gdf.sindex.query(clip, predicate="intersects"))
+    return gdf.iloc[idx]
 
 
 def build_source_dataset_rows() -> list[dict[str, object]]:
@@ -901,6 +1249,64 @@ def run_scope(
                 area_index,
                 "alsace-parcellaire",
                 stats_map,
+            )
+            n_dissolved = replace_alsace_gc_geoms_from_parcels(bundle)
+            if n_dissolved:
+                print(
+                    f"  alsace-gc-dissolve: replaced {n_dissolved} GC envelopes "
+                    "with parcellaire unions"
+                )
+            if rebuild_alsace_gc_envelope(bundle):
+                print(
+                    "  alsace-gc-envelope: level-2 node rebuilt as the union "
+                    "of the named grands crus"
+                )
+            n_hidden = hide_regional_product_parcels(bundle)
+            if n_hidden:
+                print(
+                    f"  alsace-parcellaire: {n_hidden} redundant aires hidden "
+                    "from the map (regional AOCs + grand-cru duplicates)"
+                )
+
+        # Cadastral lieux-dits: the only source of NAMED fine geometry in
+        # Alsace (the INAO parcellaire is an aire per commune x appellation,
+        # so its "name" is the appellation, not a place). Clipped to the
+        # delimited vineyard so 67/68 forests and towns never land in the DB.
+        alsace_cadastre = resolve_cadastre_lieux_dits(raw_dir, "alsace")
+        if not alsace_cadastre:
+            cad_fixture = _fixture_path(
+                fixture_dir, "alsace-lieux-dits-sample.geojson"
+            )
+            if cad_fixture:
+                alsace_cadastre = [cad_fixture]
+        if alsace_cadastre:
+            clip = build_alsace_vineyard_clip(bundle)
+            if clip is None:
+                print(
+                    "  alsace-lieux-dits: skipped (no AOC Alsace aire to clip "
+                    "against — run the parcellaire step first)"
+                )
+            else:
+                resolver = build_alsace_cru_resolver(bundle)
+                st = IngestStats()
+                seen_lieux: set[tuple[str, str, str]] = set()
+                for cad_path in alsace_cadastre:
+                    gdf = load_geodata(cad_path)
+                    gdf = clip_lieux_dits_to_vineyard(gdf, clip)
+                    process_cadastre_lieux_dits(
+                        gdf,
+                        "alsace",
+                        st,
+                        bundle,
+                        {},
+                        seen_lieux,
+                        area_resolver=resolver,
+                    )
+                stats_map["alsace-lieux-dits"] = st
+        else:
+            print(
+                "  alsace-lieux-dits: skipped (no cadastre 67/68 under "
+                "--raw-dir; add --allow-download to fetch it)"
             )
 
     if scope in ("champagne", "all-initial"):

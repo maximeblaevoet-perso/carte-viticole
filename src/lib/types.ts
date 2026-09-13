@@ -94,6 +94,12 @@ export interface WineArea {
   /** Map zoom after which this area is hidden (0 = no upper bound). */
   zoomMax: number;
   /**
+   * When false, the area stays in the hierarchy (panel / climate) but is
+   * omitted from map tiles. Used for product AOCs (e.g. Crémant) and regional
+   * footprint duplicates (e.g. AOC "Alsace" mirroring the L1 region).
+   */
+  mapVisible?: boolean;
+  /**
    * Scopes for which this node carries its OWN data. Climate is deliberately
    * usually absent below level 1 (climate stays macro/regional for now).
    */
@@ -153,6 +159,12 @@ export interface WineParcel {
   name: string | null;
   center: [number, number] | null;
   zoomMin: number;
+  /**
+   * When false, the parcel stays queryable but is omitted from map tiles.
+   * Mirrors {@link WineArea.mapVisible} — used for aires that only repeat a
+   * contour already drawn (regional AOCs, grand-cru aires). See ADR 0012.
+   */
+  mapVisible?: boolean;
   areaHa: number | null;
   inaoIdAire: string | null;
   rpgPlotId: string | null;

@@ -10,6 +10,7 @@ from ingest_wine_geodata import (
     build_column_map,
     build_source_dataset_rows,
     centroid_lon_lat,
+    classify_alsace_map_visibility,
     geometry_to_ewkt,
     load_geodata,
     run_scope,
@@ -58,6 +59,25 @@ class TestGeometry(unittest.TestCase):
         self.assertIsNotNone(center)
         mp = to_multipolygon(gdf.geometry.iloc[0])
         self.assertIsNotNone(mp)
+
+
+class TestAlsaceMapVisibility(unittest.TestCase):
+    def test_hides_region_footprint_and_cremant(self) -> None:
+        self.assertEqual(
+            classify_alsace_map_visibility("Alsace"),
+            (False, "region-footprint-duplicate"),
+        )
+        visible, reason = classify_alsace_map_visibility("Crémant d’Alsace")
+        self.assertFalse(visible)
+        self.assertEqual(reason, "product-aoc-region-wide")
+        self.assertEqual(
+            classify_alsace_map_visibility("Alsace grand cru"),
+            (False, "generic-parent-denomination"),
+        )
+        self.assertEqual(
+            classify_alsace_map_visibility("Alsace Côtes de Barr"),
+            (True, None),
+        )
 
 
 class TestDryRunFixtures(unittest.TestCase):
