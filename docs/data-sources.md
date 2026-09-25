@@ -88,8 +88,8 @@ MapLibre source (ADR 0011).
 | IGN Géoplateforme (WMTS) | `ORTHOIMAGERY.ORTHOPHOTOS` | "Aérien" basemap, **default** (20 cm/px, to z19) | © IGN / Géoplateforme |
 | IGN Géoplateforme (WMTS) | `GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2` | "Plan" basemap (already shaded) | © IGN / Géoplateforme |
 | BRGM (**WMS only**) | `GEOLOGIE` | "Géologie" basemap (scale-adaptive 1/1 M → 1/50 000) | © BRGM |
-| BRGM (**WMS only**) | `LITHO_1M_SIMPLIFIEE` | Click-to-read subsoil rock, all basemaps (`GetFeatureInfo`) | © BRGM |
-| ISRIC SoilGrids (REST) | `properties/query` | Click-to-read topsoil texture 0–30 cm (250 m) | © ISRIC SoilGrids (CC-BY 4.0) |
+| BRGM **BD Charm-50** (ingested) | `geology_units` | Click-to-read subsoil formation at 1/50 000, all basemaps | © BRGM — BD Charm-50 |
+| BRGM (**WMS only**) | `LITHO_1M_SIMPLIFIEE` | **Fallback only** outside the ingested départements (`GetFeatureInfo`) | © BRGM |
 
 Coverage is France métropolitaine; outside it these layers are empty. The BRGM
 WMTS endpoint returns a MapServer error — WMS with `{bbox-epsg-3857}` is the
@@ -98,17 +98,45 @@ only working path. Use the composite `GEOLOGIE` layer, not `SCAN_D_GEOL50` /
 tiles below z11 (ADR 0011).
 
 The geological rasters are **not queryable**. `LITHO_1M_SIMPLIFIEE` is the only
-layer on this service that answers `GetFeatureInfo`, and it is a *simplified*
-lithology at 1/1 000 000: it names a rock family ("Calcaires, marnes et gypse",
-"Granites"…), never the exact formation drawn on the 1/50 000 map. The UI must
-keep saying so. `INFO_FORMAT` must be `text/plain` — `application/json` is
-rejected by this MapServer instance.
+layer on this service that answers `GetFeatureInfo`, and the harmonised 1/50 000
+map is published here as a non-queryable raster (`SCAN_H_GEOL50_SCAN`,
+`queryable="0"`); the WFS on the same endpoint exposes the 1/1 000 000 layer
+only. `INFO_FORMAT` must be `text/plain` — `application/json` is rejected by
+this MapServer instance.
 
-The readout is shown on **every** basemap and worded in plain French, keyed by
-`CODE_GEOL` (ADR 0013). The classes observed over France métropolitaine are:
-1 Argiles, 2 Calcaires/marnes/gypse, 3 Craie, 5 Grès, 6 Sables, 7
-Basaltes/rhyolites, 8 Granites, 9 Ophiolites, 10 Gneiss, 11 Micaschistes, 12
-Schistes/grès.
+### The subsoil readout: BD Charm-50 at 1/50 000 (ADR 0014)
+
+`LITHO_1M_SIMPLIFIEE` was the subsoil source until ADR 0014, and it is **not
+trustworthy at the scale of a cru**. At 1/1 000 000 it is not a generalisation
+of the geological map but a separate drawing whose boundaries sit kilometres
+away from the real ones. Measured on the INAO parcellaire of the 51 Alsace
+grands crus:
+
+- one 155 km² polygon (`OBJECTID 845`, "Basaltes et rhyolites") covers **eleven
+  grands crus** planted on Jurassic limestone and Triassic sandstone — Steinert,
+  Hengst, Goldert, Hatschbourg, Eichberg, Pfersigberg, Steingrubler, Florimont,
+  Spiegel, Pfingstberg, Zinnkoepflé;
+- the **Rangen de Thann**, the one genuinely volcanic cru, comes back as
+  "Sables".
+
+The readout therefore reads **BD Charm-50**, BRGM's harmonised 1/50 000 vector
+map (Licence Ouverte), downloaded per département from
+`https://infoterre.brgm.fr/telechargements/BDCharm50/GEO050K_HARM_0DD.zip`
+(15–36 MB each, ~150 KB/s) and ingested by `scripts/ingest_bdcharm50.py` into
+`geology_units` (migration 0012), **clipped to the delimited vineyard** — the
+dissolved INAO parcellaire buffered by 500 m. Unclipped, the Haut-Rhin alone
+would bring 7 722 polygons, almost all of them forest, plain and Vosges summits.
+
+Fields kept: `NOTATION` (stratigraphic id, `j2c`), `DESCR` (full label, age in
+trailing parentheses), `CARTE` (source 1/50 000 sheet). The sibling layers
+(`S_SURCH` overlays, `L_*` faults, `P_*` dips) are not ingested. There is no
+lithology column: the label *is* the lithology, and
+`src/lib/geology-formation.ts` derives the rock family from it.
+
+`/api/geology?lon=&lat=` answers from `geology_units` and falls back to
+`LITHO_1M_SIMPLIFIEE` outside the ingested départements (67, 68, 08, 10, 51,
+52). The response carries its scale (`"50k"` | `"1M"`) and the UI always states
+which map answered.
 
 ### Soil depth — no usable source yet
 
@@ -129,12 +157,13 @@ No other queryable layer on the BRGM service carries a depth. BSS boreholes
 drillings, the field is frequently empty, and a borehole's total depth is not
 the soil depth over a plot.
 
-#### ISRIC SoilGrids — integrated, alongside BRGM
+#### ISRIC SoilGrids — evaluated, integrated, then removed (ADR 0015)
 
 Texture is **not** depth, and does not close the gap above: SoilGrids answers
-what the first 30 cm are *made of*, never how deep the rock lies. It is shown as
-a second, clearly separate half of the subsoil card, with its own provenance
-line (`src/lib/soil-texture.ts`, ADR 0013).
+what the first 30 cm are *made of*, never how deep the rock lies. It was shown
+as a second half of the subsoil card (ADR 0013) and **removed in ADR 0015**: at
+250 m it added little at cru scale next to BD Charm-50. The notes below are kept
+for reference.
 
 SoilGrids v2.0 (ISRIC, CC-BY 4.0) is a global soil-property model with a
 key-free REST API. Point query, no registration:

@@ -204,3 +204,42 @@ communes GC/PC (`wine_areas`) + lieux-dits cadastre (`wine_lieux_dits`), pas de
 Options : `--scope`, `--raw-dir`, `--skip-download`, `--allow-download`,
 `--download-only`, `--include-national-geo`, `--cadastre-mode`, `--force-download`,
 `--commit`, `--allow-overwrite-synthetic`.
+
+## Géologie du sous-sol — BD Charm-50 (1/50 000)
+
+`scripts/ingest_bdcharm50.py` alimente la table `geology_units` (migration
+0012) qui répond à la carte « Sous-sol » de la carte interactive. Il remplace
+l'appel WMS au 1/1 000 000, inutilisable à l'échelle d'un cru : un seul polygone
+« Basaltes et rhyolites » de 155 km² y recouvre onze grands crus alsaciens
+plantés sur calcaire, et le Rangen de Thann, seul cru réellement volcanique, y
+est rendu « Sables » (ADR 0014).
+
+La source est **BD Charm-50**, carte géologique harmonisée du BRGM, téléchargée
+par département depuis InfoTerre (`GEO050K_HARM_0DD.zip`, 15 à 36 Mo, ~150 Ko/s
+— comptez quelques minutes par département). Seule la couche surfacique
+`S_FGEOL` est ingérée, et elle est **clippée au vignoble** : parcellaire INAO
+dissous pour l'Alsace, communes Grand Cru / Premier Cru pour la Champagne (le
+parcellaire national INAO ne contient aucune ligne champenoise), le tout
+bufferisé de 500 m.
+
+```bash
+# Dry-run avec téléchargement (Alsace seule)
+python scripts/ingest_bdcharm50.py --scope alsace --download
+
+# Dry-run hors ligne sur des archives déjà téléchargées, avec export des lignes
+python scripts/ingest_bdcharm50.py --scope all-initial --out /tmp/geol.json
+
+# Tests
+python scripts/test_ingest_bdcharm50.py
+
+# Import réel
+python scripts/ingest_bdcharm50.py --scope all-initial --download --commit
+```
+
+Prérequis : le parcellaire INAO national doit avoir été téléchargé
+(`ingest_wine_geodata.py --include-national-geo`) et, pour la Champagne, les
+lieux-dits cadastraux départementaux. Sans masque, le script refuse d'ingérer
+des départements entiers.
+
+Options : `--scope`, `--raw-dir`, `--download`, `--force-download`, `--out`,
+`--batch-size`, `--commit`, `--dry-run`.

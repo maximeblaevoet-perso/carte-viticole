@@ -1,98 +1,82 @@
 "use client";
 
 import { BRGM_ATTRIBUTION } from "@/lib/basemaps";
+import { plainFormation } from "@/lib/geology-formation";
+import type { FormationInfo } from "@/lib/geology-formation";
 import { plainSubsoil } from "@/lib/geology-info";
 import type { GeologyInfo } from "@/lib/geology-info";
-import { SOILGRIDS_ATTRIBUTION } from "@/lib/soil-texture";
-import type { SoilTexture } from "@/lib/soil-texture";
+import type { SubsoilAnswer } from "@/lib/subsoil";
 
 export type GeologyReadoutState =
   | { status: "idle" }
+  /** Dismissed by the user; the next map click opens it again. */
+  | { status: "hidden" }
   | { status: "loading" }
   | { status: "error" }
   | { status: "empty" }
-  | { status: "ready"; info: GeologyInfo };
-
-export type SoilReadoutState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "error" }
-  | { status: "empty" }
-  | { status: "ready"; texture: SoilTexture };
+  | { status: "ready"; answer: SubsoilAnswer };
 
 /**
- * Reads out what is under the last clicked point, from **two independent
- * sources stacked in one card** (ADR 0013):
- *
- * - *La roche* — BRGM simplified lithology at 1/1 000 000: the rock family.
- * - *La terre* — ISRIC SoilGrids: the texture of the first 30 cm, 250 m raster.
- *
- * They answer different questions at wildly different precisions, so each half
- * carries its own provenance line. Neither is ever presented as the other, and
- * either half may be missing while the other resolves: the two requests are
- * independent and fail independently.
+ * Reads out the subsoil under the last clicked point: BRGM BD Charm-50 at
+ * 1/50 000, falling back to the simplified 1/1 000 000 lithology outside the
+ * ingested départements (ADR 0014). The topsoil-texture half (SoilGrids) was
+ * removed in ADR 0015.
  *
  * Shown on **every** basemap, not just the geological one: "what is my plot
- * sitting on?" is asked just as often over the aerial imagery. The queries
- * depend only on the clicked coordinates, never on the basemap.
+ * sitting on?" is asked just as often over the aerial imagery.
+ *
+ * Tapping anywhere on the card (or its ×) dismisses it: on a phone it covers
+ * most of the map. The next map click brings it back.
  */
 export function GeologyReadout({
   geology,
-  soil,
+  onClose,
 }: {
   geology: GeologyReadoutState;
-  soil: SoilReadoutState;
+  onClose: () => void;
 }) {
+  if (geology.status === "hidden") return null;
   return (
-    <div className="pointer-events-none absolute right-3 top-[52px] z-10 w-[238px] rounded-lg border border-slate-200 bg-white/95 p-2.5 text-xs shadow-md ring-1 ring-black/5">
-      <Section title="La roche (sous-sol)">
-        <StatusLine
-          state={geology.status}
-          idle="Cliquez sur la carte pour lire la nature du sous-sol."
-        />
-        {geology.status === "ready" && <RockBody info={geology.info} />}
-      </Section>
-
-      {geology.status !== "idle" && (
-        <Section title="La terre (0–30 cm)" separated>
-          <StatusLine state={soil.status} idle="" />
-          {soil.status === "ready" && <SoilBody texture={soil.texture} />}
-        </Section>
-      )}
-    </div>
-  );
-}
-
-function Section({
-  title,
-  separated,
-  children,
-}: {
-  title: string;
-  separated?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={separated ? "mt-2.5 border-t border-slate-200 pt-2" : ""}>
-      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-        {title}
+    <div
+      onClick={onClose}
+      title="Fermer"
+      className="absolute right-3 top-[52px] z-10 w-[238px] cursor-pointer rounded-lg border border-slate-200 bg-white/95 p-2.5 text-xs shadow-md ring-1 ring-black/5"
+    >
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+          Sous-sol
+        </span>
+        <button
+          type="button"
+          aria-label="Fermer l’encart sous-sol"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className="-m-1.5 flex h-7 w-7 items-center justify-center rounded text-base leading-none text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+        >
+          ×
+        </button>
       </div>
-      {children}
+      <StatusLine state={geology.status} />
+      {geology.status === "ready" &&
+        (geology.answer.scale === "50k" ? (
+          <FormationBody formation={geology.answer.formation} />
+        ) : (
+          <RockBody info={geology.answer.info} />
+        ))}
     </div>
   );
 }
 
-/** Shared non-`ready` wording, so both halves report failure the same way. */
-function StatusLine({
-  state,
-  idle,
-}: {
-  state: GeologyReadoutState["status"] | SoilReadoutState["status"];
-  idle: string;
-}) {
-  if (state === "ready") return null;
+function StatusLine({ state }: { state: GeologyReadoutState["status"] }) {
+  if (state === "ready" || state === "hidden") return null;
   if (state === "idle") {
-    return idle ? <p className="text-slate-500">{idle}</p> : null;
+    return (
+      <p className="text-slate-500">
+        Cliquez sur la carte pour lire la nature du sous-sol.
+      </p>
+    );
   }
   if (state === "loading") {
     return <p className="text-slate-400">Lecture en cours…</p>;
@@ -103,6 +87,39 @@ function StatusLine({
   return <p className="text-slate-500">Service indisponible. Réessayez.</p>;
 }
 
+/**
+ * The 1/50 000 answer (BD Charm-50) — the default since ADR 0014.
+ *
+ * Rock family, what it means for a vine, then BRGM's own formation label with
+ * its age and stratigraphic code, printed verbatim, never paraphrased.
+ */
+function FormationBody({ formation }: { formation: FormationInfo }) {
+  const plain = plainFormation(formation);
+  return (
+    <>
+      <div className="font-bold leading-snug text-wine-900">{plain.phrase}</div>
+      {plain.gloss && (
+        <p className="mt-0.5 text-[11px] leading-snug text-slate-600">
+          {plain.gloss}
+        </p>
+      )}
+      <div className="mt-1 text-[10px] leading-snug text-slate-500">
+        {plain.formation}
+        {plain.age && <> — {plain.age}</>}
+        {formation.notation && (
+          <span className="text-slate-400"> ({formation.notation})</span>
+        )}
+      </div>
+      <Provenance>{BRGM_ATTRIBUTION}</Provenance>
+    </>
+  );
+}
+
+/**
+ * The 1/1 000 000 fallback, outside the ingested départements. The scale stays
+ * on the provenance line: at this scale a cru can be handed the lithology of
+ * the massif next door (see `geology-info.ts`).
+ */
 function RockBody({ info }: { info: GeologyInfo }) {
   const plain = plainSubsoil(info);
   return (
@@ -113,37 +130,7 @@ function RockBody({ info }: { info: GeologyInfo }) {
           {plain.gloss}
         </p>
       )}
-      {plain.rockClass && (
-        <div className="mt-0.5 text-[10px] text-slate-400">
-          {plain.rockClass}
-        </div>
-      )}
-      <Provenance>
-        {BRGM_ATTRIBUTION} — lithologie simplifiée au 1/1 000 000 : une famille
-        de roche, pas la formation exacte ni sa profondeur.
-      </Provenance>
-    </>
-  );
-}
-
-function SoilBody({ texture }: { texture: SoilTexture }) {
-  return (
-    <>
-      <div className="font-bold leading-snug text-wine-900">
-        {texture.label}
-      </div>
-      <p className="mt-0.5 text-[11px] leading-snug text-slate-600">
-        {texture.gloss}
-      </p>
-      <div className="mt-0.5 text-[10px] text-slate-500">
-        {texture.clay} % argile · {texture.silt} % limon · {texture.sand} %
-        sable
-        {texture.ph !== null && <> · pH {texture.ph.toFixed(1)}</>}
-      </div>
-      <Provenance>
-        {SOILGRIDS_ATTRIBUTION} — modèle mondial, maille 250 m (6,25 ha) :
-        valeur indicative à l’échelle du cru, pas un relevé de terrain.
-      </Provenance>
+      <Provenance>{BRGM_ATTRIBUTION} · 1/1 000 000, indicatif</Provenance>
     </>
   );
 }

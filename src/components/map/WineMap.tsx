@@ -15,14 +15,10 @@ import { shouldUseSupabase } from "@/lib/supabase";
 import { WINE_TILES_VERSION } from "@/lib/wine-tiles";
 import { BASEMAPS, DEFAULT_BASEMAP } from "@/lib/basemaps";
 import type { BasemapId, WineLayerTheme } from "@/lib/basemaps";
-import { geologyInfoUrl, parseGeologyInfo } from "@/lib/geology-info";
+import { parseSubsoilResponse } from "@/lib/subsoil";
 import { BasemapSwitcher } from "@/components/map/BasemapSwitcher";
-import { soilTextureUrl, parseSoilTexture } from "@/lib/soil-texture";
 import { GeologyReadout } from "@/components/map/GeologyReadout";
-import type {
-  GeologyReadoutState,
-  SoilReadoutState,
-} from "@/components/map/GeologyReadout";
+import type { GeologyReadoutState } from "@/components/map/GeologyReadout";
 import type {
   AreaLevel,
   GeoDataProvenance,
@@ -287,11 +283,8 @@ export function WineMap({
   const [basemap, setBasemap] = useState<BasemapId>(DEFAULT_BASEMAP);
   /** Subsoil readout for the last click, on every basemap (ADR 0013). */
   const [geology, setGeology] = useState<GeologyReadoutState>({ status: "idle" });
-  /** Topsoil texture for the same click — a second, independent source. */
-  const [soil, setSoil] = useState<SoilReadoutState>({ status: "idle" });
-  /** In-flight subsoil requests, aborted when a newer click lands. */
+  /** In-flight subsoil request, aborted when a newer click lands. */
   const geologyReqRef = useRef<AbortController | null>(null);
-  const soilReqRef = useRef<AbortController | null>(null);
   /**
    * Set once the `load` handler has built every wine layer. `isStyleLoaded()`
    * is NOT a substitute: it also reports false while tiles are still streaming,
@@ -677,44 +670,27 @@ export function WineMap({
     if (!map) return;
 
     const onClick = (e: maplibregl.MapMouseEvent) => {
-      // The rock (BRGM) and the topsoil (SoilGrids) are two unrelated services
-      // with very different latencies, so they are fired and aborted
-      // separately: a slow or failing SoilGrids never delays the BRGM answer.
       geologyReqRef.current?.abort();
-      soilReqRef.current?.abort();
       const rockCtrl = new AbortController();
-      const soilCtrl = new AbortController();
       geologyReqRef.current = rockCtrl;
-      soilReqRef.current = soilCtrl;
       setGeology({ status: "loading" });
-      setSoil({ status: "loading" });
 
-      const m = maplibregl.MercatorCoordinate.fromLngLat(e.lngLat);
-      const WORLD = 40075016.686;
-      const url = geologyInfoUrl((m.x - 0.5) * WORLD, (0.5 - m.y) * WORLD);
+      // `/api/geology` picks the scale: BD Charm-50 at 1/50 000 inside the
+      // ingested départements, BRGM 1/1 000 000 elsewhere (ADR 0014). The
+      // browser never talks to BRGM or Supabase directly.
+      const url =
+        `/api/geology?lon=${e.lngLat.lng.toFixed(6)}` +
+        `&lat=${e.lngLat.lat.toFixed(6)}`;
 
       fetch(url, { signal: rockCtrl.signal })
-        .then((r) => r.text())
-        .then((body) => {
-          const info = parseGeologyInfo(body);
-          setGeology(info ? { status: "ready", info } : { status: "empty" });
+        .then((r) => r.json())
+        .then((payload) => {
+          const answer = parseSubsoilResponse(payload);
+          setGeology(answer ? { status: "ready", answer } : { status: "empty" });
         })
         .catch((err) => {
           if ((err as Error).name === "AbortError") return;
           setGeology({ status: "error" });
-        });
-
-      fetch(soilTextureUrl(e.lngLat.lng, e.lngLat.lat), {
-        signal: soilCtrl.signal,
-      })
-        .then((r) => r.json())
-        .then((payload) => {
-          const texture = parseSoilTexture(payload);
-          setSoil(texture ? { status: "ready", texture } : { status: "empty" });
-        })
-        .catch((err) => {
-          if ((err as Error).name === "AbortError") return;
-          setSoil({ status: "error" });
         });
     };
 
@@ -728,7 +704,13 @@ export function WineMap({
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full" />
       <BasemapSwitcher basemap={basemap} onBasemapChange={setBasemap} />
-      <GeologyReadout geology={geology} soil={soil} />
+      <GeologyReadout
+        geology={geology}
+        onClose={() => {
+          geologyReqRef.current?.abort();
+          setGeology({ status: "hidden" });
+        }}
+      />
     </div>
   );
 }

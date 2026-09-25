@@ -1,16 +1,19 @@
 /**
- * "What is under this point?" — the subsoil readout, available on **every**
- * basemap (ADR 0011, then ADR 0013).
+ * **Fallback** subsoil source: BRGM `LITHO_1M_SIMPLIFIEE`, 1/1 000 000.
  *
- * The geological basemap (`GEOLOGIE`) is a pure image service: it is not
- * queryable, and its legend runs to hundreds of formations per 1/50 000 sheet —
- * far too many to show as a static legend. BRGM does expose one queryable
- * layer describing the subsoil nationally, `LITHO_1M_SIMPLIFIEE` (simplified
- * lithology at 1/1 000 000), so clicking the map answers with a **rock family**
- * ("Calcaires", "Marnes", "Granites"…) rather than the exact formation.
+ * Since ADR 0014 the readout answers from BD Charm-50 at 1/50 000
+ * (`geology-formation.ts`, table `geology_units`). This module is what answers
+ * when that table cannot: outside the ingested départements, or with Supabase
+ * unconfigured. It is national and needs no database, which is the only reason
+ * it survives.
  *
- * That precision gap is real and must stay visible in the UI: the colours on
- * screen are the 1/50 000 map, the label comes from the 1/1 000 000 one.
+ * **Do not trust it at the scale of a cru.** At 1/1 000 000 this layer is not a
+ * generalisation of the geological map but a separate drawing, and its polygon
+ * boundaries sit kilometres away from the real ones. Over Alsace a single
+ * 155 km² polygon labelled "Basaltes et rhyolites" covers eleven grands crus
+ * planted on Jurassic limestone, while the Rangen de Thann — the one genuinely
+ * volcanic cru — comes back as "Sables". The UI must always say which of the
+ * two scales answered.
  *
  * **No soil depth is served here, on purpose.** BRGM's `EPAISSEUR_ALTERITES`
  * ("Modèle d'épaisseur des Altérites") is the right *concept* — the thickness
@@ -75,6 +78,24 @@ export function geologyInfoUrl(xMeters: number, yMeters: number): string {
     STYLES: "",
   });
   return `${BRGM_WMS}?${params.toString()}`;
+}
+
+/**
+ * WGS84 degrees → EPSG:3857 metres, for `geologyInfoUrl`.
+ *
+ * The click handler used to hand over MapLibre's own `MercatorCoordinate`, but
+ * the query now runs server-side (`/api/geology`), where MapLibre is not
+ * loaded. Latitude is clamped to the Web-Mercator limit so a click in the polar
+ * void cannot produce an infinite bbox.
+ */
+export function lonLatToMercator(lon: number, lat: number): [number, number] {
+  const WORLD = 20037508.342789244;
+  const clamped = Math.max(-85.051129, Math.min(85.051129, lat));
+  const x = (lon * WORLD) / 180;
+  const y =
+    (Math.log(Math.tan(((90 + clamped) * Math.PI) / 360)) / (Math.PI / 180)) *
+    (WORLD / 180);
+  return [x, y];
 }
 
 export interface GeologyInfo {

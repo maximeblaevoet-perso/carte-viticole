@@ -103,10 +103,14 @@ Under those wine layers sits a **switchable raster basemap**, declared in
 WMS, loaded only when selected because it has no CDN). There is no relief
 overlay: Plan v2 is already shaded.
 
-In the geology view, clicking the map runs a BRGM WMS `GetFeatureInfo` against
-`LITHO_1M_SIMPLIFIEE` (`src/lib/geology-info.ts`, pure URL builder + parser) and
-`GeologyReadout.tsx` names the rock family under the point, with its 1/1 000 000
-precision stated on the card.
+Clicking the map — on **any** basemap — asks `/api/geology?lon=&lat=` what the
+subsoil is. The route reads BRGM **BD Charm-50** at 1/50 000 from `geology_units`
+via the `geology_at_point` PostGIS function, and falls back to the national
+`LITHO_1M_SIMPLIFIEE` WMS outside the ingested départements
+(`src/lib/geology-info.ts` keeps that URL builder + parser). `GeologyReadout.tsx`
+prints the rock family in plain French (`src/lib/geology-formation.ts`), the
+exact BRGM formation with its age, and **which of the two scales answered** — the
+1/1 000 000 layer is unusable at the scale of a cru (ADR 0014).
 
 Switching a basemap only removes/adds the `basemap` raster layer and its source,
 re-inserted *before* the lowest wine layer: the GeoJSON and MVT sources are never
@@ -158,6 +162,8 @@ See `docs/decisions/` (ADRs):
 - 0011 — switchable public basemaps (IGN / BRGM)
 - 0012 — Alsace layers: no synthetic/real stacking, cru tier colour, named
   lieux-dits
+- 0013 — subsoil readout on every basemap, in plain French, without a depth
+- 0014 — subsoil from BD Charm-50 at 1/50 000 (`geology_units` + `/api/geology`)
 
 ## Conventions
 

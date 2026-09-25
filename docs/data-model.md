@@ -99,6 +99,14 @@ Provenance columns as above. Champagne rows are attached to their commune-level
 GC/PC area; Alsace rows (clipped to the delimited vineyard) are attached to the
 grand cru that geometrically contains them, or to nothing (ADR 0012).
 
+### `geology_units`
+BRGM **BD Charm-50** polygons (harmonised geological map at 1/50 000), clipped
+to the delimited vineyard. `notation` (`j2c`), `descr` (full label with its
+stratigraphic age), `carte` (source 1/50 000 sheet), `department`, `area_ha`,
+PostGIS `geom`. Provenance columns as above. Read point-by-point through the
+`geology_at_point(lon, lat)` function and `/api/geology`, never listed whole
+(migration 0012, ADR 0014).
+
 ### `wine_real_coverage` (view)
 Root regions holding at least one real PostGIS contour. Read through
 `/api/wine/coverage` so the map can retire its rough synthetic footprints for
