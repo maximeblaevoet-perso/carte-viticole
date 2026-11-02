@@ -19,12 +19,42 @@ import { parseSubsoilResponse } from "@/lib/subsoil";
 import { BasemapSwitcher } from "@/components/map/BasemapSwitcher";
 import { GeologyReadout } from "@/components/map/GeologyReadout";
 import type { GeologyReadoutState } from "@/components/map/GeologyReadout";
+import { VineColorSwitcher } from "@/components/map/VineColorSwitcher";
+import {
+  DOMAIN_CIRCLE,
+  THEME_EXEMPT_LAYERS,
+  VINE_FILL,
+  VINE_SOURCE_LAYER,
+  addDomainLayers,
+  addVineLayers,
+  highlightDomainPlots,
+  setVineColor,
+} from "@/components/map/vineLayers";
+import type { VineColorBy } from "@/components/map/vineLayers";
+import { fetchDomains } from "@/hooks/useDomains";
+import {
+  aspectLabel,
+  domainSelection as domainFeature,
+  parseComponents,
+  rockFamilyLabel,
+} from "@/lib/terroir-score";
 import type {
   AreaLevel,
   GeoDataProvenance,
   SelectedGeoFeature,
   WineArea,
+  WineDomain,
 } from "@/lib/types";
+
+/** Regions that have a reference-domain list (ADR 0016). */
+const DOMAIN_REGIONS = ["alsace"];
+
+/** Lieu-dit in Bas-Rhin / Haut-Rhin, where planted vines carry the colour. */
+const ALSACE_COMMUNE = [
+  "in",
+  ["slice", ["coalesce", ["get", "commune_insee"], ""], 0, 2],
+  ["literal", ["67", "68"]],
+] as unknown as maplibregl.ExpressionSpecification;
 
 const FRANCE_CENTER: [number, number] = [2.6, 46.3];
 
@@ -217,6 +247,7 @@ const SRC = {
   cru: "wine-areas-cru",
   parcels: "wine-parcels",
   lieux: "wine-lieux-dits",
+  vines: VINE_SOURCE_LAYER,
 } as const;
 
 /**
@@ -257,9 +288,12 @@ function regionColorExpression(): maplibregl.ExpressionSpecification {
  */
 export function WineMap({
   selectedAreaId,
+  selectedFeature,
   onSelectArea,
 }: {
   selectedAreaId: string | null;
+  /** Rich real selection — a domain or a vine plot highlights the domain's plots. */
+  selectedFeature?: SelectedGeoFeature | null;
   onSelectArea: (areaId: string, feature?: SelectedGeoFeature) => void;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -281,6 +315,10 @@ export function WineMap({
   coveredRef.current = coveredRegions;
 
   const [basemap, setBasemap] = useState<BasemapId>(DEFAULT_BASEMAP);
+  /** Reading used to colour the planted vines (ADR 0016). */
+  const [vineColorBy, setVineColorBy] = useState<VineColorBy>("score_sun");
+  const vineColorRef = useRef(vineColorBy);
+  vineColorRef.current = vineColorBy;
   /** Subsoil readout for the last click, on every basemap (ADR 0013). */
   const [geology, setGeology] = useState<GeologyReadoutState>({ status: "idle" });
   /** In-flight subsoil request, aborted when a newer click lands. */
@@ -560,6 +598,7 @@ export function WineMap({
       // --- real PostGIS vector tiles (layered on top) ----------------------
       if (USE_REAL) {
         addRealLayers(map, popup, {
+          vineColorBy: vineColorRef.current,
           realHoverRef,
           realSelectedRef,
           onSelect: (id, feature, lngLat, level) => {
@@ -572,6 +611,28 @@ export function WineMap({
             );
             map.easeTo({ center: lngLat, zoom: target, duration: 700 });
           },
+        });
+
+        // Reference domains: cellar markers, click opens the domain card.
+        Promise.all(DOMAIN_REGIONS.map(fetchDomains)).then((lists) => {
+          const domains = lists.flat();
+          if (!domains.length || !mapRef.current) return;
+          const byId = new Map(domains.map((d) => [d.id, d]));
+          addDomainLayers(map, domains);
+          map.on("mousemove", DOMAIN_CIRCLE, (e) => {
+            const d = byId.get(String(e.features?.[0]?.properties?.id));
+            if (!d) return;
+            map.getCanvas().style.cursor = "pointer";
+            popup.setLngLat([d.lon, d.lat]).setHTML(domainPopupHtml(d)).addTo(map);
+          });
+          map.on("mouseleave", DOMAIN_CIRCLE, () => {
+            map.getCanvas().style.cursor = "";
+            popup.remove();
+          });
+          map.on("click", DOMAIN_CIRCLE, (e) => {
+            const d = byId.get(String(e.features?.[0]?.properties?.id));
+            if (d) onSelectRef.current(d.id, domainFeature(d));
+          });
         });
       }
 
@@ -643,6 +704,31 @@ export function WineMap({
     else map.once("idle", run);
   }, [selectedAreaId]);
 
+  // A selected domain — or the estimated domain of a selected vine plot —
+  // outlines all its plots; selecting a domain also flies to its cellar.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !USE_REAL) return;
+    const domainId =
+      selectedFeature?.kind === "domain"
+        ? selectedFeature.id
+        : selectedFeature?.vinePlot?.domainId ?? null;
+    const run = () => {
+      highlightDomainPlots(map, domainId);
+      const d = selectedFeature?.domain;
+      if (d) {
+        map.easeTo({ center: [d.lon, d.lat], zoom: Math.max(map.getZoom(), 13.2), duration: 700 });
+      }
+    };
+    if (mapReadyRef.current) run();
+    else map.once("idle", run);
+  }, [selectedFeature]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && mapReadyRef.current) setVineColor(map, vineColorBy);
+  }, [vineColorBy]);
+
   // --- basemap switching -----------------------------------------------------
   // Only the raster basemap layer is replaced, always *below* the wine layers:
   // the GeoJSON / MVT sources are never touched, so nothing reloads (ADR 0011).
@@ -704,6 +790,7 @@ export function WineMap({
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full" />
       <BasemapSwitcher basemap={basemap} onBasemapChange={setBasemap} />
+      {USE_REAL && <VineColorSwitcher value={vineColorBy} onChange={setVineColorBy} />}
       <GeologyReadout
         geology={geology}
         onClose={() => {
@@ -759,7 +846,7 @@ function applyWineTheme(
   basePaint: Map<string, { color: unknown; width: unknown }>
 ) {
   for (const layer of map.getStyle().layers ?? []) {
-    if (BASE_LAYER_IDS.has(layer.id)) continue;
+    if (BASE_LAYER_IDS.has(layer.id) || THEME_EXEMPT_LAYERS.has(layer.id)) continue;
 
     if (layer.type === "line") {
       let base = basePaint.get(layer.id);
@@ -816,6 +903,16 @@ function applyWineTheme(
   }
 }
 
+function domainPopupHtml(d: WineDomain): string {
+  const cov = d.coverage != null ? `${Math.round(d.coverage * 100)} %` : "—";
+  return (
+    `<div class="wp-name">${d.name}</div>` +
+    `<div class="wp-meta">${d.commune ?? ""}${d.surfaceHa != null ? ` · ${d.surfaceHa} ha déclarés` : ""}</div>` +
+    `<div class="wp-data">Score estimé ${d.scoreSun ?? "—"} · couverture ${cov}</div>` +
+    `<div class="wp-hint">Cliquer pour la fiche du domaine</div>`
+  );
+}
+
 /** Apply the `selected` feature-state to the right feature across both sources. */
 function applySelection(map: MlMap, selectedAreaId: string | null) {
   for (const area of WINE_AREAS) {
@@ -832,6 +929,7 @@ function applySelection(map: MlMap, selectedAreaId: string | null) {
 /* -------------------------------------------------------------------------- */
 
 interface RealLayerHandles {
+  vineColorBy: VineColorBy;
   realHoverRef: React.MutableRefObject<{ sourceLayer: string; id: string } | null>;
   realSelectedRef: React.MutableRefObject<{ sourceLayer: string; id: string } | null>;
   onSelect: (
@@ -873,6 +971,43 @@ function featureFromProps(
   p: RealProps
 ): SelectedGeoFeature {
   const provenance = provenanceOf(p);
+  if (sourceLayer === SRC.vines) {
+    const vinePlot = {
+      id: String(p.id),
+      source: (str(p.source) ?? "rpg") as "rpg" | "bdtopo",
+      isOrganic: p.is_organic == null ? null : bool(p.is_organic),
+      communeName: str(p.commune_name),
+      appellation: str(p.appellation),
+      grandCru: str(p.grand_cru),
+      lieuDit: str(p.lieu_dit),
+      areaHa: num(p.area_ha),
+      altitudeM: num(p.altitude_m),
+      slopePct: num(p.slope_pct),
+      aspectDeg: num(p.aspect_deg),
+      geolNotation: str(p.geol_notation),
+      geolDescr: str(p.geol_descr),
+      geolFamily: str(p.geol_family),
+      soilName: str(p.soil_name),
+      scoreSun: num(p.score_sun),
+      scoreCool: num(p.score_cool),
+      scoreComponents: parseComponents(p.score_components),
+      domainId: str(p.domain_id),
+      domainName: str(p.domain_name),
+      domainDistanceM: num(p.domain_distance_m),
+      domainViaCru: p.domain_via_cru == null ? null : bool(p.domain_via_cru),
+    };
+    return {
+      kind: "vine-plot",
+      id: vinePlot.id,
+      name: vinePlot.lieuDit
+        ? `${vinePlot.lieuDit} · ${vinePlot.communeName ?? ""}`.trim()
+        : `Vigne · ${vinePlot.communeName ?? "Alsace"}`,
+      rootRegionId: "alsace",
+      areaHa: vinePlot.areaHa,
+      vinePlot,
+      provenance: { ...provenance, isInformative: true, isOfficial: false },
+    };
+  }
   if (sourceLayer === SRC.parcels) {
     return {
       kind: "parcel",
@@ -915,6 +1050,20 @@ function featureFromProps(
 
 function popupHtml(sourceLayer: string, f: SelectedGeoFeature): string {
   const badge = f.provenance.isOfficial ? "Limite officielle" : "Contour informatif";
+  if (sourceLayer === SRC.vines && f.vinePlot) {
+    const v = f.vinePlot;
+    const fmt1 = (x: number | null, u: string) => (x == null ? "—" : `${Math.round(x)} ${u}`);
+    return (
+      `<div class="wp-name">${f.name}</div>` +
+      `<div class="wp-meta">${v.grandCru ? `Grand cru ${v.grandCru}` : v.appellation ?? "Alsace"}` +
+      ` · ${v.areaHa != null ? v.areaHa.toFixed(2) : "—"} ha</div>` +
+      `<div class="wp-meta">${rockFamilyLabel(v.geolFamily)} · pente ${fmt1(v.slopePct, "%")}` +
+      ` · ${aspectLabel(v.aspectDeg, v.slopePct)} · ${fmt1(v.altitudeM, "m")}</div>` +
+      `<div class="wp-data">Score ${v.scoreSun ?? "—"} (soleil) · ${v.scoreCool ?? "—"} (fraîcheur)</div>` +
+      (v.domainName ? `<div class="wp-meta">Domaine estimé : ${v.domainName}</div>` : "") +
+      `<div class="wp-hint">Cliquer pour la fiche</div>`
+    );
+  }
   if (sourceLayer === SRC.parcels) {
     // INAO "parcellaire" is an aire délimitée per commune x denomination, not a
     // cadastral plot: `name` is the appellation. Say so instead of letting the
@@ -973,6 +1122,7 @@ function addRealLayers(
       [SRC.cru]: "id",
       [SRC.parcels]: "id",
       [SRC.lieux]: "id",
+      [SRC.vines]: "id",
     },
   });
 
@@ -1113,13 +1263,16 @@ function addRealLayers(
     minzoom: 13,
     paint: {
       "fill-color": lieuColor,
+      // An Alsace lieu-dit runs into forest and village: the planted vines
+      // carry the colour, the lieu-dit only its outline and name (ADR 0016).
+      // Keyed on the commune (67/68): most lieux-dits have no cru parent.
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "selected"], false],
         0.55,
         ["boolean", ["feature-state", "hover"], false],
-        0.4,
-        0.22,
+        ["case", ALSACE_COMMUNE, 0.12, 0.4],
+        ["case", ALSACE_COMMUNE, 0, 0.22],
       ],
     },
   });
@@ -1131,6 +1284,8 @@ function addRealLayers(
     minzoom: 13,
     paint: { "line-color": "#7a6a3a", "line-width": 0.6, "line-opacity": 0.7 },
   });
+  // Planted vines above the lieux-dits, below their names.
+  addVineLayers(map, handles.vineColorBy);
   map.addLayer({
     id: "wine-lieux-dits-labels",
     type: "symbol",
@@ -1152,6 +1307,16 @@ function addRealLayers(
     },
   });
   interactive.push({ layerId: "real-fill-lieux", sourceLayer: SRC.lieux });
+  interactive.push({ layerId: VINE_FILL, sourceLayer: SRC.vines });
+
+  // Only the topmost interactive layer under the cursor answers: a vine plot
+  // sits inside a lieu-dit inside a cru, and all three used to fire at once.
+  const interactiveIds = interactive.map((i) => i.layerId);
+  const isTopmost = (layerId: string, point: maplibregl.PointLike) =>
+    map.queryRenderedFeatures(point, {
+      // Domain markers are added later, above everything, by their own handlers.
+      layers: map.getLayer(DOMAIN_CIRCLE) ? [...interactiveIds, DOMAIN_CIRCLE] : interactiveIds,
+    })[0]?.layer.id === layerId;
 
   // --- hover / click on real layers --------------------------------------
   const setRealHover = (sourceLayer: string, id: string | null) => {
@@ -1171,7 +1336,7 @@ function addRealLayers(
   for (const { layerId, sourceLayer } of interactive) {
     map.on("mousemove", layerId, (e) => {
       const raw = e.features?.[0];
-      if (!raw) return;
+      if (!raw || !isTopmost(layerId, e.point)) return;
       map.getCanvas().style.cursor = "pointer";
       const props = raw.properties as unknown as RealProps;
       const feature = featureFromProps(sourceLayer, props);
@@ -1185,7 +1350,7 @@ function addRealLayers(
     });
     map.on("click", layerId, (e) => {
       const raw = e.features?.[0];
-      if (!raw) return;
+      if (!raw || !isTopmost(layerId, e.point)) return;
       const props = raw.properties as unknown as RealProps;
       const feature = featureFromProps(sourceLayer, props);
 

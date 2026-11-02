@@ -7,4 +7,4 @@
  * or dissolve that rewrites `wine_areas` geometries.
  */
 export const WINE_TILES_VERSION =
-  process.env.NEXT_PUBLIC_WINE_TILES_VERSION ?? "2026-09-12b";
+  process.env.NEXT_PUBLIC_WINE_TILES_VERSION ?? "2026-11-02-vines";

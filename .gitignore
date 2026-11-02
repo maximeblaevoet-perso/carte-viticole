@@ -41,3 +41,6 @@ scripts/.venv/
 /data/raw/wine-geodata/
 .vercel
 .env*
+
+# derived geodata (scripts/build_alsace_vineyard.py)
+/data/processed/

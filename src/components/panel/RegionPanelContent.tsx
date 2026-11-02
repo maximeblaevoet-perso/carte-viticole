@@ -20,6 +20,11 @@ import { SourceBadge } from "@/components/SourceBadge";
 import { VintageTimeline } from "@/components/VintageTimeline";
 import { ClimateChart } from "@/components/charts/ClimateChart";
 import { GeoProvenanceCard } from "@/components/panel/GeoProvenanceCard";
+import {
+  DomainDetails,
+  DomainRanking,
+  VinePlotDetails,
+} from "@/components/panel/TerroirPanels";
 import type {
   RegionType,
   RegionVintageClimate,
@@ -56,7 +61,7 @@ export function RegionPanelContent({
   feature?: SelectedGeoFeature | null;
   year: number;
   onYearChange: (year: number) => void;
-  onSelectArea: (areaId: string) => void;
+  onSelectArea: (areaId: string, feature?: SelectedGeoFeature) => void;
 }) {
   const area = getArea(areaId);
   // Root region resolves from the seed tree first, then the real feature.
@@ -237,6 +242,11 @@ export function RegionPanelContent({
         </>
       )}
 
+      {/* Reference domains ranked by estimated terroir score (ADR 0016). */}
+      {isRegion && (
+        <DomainRanking regionId={area.rootRegionId} onSelectDomain={onSelectArea} />
+      )}
+
       {/* Soils (can be finer than region) */}
       <section>
         <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -349,11 +359,15 @@ function RealFeaturePanel({
   vintage: RegionVintageClimate | undefined;
   year: number;
   onYearChange: (year: number) => void;
-  onSelectArea: (areaId: string) => void;
+  onSelectArea: (areaId: string, feature?: SelectedGeoFeature) => void;
   intensities?: Record<number, number>;
 }) {
   const kindLabel =
-    feature.kind === "parcel"
+    feature.kind === "vine-plot"
+      ? "Vigne plantée"
+      : feature.kind === "domain"
+      ? "Domaine"
+      : feature.kind === "parcel"
       ? "Parcelle"
       : feature.kind === "lieu-dit"
       ? "Lieu-dit"
@@ -408,6 +422,13 @@ function RealFeaturePanel({
           </p>
         )}
       </div>
+
+      {feature.kind === "vine-plot" && feature.vinePlot && (
+        <VinePlotDetails plot={feature.vinePlot} onSelectDomain={onSelectArea} />
+      )}
+      {feature.kind === "domain" && feature.domain && (
+        <DomainDetails domain={feature.domain} />
+      )}
 
       {/* Identifiers for fine geometries */}
       {(feature.kind === "parcel" || feature.kind === "lieu-dit") && (

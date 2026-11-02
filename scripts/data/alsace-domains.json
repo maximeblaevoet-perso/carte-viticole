@@ -1,0 +1,1474 @@
+{
+  "generated": "2026-11-02",
+  "_aide": "Liste de domaines de référence d'Alsace (surface viticole, cave, grands crus) compilée manuellement à partir de sources publiques : données informatives, source_type manual, à ne pas utiliser comme des données officielles.",
+  "domaines": [
+    {
+      "id": "zind-humbrecht",
+      "name": "Domaine Zind-Humbrecht",
+      "commune": "Turckheim",
+      "insee": "68338",
+      "lat": 48.08782,
+      "lon": 7.27801,
+      "coord_precision": "commune",
+      "surface_ha": 40,
+      "surface_note": "Environ 40 ha (Wine Anorak : ~40,4 ha répartis entre Turckheim, Wintzenheim, Hunawihr, Gueberschwihr et Thann) ; chiffre concordant sur plusieurs fiches (Wikipedia, Kobrand). Rangen ~5,5 ha.",
+      "grands_crus": [
+        "Rangen",
+        "Brand",
+        "Hengst",
+        "Goldert"
+      ],
+      "lieux_dits": [
+        "Clos Windsbuhl",
+        "Clos Saint-Urbain",
+        "Herrenweg de Turckheim"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://wineanorak.com/Alsace/zindhumbrecht.htm",
+        "https://en.wikipedia.org/wiki/Domaine_Zind-Humbrecht",
+        "https://www.premiumgrandscrus.com/en/62_zind-humbrecht",
+        "https://kobrandwineandspirits.com/brand-page/zind-humbrecht/terroir_and_vineyards"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "schlumberger",
+      "name": "Domaines Schlumberger",
+      "commune": "Guebwiller",
+      "insee": "68112",
+      "lat": 47.90946,
+      "lon": 7.21133,
+      "coord_precision": "commune",
+      "surface_ha": 130,
+      "surface_note": "Environ 130 ha dont ~70 ha en grands crus (Kitterlé, Kessler, Saering, Spiegel) selon fiches de présentation ; année non précisée, domaine le plus étendu des indépendants.",
+      "grands_crus": [
+        "Kitterlé",
+        "Kessler",
+        "Saering",
+        "Spiegel"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.vinatis.com/schlumberger-les-grands-crus",
+        "https://www.vinatis.com/21_domaine-schlumberger",
+        "https://www.tourisme-eguisheim-rouffach.com/EN/Schlumberger-Domaine-f232005714.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "trimbach",
+      "name": "Maison Trimbach",
+      "commune": "Ribeauvillé",
+      "insee": "68269",
+      "lat": 48.19246,
+      "lon": 7.32489,
+      "coord_precision": "commune",
+      "surface_ha": 67,
+      "surface_note": "Chiffres très divergents selon les sources et les dates : 27, 40, 57-58 puis 67 ha en propriété (article 2025 : ~30 % en grands crus, plus ~80 ha en partenariat/achats). Maison de négoce-viticulture : seule la surface en propriété est retenue ; à confirmer. Clos Sainte Hune 1,67 ha.",
+      "grands_crus": [
+        "Geisberg",
+        "Osterberg",
+        "Rosacker"
+      ],
+      "lieux_dits": [
+        "Clos Sainte Hune"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.vinetur.com/en/2025091791272/trimbach-family-marks-four-centuries-of-winemaking-excellence-in-alsace.html",
+        "https://robbreport.hk/posts/maison-trimbach-grand-cru-grand-family-grand-life",
+        "https://www.idealwine.net/maison-trimbach-institution-alsacienne-pres-de-quatre-siecles",
+        "https://www.winewithseth.com/winewiki/maison-trimbach/"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "hugel",
+      "name": "Maison Hugel",
+      "commune": "Riquewihr",
+      "insee": "68277",
+      "lat": 48.16608,
+      "lon": 7.29801,
+      "coord_precision": "commune",
+      "surface_ha": 30,
+      "surface_note": "Environ 30 ha en propriété à Riquewihr, en majorité grands crus (sources anciennes : 25-26 ha). Hugel achète en plus du raisin (~100 ha sous contrat), non compté ici.",
+      "grands_crus": [
+        "Schoenenbourg",
+        "Sporen"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.net/carte-postale-3-hugel-380-ans-de-tradition-alsacienne/",
+        "https://www.winewithseth.com/winewiki/domaine-hugel-fils/",
+        "https://www.wikipedia.com/wiki/Hugel",
+        "https://vincod.com/598DGMB3C4?preview=1"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "weinbach",
+      "name": "Domaine Weinbach (Colette Faller et ses filles)",
+      "commune": "Kaysersberg",
+      "insee": "68162",
+      "lat": 48.15719,
+      "lon": 7.24109,
+      "coord_precision": "commune",
+      "surface_ha": 38,
+      "surface_note": "Entre 26 et 38 ha selon les sources (29 ha et 38 ha cités) ; 38 ha en biodynamie retenu comme chiffre le plus récent. Clos des Capucins (~5 ha, mur) ; Schlossberg 8 à 10 ha.",
+      "grands_crus": [
+        "Schlossberg",
+        "Furstentum",
+        "Mambourg"
+      ],
+      "lieux_dits": [
+        "Clos des Capucins"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://gauntleys.com/producers/domaine-weinbach/",
+        "https://www.winewithseth.com/winewiki/domaine-weinbach/",
+        "https://www.grandcruwijnen.nl/en/wines/domaine-weinbach--93",
+        "https://www.magnumdevin.com/en/domaine/269-domaine-weinbach"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "marcel-deiss",
+      "name": "Domaine Marcel Deiss",
+      "commune": "Bergheim",
+      "insee": "68028",
+      "lat": 48.20567,
+      "lon": 7.36218,
+      "coord_precision": "commune",
+      "surface_ha": 27,
+      "surface_note": "27 ha selon la majorité des sources (26 ha ailleurs, 32 ha sur une fiche récente, extension à ~40 ha évoquée par un caviste, non confirmé). Complantation de nombreux cépages.",
+      "grands_crus": [
+        "Altenberg de Bergheim",
+        "Mambourg",
+        "Schoenenbourg"
+      ],
+      "lieux_dits": [],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.hameaualbert.fr/sites/default/files/2019-09/FT%20Domaine%20Marcel%20Deiss.pdf",
+        "https://sommelier-academy.de/topic/court-of-master-sommeliers-notable-producers-marcel-deiss/",
+        "https://organicwinefind.com/?p=980"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "ostertag",
+      "name": "Domaine Ostertag",
+      "commune": "Epfig",
+      "insee": "67125",
+      "lat": 48.35972,
+      "lon": 7.46389,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "Environ 15 ha (14,4 ha sur une fiche) sur cinq villages du Bas-Rhin ; Muenchberg ~2 à 2,4 ha.",
+      "grands_crus": [
+        "Muenchberg"
+      ],
+      "lieux_dits": [
+        "Fronholz"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.hameaualbert.fr/sites/default/files/2019-09/Domaine%20Ostertag.pdf",
+        "https://www.winewithseth.com/winewiki/domaine-ostertag/",
+        "https://www.idealwine.net/domaine-ostertag-quand-lart-et-le-vin-cohabitent-en-alsace/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "kreydenweiss",
+      "name": "Domaine Marc Kreydenweiss",
+      "commune": "Andlau",
+      "insee": "67010",
+      "lat": 48.38652,
+      "lon": 7.41774,
+      "coord_precision": "commune",
+      "surface_ha": 13.5,
+      "surface_note": "13,5 ha sur 25 parcelles ; Hachette indique ~12 ha, une autre fiche un peu plus de 10 ha.",
+      "grands_crus": [
+        "Kastelberg",
+        "Wiebelsberg",
+        "Moenchberg",
+        "Kirchberg de Barr"
+      ],
+      "lieux_dits": [
+        "Kritt"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://primalwine.com/blogs/natural-wine-producers-primal-wine/marc-kreydenweiss",
+        "https://www.biodyvin.com/en/our-members/152-domaine-marc-kreydenweiss.html",
+        "https://bibendum-wine.co.uk/producers/domaine-marc-kreydenweiss",
+        "https://www.hachette-vins.com/guide-vins/producteurs/500/marc-kreydenweiss"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "albert-boxler",
+      "name": "Domaine Albert Boxler",
+      "commune": "Niedermorschwihr",
+      "insee": "68237",
+      "lat": 48.09985,
+      "lon": 7.2746,
+      "coord_precision": "commune",
+      "surface_ha": 14,
+      "surface_note": "Environ 14 ha (13,5 ha chez James Suckling), dont ~4 ha à Sommerberg et ~2 ha à Brand.",
+      "grands_crus": [
+        "Sommerberg",
+        "Brand"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://winescholarguild.com/producer-guide/france/alsace/1-domaine-albert-boxler",
+        "https://hartandcru.com/blogs/grower-stories/albert-boxler",
+        "https://jamessuckling.com/?p=2845",
+        "https://www.premiumgrandscrus.com/en/64_albert-boxler"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "barmes-buecher",
+      "name": "Domaine Barmès-Buecher",
+      "commune": "Wettolsheim",
+      "insee": "68365",
+      "lat": 48.05793,
+      "lon": 7.30055,
+      "coord_precision": "commune",
+      "surface_ha": 17,
+      "surface_note": "17 ha dont 3 en grands crus (iDealwine, chiffre le plus récent) ; Hachette : 16 ha ; ancienne fiche : 15 ha.",
+      "grands_crus": [
+        "Hengst",
+        "Steingrubler",
+        "Pfersigberg"
+      ],
+      "lieux_dits": [
+        "Rosenberg",
+        "Herrenweg de Turckheim"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.idealwine.net/barmes-buecher-des-terroirs-a-forte-personnalite/",
+        "https://www.idealwine.info/?p=14895",
+        "https://tourisme-colmar.com/en/eat-drink/wine-related/wineries-winegrowers-and-distilleries/F235018197_domaine-barmes-buecher-wettolsheim-en",
+        "https://www.hachette-vins.com/guide-vins/producteurs/432/dom-barmes-buecher"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "josmeyer",
+      "name": "Domaine Josmeyer",
+      "commune": "Wintzenheim",
+      "insee": "68374",
+      "lat": 48.07245,
+      "lon": 7.29255,
+      "coord_precision": "commune",
+      "surface_ha": 28,
+      "surface_note": "28 ha sur ~90 parcelles (Wine Anorak, Wine with Seth, Clos des Spiritueux) ; autres fiches : 24,4 ha et 25 ha. Hengst + Brand : ~3,5 à 5 ha.",
+      "grands_crus": [
+        "Hengst",
+        "Brand"
+      ],
+      "lieux_dits": [
+        "Les Pierrets"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://wineanorak.com/Alsace/josmeyer.htm",
+        "https://www.winewithseth.com/winewiki/domaine-josmeyer/",
+        "https://www.idealwine.net/domaine-josmeyer-meilleur-grande-tradition-alsacienne",
+        "https://closdesspiritueux.com/alsace-domaine-josmeyer-riesling-les-pierrets-2017.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "schoffit",
+      "name": "Domaine Schoffit",
+      "commune": "Colmar",
+      "insee": "68066",
+      "lat": 48.07775,
+      "lon": 7.35796,
+      "coord_precision": "commune",
+      "surface_ha": 18.8,
+      "surface_note": "18,8 ha au total : Harth (Colmar) ~12,1 ha, Rangen de Thann ~6,5 ha (dont Clos Saint-Théobald 5,3 à 5,8 ha), Sommerberg 0,2 ha ; les chiffres ne se recoupent pas parfaitement.",
+      "grands_crus": [
+        "Rangen",
+        "Sommerberg"
+      ],
+      "lieux_dits": [
+        "Clos Saint-Théobald",
+        "Harth"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.winewithseth.com/winewiki/domaine-schoffit/",
+        "https://www.vinsetmillesimes.com/en/10148-schoffit",
+        "https://www.finevines.com/node/153"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "bott-geyl",
+      "name": "Domaine Bott-Geyl",
+      "commune": "Beblenheim",
+      "insee": "68023",
+      "lat": 48.15649,
+      "lon": 7.32864,
+      "coord_precision": "adresse",
+      "surface_ha": 15,
+      "surface_note": "Environ 15 ha sur ~75 parcelles (fiches de 13 à 18 ha selon la date) ; la liste des grands crus varie selon les sources (4 à 6).",
+      "grands_crus": [
+        "Sonnenglanz",
+        "Schoenenbourg",
+        "Sporen",
+        "Mandelberg",
+        "Furstentum",
+        "Schlossberg"
+      ],
+      "lieux_dits": [],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.winewithseth.com/winewiki/domaine-bott-geyl/",
+        "https://www.idealwine.net/?p=14992",
+        "https://www.vinotrip.com/en/partners/60-bott-geyl-estate",
+        "https://www.vinissimus.com/es/vino/bott-geyl-pinot-gris-sonnenglanz"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "albert-mann",
+      "name": "Domaine Albert Mann",
+      "commune": "Wettolsheim",
+      "insee": "68365",
+      "lat": 48.05651,
+      "lon": 7.29842,
+      "coord_precision": "adresse",
+      "surface_ha": 25,
+      "surface_note": "Entre 20 et 25 ha selon les sources (25 ha sur les fiches récentes), plus de 100 petites parcelles. Certification AB ; qualifié de biodynamique en pratique, certification biodynamique non confirmée.",
+      "grands_crus": [
+        "Hengst",
+        "Furstentum",
+        "Schlossberg",
+        "Pfersigberg"
+      ],
+      "lieux_dits": [],
+      "certification": "bio",
+      "sources": [
+        "https://wineanorak.com/albertmann.htm",
+        "https://wineanorak.com/2025/01/16/alsace-adventure-7-domaine-albert-mann/",
+        "https://www.hachette-vins.com/guide-vins/producteurs/458/dom-albert-mann",
+        "https://www.winescholarguild.com/producer-guide/france/alsace/2-domaine-albert-mann"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "meyer-fonne",
+      "name": "Domaine Meyer-Fonné",
+      "commune": "Katzenthal",
+      "insee": "68161",
+      "lat": 48.10807,
+      "lon": 7.28475,
+      "coord_precision": "commune",
+      "surface_ha": 18,
+      "surface_note": "Environ 18 ha sur sept communes (fiche plus ancienne : 19 ha).",
+      "grands_crus": [
+        "Wineck-Schlossberg",
+        "Kaefferkopf"
+      ],
+      "lieux_dits": [
+        "Pfoeller",
+        "Hinterburg de Katzenthal"
+      ],
+      "certification": null,
+      "sources": [
+        "https://kermitlynch.com/files/meyer-fonne.pdf",
+        "https://dreyfus-ashby.co.uk/?p=1592",
+        "https://winescholarguild.com/producer-guide/france/alsace/26-domaine-meyer-fonne"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "rolly-gassmann",
+      "name": "Domaine Rolly Gassmann",
+      "commune": "Rorschwihr",
+      "insee": "68285",
+      "lat": 48.21714,
+      "lon": 7.36216,
+      "coord_precision": "commune",
+      "surface_ha": 55,
+      "surface_note": "Entre 50 et 60 ha selon les sources (55 ha dans la presse économique ; 40 ha à Rorschwihr et 10 ha à Bergheim sur d'autres fiches). Pas de grand cru ; lieux-dits renommés.",
+      "grands_crus": [],
+      "lieux_dits": [
+        "Kappelweg de Rorschwihr",
+        "Oberer Weingarten de Rorschwihr",
+        "Silberberg de Rorschwihr"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.lejournaldesentreprises.com/article/la-cathedrale-du-vignoble-de-rolly-gassmann-est-sortie-de-terre-363215",
+        "https://www.libertywines.co.uk/our-portfolio/RL205-kappelweg-de-rorschwihr-riesling",
+        "https://siemawines.squarespace.com/rolly-gassmann"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "kientzler",
+      "name": "Domaine André Kientzler",
+      "commune": "Ribeauvillé",
+      "insee": "68269",
+      "lat": 48.19246,
+      "lon": 7.32489,
+      "coord_precision": "commune",
+      "surface_ha": 13.8,
+      "surface_note": "13,8 ha dont 4,4 ha en grands crus (iDealwine, Rue des Vignerons) ; ~14 ha ailleurs ; ancienne fiche Hachette : 11 ha. Geisberg 1,5 ha, Kirchberg de Ribeauvillé 1,63 ha, Osterberg 1,15 ha, Schoenenbourg 0,12 ha.",
+      "grands_crus": [
+        "Geisberg",
+        "Osterberg",
+        "Kirchberg de Ribeauvillé",
+        "Schoenenbourg"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.net/domaine-andre-kientzler-les-artisans-du-grand-cru-geisberg",
+        "https://www.ruedesvignerons.com/fr/domaine/209/domaine-andre-kientzler",
+        "https://www.vintageandvine.com/producers/alsace/andre-kientzler"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "paul-blanck",
+      "name": "Domaine Paul Blanck",
+      "commune": "Kientzheim",
+      "insee": "68162",
+      "lat": 48.14607,
+      "lon": 7.28121,
+      "coord_precision": "commune",
+      "surface_ha": 36,
+      "surface_note": "35 à 36 ha selon les sources récentes (32 ha sur une ancienne fiche Hachette, 38 ha sur une autre). Cinq grands crus ; Schlossberg >4 ha.",
+      "grands_crus": [
+        "Schlossberg",
+        "Furstentum",
+        "Wineck-Schlossberg",
+        "Sommerberg",
+        "Mambourg"
+      ],
+      "lieux_dits": [
+        "Altenbourg",
+        "Rosenbourg"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.winewithseth.com/winewiki/paul-blanck/",
+        "https://www.wineanorak.com/Alsace/Paul_Blanck.htm",
+        "https://www.hachette-vins.com/guide-vins/producteurs/24684/domaine-paul-blanck/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "dirler-cade",
+      "name": "Domaine Dirler-Cadé",
+      "commune": "Bergholtz",
+      "insee": "68029",
+      "lat": 47.91762,
+      "lon": 7.24699,
+      "coord_precision": "commune",
+      "surface_ha": 18,
+      "surface_note": "Environ 18 ha dont 28 à 42 % en grands crus selon les sources (anciennes fiches Hachette : 17 à 27 ha).",
+      "grands_crus": [
+        "Saering",
+        "Spiegel",
+        "Kessler",
+        "Kitterlé"
+      ],
+      "lieux_dits": [],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.tourisme-guebwiller.fr/en/fiche-sit/F232005708_dirler-cade-domaine-bergholtz-en/",
+        "https://joinpearl.co/wineries/bergholtz/domaine-dirler-cade",
+        "https://haywines.co.uk/products/dirler-cade-riesling-grand-cru-spiegel-2018"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "leon-beyer",
+      "name": "Maison Léon Beyer",
+      "commune": "Eguisheim",
+      "insee": "68078",
+      "lat": 48.0448,
+      "lon": 7.30796,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "Environ 20 ha en propre (Wine Anorak, Wine with Seth) ; la maison exploite ~70 ha au total avec 40 à 50 ha sous contrat, non comptés ici.",
+      "grands_crus": [
+        "Eichberg",
+        "Pfersigberg"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.wineanorak.com/Alsace/leon_beyer.htm",
+        "https://www.winewithseth.com/winewiki/domaine-leon-beyer/",
+        "https://www.yapp.co.uk/wines/leon_beyer"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "marc-tempe",
+      "name": "Domaine Marc Tempé",
+      "commune": "Zellenberg",
+      "insee": "68383",
+      "lat": 48.16987,
+      "lon": 7.32007,
+      "coord_precision": "commune",
+      "surface_ha": 8.5,
+      "surface_note": "8,5 ha loués à de jeunes domaines depuis la retraite du couple après les vendanges 2022 (Sommselect) ; ~8 ha selon deux sources françaises ; 20 ha sur une fiche plus ancienne. Situation d'exploitation à vérifier.",
+      "grands_crus": [
+        "Mambourg",
+        "Furstentum",
+        "Schoenenbourg",
+        "Sporen"
+      ],
+      "lieux_dits": [],
+      "certification": "biodynamie",
+      "sources": [
+        "https://sommselect.com/products/2020-marc-tempe-riesling-grand-cru-mambourgsomm2509-mtmp20rsmg-750",
+        "https://organicwinefind.com/?p=979",
+        "https://www.callmewine.com/en/marc-tempe-B2776.htm"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "valentin-zusslin",
+      "name": "Domaine Valentin Zusslin",
+      "commune": "Orschwihr",
+      "insee": "68250",
+      "lat": 47.93497,
+      "lon": 7.2331,
+      "coord_precision": "commune",
+      "surface_ha": 16,
+      "surface_note": "16 ha (13 ha blanc, 3 ha rouge, fiche Hameau Albert) ; 18 ha sur iDealwine ; 13 ha en propriété selon un caviste. Clos Liebenberg 3 à 3,5 ha.",
+      "grands_crus": [
+        "Pfingstberg"
+      ],
+      "lieux_dits": [
+        "Clos Liebenberg",
+        "Bollenberg"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.hameaualbert.fr/sites/default/files/2019-09/Valentin%20Zusslin.pdf",
+        "https://www.idealwine.net/28700/",
+        "https://www.xtrawine.com/collections/zusslin"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "pierre-frick",
+      "name": "Domaine Pierre Frick",
+      "commune": "Pfaffenheim",
+      "insee": "68255",
+      "lat": 47.98556,
+      "lon": 7.28961,
+      "coord_precision": "commune",
+      "surface_ha": 12,
+      "surface_note": "Environ 12 ha (Hachette : 12,5 ha).",
+      "grands_crus": [
+        "Steinert",
+        "Vorbourg",
+        "Eichberg"
+      ],
+      "lieux_dits": [],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.vinsetmillesimes.com/en/9587-pierre-frick",
+        "https://wineanorak.com/pierrefrick.htm",
+        "https://www.hachette-vins.com/guide-vins/producteurs/509/pierre-frick/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "gerard-schueller",
+      "name": "Domaine Gérard Schueller et Fils",
+      "commune": "Husseren-les-Châteaux",
+      "insee": "68150",
+      "lat": 48.03363,
+      "lon": 7.28067,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "Environ 10 ha à Husseren-les-Châteaux, Eguisheim et Obermorschwihr ; chiffre issu de fiches de revendeurs, non daté.",
+      "grands_crus": [
+        "Eichberg",
+        "Pfersigberg"
+      ],
+      "lieux_dits": [
+        "Bildstoecklé"
+      ],
+      "certification": null,
+      "sources": [
+        "https://primalwine.com/blogs/natural-wine-producers-primal-wine/bruno-schueller-a-natural-wine-figure-of-alsace",
+        "https://www.mareehaute.vin/en/collections/gerard-schueller",
+        "https://www.lapassionduvin.com/alsace/2257-rencontres-alsaciennes-lpv-domaine-gerard-et-bruno-schueller"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "bruno-schueller",
+      "name": "Domaine Bruno Schueller",
+      "commune": "Husseren-les-Châteaux",
+      "insee": "68150",
+      "lat": 48.03363,
+      "lon": 7.28067,
+      "coord_precision": "commune",
+      "surface_ha": null,
+      "surface_note": "Surface non trouvée ; Bruno Schueller est lié au domaine familial Gérard Schueller (~10 ha) : possible recoupement avec la fiche Gérard Schueller, à vérifier avant d'attribuer des parcelles aux deux.",
+      "grands_crus": [],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://primalwine.com/collections/bruno-schueller",
+        "https://primalwine.com/blogs/natural-wine-producers-primal-wine/bruno-schueller-a-natural-wine-figure-of-alsace"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "rieffel",
+      "name": "Domaine Lucas et André Rieffel",
+      "commune": "Mittelbergheim",
+      "insee": "67295",
+      "lat": 48.39667,
+      "lon": 7.4425,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "9,5 ha (BBR) à un peu plus de 10 ha (autres fiches), chiffres non datés.",
+      "grands_crus": [
+        "Zotzenberg",
+        "Wiebelsberg",
+        "Kirchberg de Barr"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.bbr.com/producer-4467-lucas-andre-rieffel",
+        "https://pleasurewine.com/en/alsace-grand-cru-zotzenberg/3347-alsace-riesling-grand-cru-zotzenberg-2021-lucas-et-andre-rieffel.html",
+        "https://wine-pages.com/tasting-articles/5-alsace-producers/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "agathe-bursin",
+      "name": "Domaine Agathe Bursin",
+      "commune": "Westhalten",
+      "insee": "68364",
+      "lat": 47.95776,
+      "lon": 7.25946,
+      "coord_precision": "commune",
+      "surface_ha": 7,
+      "surface_note": "~7 ha après agrandissement progressif depuis 3 ha en 2000 (iDealwine) ; 6 à 6,9 ha sur les fiches de vente ; ~4 ha vers 2008.",
+      "grands_crus": [
+        "Zinnkoepflé"
+      ],
+      "lieux_dits": [
+        "Bollenberg"
+      ],
+      "certification": "bio",
+      "sources": [
+        "https://www.idealwine.net/agathe-bursin-lenergie-bio-sur-le-mont-du-soleil/",
+        "https://www.lapassionduvin.com/alsace/12787-domaine-agathe-bursin",
+        "https://idealwine.com/en/buy-a-wine/2355701-1-bottle-Pinot-Gris-Grand-Cru-Zinnkoepfle-Agathe-Bursin-2023-White"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "jean-marc-bernhard",
+      "name": "Domaine Jean-Marc Bernhard",
+      "commune": "Katzenthal",
+      "insee": "68161",
+      "lat": 48.10807,
+      "lon": 7.28475,
+      "coord_precision": "commune",
+      "surface_ha": 11,
+      "surface_note": "11 ha en agriculture biologique sur 5 communes (fiche office de tourisme) ; 10 ha ailleurs ; >9 ha dans un ancien Hachette. Autres grands crus cités (Furstentum, Florimont, Kaefferkopf, Schlossberg) non confirmés.",
+      "grands_crus": [
+        "Wineck-Schlossberg",
+        "Mambourg"
+      ],
+      "lieux_dits": [],
+      "certification": "bio",
+      "sources": [
+        "https://www.lac-blanc.com/en/lei/detail/5/230106774//domaine-bernhard-jean-marc-katzenthal.htm",
+        "https://abfw.co.uk/ourwines/france/alsace/bernhard-jean-marc",
+        "https://www.lapassionduvin.com/alsace/22599-domaine-jean-marc-bernhard"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "mure",
+      "name": "Domaine Muré (René Muré)",
+      "commune": "Rouffach",
+      "insee": "68287",
+      "lat": 47.95691,
+      "lon": 7.29941,
+      "coord_precision": "commune",
+      "surface_ha": 25,
+      "surface_note": "25 ha (Pudlowski 2022, caviste) ; 28 ha sur Wine with Seth. Clos Saint-Landelin : monopole de ~12 ha dans le Vorbourg.",
+      "grands_crus": [
+        "Vorbourg"
+      ],
+      "lieux_dits": [
+        "Clos Saint-Landelin"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.winewithseth.com/winewiki/domaine-mure/",
+        "https://www.gillespudlowski.com/?p=315894",
+        "https://www.cavissima.com/en/products/rene-mure-riesling-2019-clos-saint-landelin-grand-cru-vorbourg"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "ernest-burn",
+      "name": "Domaine Ernest Burn",
+      "commune": "Gueberschwihr",
+      "insee": "68111",
+      "lat": 48.00419,
+      "lon": 7.27594,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "10 ha à Gueberschwihr dont ~70 % en Goldert (Clos Saint-Imer au cœur) ; une fiche isolée indique 5 ha.",
+      "grands_crus": [
+        "Goldert"
+      ],
+      "lieux_dits": [
+        "Clos Saint-Imer"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.tourisme-eguisheim-rouffach.com/EN/Domaine-Ernest-BURN-Clos-Saint-Imer-f253002322.html",
+        "https://www.avenuedesvins.fr/en/shop/domaine-ernest-burn",
+        "https://www.thewineilove.com/france/alsace/domaine-ernest-burn.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "mittnacht-freres",
+      "name": "Domaine Mittnacht Frères",
+      "commune": "Hunawihr",
+      "insee": "68147",
+      "lat": 48.18142,
+      "lon": 7.31358,
+      "coord_precision": "commune",
+      "surface_ha": 23,
+      "surface_note": "23 ha sur plusieurs fiches ; 11 ha sur une page Millésime Bio (peut-être une entité voisine) ; ~20 ha dans un ancien Hachette.",
+      "grands_crus": [
+        "Rosacker",
+        "Osterberg",
+        "Mandelberg"
+      ],
+      "lieux_dits": [
+        "Muehlforst"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/13962/dom-mittnacht-fra-res",
+        "https://thewineilove.com/france/alsace/domaine-mittnacht-freres.html",
+        "https://www.bbr.com/producer-2502-domaine-mittnacht-freres"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "fernand-engel",
+      "name": "Domaine Fernand Engel",
+      "commune": "Rorschwihr",
+      "insee": "68285",
+      "lat": 48.21714,
+      "lon": 7.36216,
+      "coord_precision": "commune",
+      "surface_ha": 64,
+      "surface_note": "64 ha (Hachette, le plus récent) ; 40 à 50 ha sur d'autres fiches. Ne pas confondre avec Engel Frères (Orschwiller, 21 ha).",
+      "grands_crus": [
+        "Praelatenberg",
+        "Altenberg de Bergheim"
+      ],
+      "lieux_dits": [
+        "Silberberg de Rorschwihr"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/5637/dom-fernand-engel",
+        "https://www.vinatis.com/maisons/domaine-fernand-engel",
+        "https://www.xtrawine.com/collections/fernand-engel"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "paul-kubler",
+      "name": "Domaine Paul Kubler",
+      "commune": "Soultzmatt",
+      "insee": "68318",
+      "lat": 47.96211,
+      "lon": 7.23893,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "~10 ha (Wine Scholar Guild) ; 9 ha pour Hachette et iDealwine.",
+      "grands_crus": [
+        "Zinnkoepflé"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://winescholarguild.com/producer-guide/france/alsace/476-paul-kubler",
+        "https://www.hachette-vins.com/guide-vins/producteurs/35178/domaine-paul-kubler",
+        "https://www.idealwine.com/uk/domain/4659-Paul-Kubler.jsp"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "loew",
+      "name": "Domaine Loew",
+      "commune": "Westhoffen",
+      "insee": "67525",
+      "lat": 48.6029,
+      "lon": 7.44042,
+      "coord_precision": "commune",
+      "surface_ha": 6.5,
+      "surface_note": "6,5 ha sur cinq villages (Westhoffen, Traenheim, Bergbieten, Balbronn, Scharrachbergheim) ; fiches isolées à 11,5 et 14 ha, non datées.",
+      "grands_crus": [
+        "Altenberg de Bergbieten"
+      ],
+      "lieux_dits": [
+        "Bruderbach - Clos des Frères"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://fr.gaultmillau.com/fr/news/partez-a-la-decouverte-d-un-vignoble-alsacien-meconnu",
+        "https://www.vinsetmillesimes.com/en/9760-loew",
+        "https://closdesspiritueux.com/domaine-loew-alsace-grand-cru-altenberg-de-bergbieten-2022.html"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "fritsch",
+      "name": "Domaine Joseph Fritsch (J. Fritsch)",
+      "commune": "Kientzheim",
+      "insee": "68162",
+      "lat": 48.14607,
+      "lon": 7.28121,
+      "coord_precision": "commune",
+      "surface_ha": null,
+      "surface_note": "Surface non trouvée. Correspondance avec le « Domaine Fritsch » demandé non certaine (autre domaine : Gérard Fritsch et Fils). Environ la moitié des vignes en Schlossberg, Furstentum et lieu-dit Altenberg selon une fiche.",
+      "grands_crus": [
+        "Schlossberg",
+        "Furstentum"
+      ],
+      "lieux_dits": [
+        "Altenberg"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/14725/joseph-fritsch",
+        "https://www.timelesswines.com/wineries/j-fritsch/"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "rietsch",
+      "name": "Domaine Rietsch",
+      "commune": "Mittelbergheim",
+      "insee": "67295",
+      "lat": 48.39667,
+      "lon": 7.4425,
+      "coord_precision": "commune",
+      "surface_ha": 11.5,
+      "surface_note": "11,5 ha (Hachette) ; 11 à 12 ha sur d'autres fiches.",
+      "grands_crus": [
+        "Zotzenberg"
+      ],
+      "lieux_dits": [
+        "Stein"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/795/domaine-rietsch/",
+        "https://www.cityzeum.com/domaine-rietsch-mittelbergheim-12748",
+        "https://wideworldofwine.co/2017/11/08/eastern-france-part-2-jean-pierre-rietsch-mittelbergheim/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "melanie-pfister",
+      "name": "Domaine Mélanie Pfister (Domaine Pfister)",
+      "commune": "Dahlenheim",
+      "insee": "67081",
+      "lat": 48.58616,
+      "lon": 7.50806,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "~10 ha sur une quarantaine de parcelles ; Engelberg ~1 à 1,6 ha. Le « Domaine Pfister » de Dahlenheim correspond au même domaine.",
+      "grands_crus": [
+        "Engelberg"
+      ],
+      "lieux_dits": [],
+      "certification": "bio",
+      "sources": [
+        "https://winescholarguild.com/producer-guide/france/alsace/29-melanie-pfister",
+        "https://www.gillespudlowski.com/162064/produits/dahlenheim-pour-saluer-melanie-pfister",
+        "https://bkwine.com/?p=1682",
+        "https://www.winewithseth.com/winewiki/engelberg/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "ginglinger",
+      "name": "Domaine Paul Ginglinger",
+      "commune": "Eguisheim",
+      "insee": "68078",
+      "lat": 48.0448,
+      "lon": 7.30796,
+      "coord_precision": "commune",
+      "surface_ha": 12,
+      "surface_note": "12 ha dont deux grands crus (Wine Society, Xtrawine) ; plusieurs domaines Ginglinger coexistent à Eguisheim (Jean Ginglinger 6 ha bio, Pierre-Henri 9 à 15 ha) : le domaine visé par « Ginglinger » est à confirmer.",
+      "grands_crus": [
+        "Eichberg",
+        "Pfersigberg"
+      ],
+      "lieux_dits": [
+        "Wahlenbourg",
+        "Les Prélats"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.xtrawine.com/en-be/collections/paul-ginglinger",
+        "https://www.thewinesociety.com/product/cremant-dalsace-extra-brut-prestige-domaine-paul-ginglinger-2023-en.aspx",
+        "https://wineparis.com/newfront/exhibitor/domaine-paul-ginglinger"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "seppi-landmann",
+      "name": "Domaine Seppi Landmann (Rieflé-Landmann)",
+      "commune": "Soultzmatt",
+      "insee": "68318",
+      "lat": 47.96211,
+      "lon": 7.23893,
+      "coord_precision": "commune",
+      "surface_ha": 8.5,
+      "surface_note": "~8,5 ha à Soultzmatt (Hachette 2012, forum) dont ~2 ha sur le Zinnkoepflé ; repris en 2011 par Thomas et Paul Rieflé (conversion bio), pas de chiffre postérieur.",
+      "grands_crus": [
+        "Zinnkoepflé"
+      ],
+      "lieux_dits": [],
+      "certification": "bio",
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/5639/dom-riefle-landmann",
+        "https://oenoalsace.com/comptes-rendus/visites-et-dstations-par-domaines/seppi-landmann-soulzmatt/"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "kuentz-bas",
+      "name": "Maison Kuentz-Bas",
+      "commune": "Husseren-les-Châteaux",
+      "insee": "68150",
+      "lat": 48.03363,
+      "lon": 7.28067,
+      "coord_precision": "commune",
+      "surface_ha": 30,
+      "surface_note": "30 ha selon la fiche Kermit Lynch (dont 10 ha en biodynamie certifiée et 6 ha en bio) ; Hachette : 7 à 9 ha ; maison mixte domaine/négoce, part en propriété incertaine.",
+      "grands_crus": [
+        "Pfersigberg",
+        "Eichberg",
+        "Geisberg"
+      ],
+      "lieux_dits": [],
+      "certification": "biodynamie",
+      "sources": [
+        "https://kermitlynch.com/files/kuentz-bas.pdf",
+        "https://primalwine.com/blogs/natural-wine-producers-primal-wine/domaine-kuentz-bas",
+        "https://www.hachette-vins.com/guide-vins/producteurs/944/kuentz-bas",
+        "https://www.viinitie.fi/en/collections/kuentz-bas"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "dopff-au-moulin",
+      "name": "Dopff au Moulin",
+      "commune": "Riquewihr",
+      "insee": "68277",
+      "lat": 48.16608,
+      "lon": 7.29801,
+      "coord_precision": "commune",
+      "surface_ha": 70,
+      "surface_note": "70 ha annoncés par la maison, part exacte en propriété non confirmée (maison mixte domaine/négoce) ; Schoenenbourg ~9 ha, Brand 3,26 ha, AOC Alsace 35 ha. À ne pas confondre avec Dopff et Irion.",
+      "grands_crus": [
+        "Schoenenbourg",
+        "Brand"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.dopff-au-moulin.fr/en/notre-maison/le-domaine",
+        "https://www.dopff-au-moulin.fr/?p=3044",
+        "https://www.ruedesvignerons.com/fr/domaine/1163/dopff-au-moulin",
+        "https://tastingbook.com/p/dopff_au_moulin"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "gustave-lorentz",
+      "name": "Domaine Gustave Lorentz",
+      "commune": "Bergheim",
+      "insee": "68028",
+      "lat": 48.20567,
+      "lon": 7.36218,
+      "coord_precision": "commune",
+      "surface_ha": 33,
+      "surface_note": "~33 ha selon les fiches récentes (32 à 33 ha) ; 45 ha sur Hachette et la Route des vins. Altenberg de Bergheim 12 à 13,5 ha, Kanzlerberg 1,5 à 1,75 ha. La maison achète aussi du raisin (non compté).",
+      "grands_crus": [
+        "Altenberg de Bergheim",
+        "Kanzlerberg"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.com/uk/domain/5738-Domaine-Gustave-Lorentz.jsp",
+        "https://www.wineroute.alsace/?p=8656",
+        "https://www.hachette-vins.com/guide-vins/producteurs/767/dom-gustave-lorentz",
+        "https://thewineilove.com/france/alsace/gustave-lorentz.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "bott-freres",
+      "name": "Domaine Bott Frères",
+      "commune": "Ribeauvillé",
+      "insee": "68269",
+      "lat": 48.19246,
+      "lon": 7.32489,
+      "coord_precision": "commune",
+      "surface_ha": 18,
+      "surface_note": "18 ha (Winetourism, Rue des Vignerons) ; 20 ha en propre (Hachette) ; 22 ha sur une fiche récente.",
+      "grands_crus": [
+        "Osterberg",
+        "Geisberg",
+        "Kirchberg de Ribeauvillé",
+        "Gloeckelberg"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.winetourism.com/fr/vignoble/domaine-bott-freres/",
+        "https://www.ruedesvignerons.com/fr/domaine/1502/bott-freres",
+        "https://www.hachette-vins.com/guide-vins/producteurs/13973/dom-bott-freres",
+        "https://wineparis.com/exhibitor/domaine-bott-freres"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "sipp-mack",
+      "name": "Domaine Sipp Mack",
+      "commune": "Hunawihr",
+      "insee": "68147",
+      "lat": 48.18142,
+      "lon": 7.31358,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "Entre 15 ha (anciens Hachette) et 25 ha (Gerrard Seel) ; 20 ha sur Hunawihr, Ribeauvillé et Bergheim retenu. Rosacker 1 à 2,1 ha.",
+      "grands_crus": [
+        "Rosacker"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/465/domaine-sipp-mack/",
+        "https://www.gerrardseel.co.uk/collections/sipp-mack/20-30",
+        "https://www.timelesswines.com/wineries/sipp-mack"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "louis-sipp",
+      "name": "Domaine Louis Sipp",
+      "commune": "Ribeauvillé",
+      "insee": "68269",
+      "lat": 48.19314,
+      "lon": 7.32359,
+      "coord_precision": "adresse",
+      "surface_ha": null,
+      "surface_note": "Surface non trouvée (« vaste domaine » selon Bettane+Desseauve). Adresse : 5 Grand-Rue, Ribeauvillé.",
+      "grands_crus": [
+        "Kirchberg de Ribeauvillé",
+        "Osterberg"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.mybettanedesseauve.fr/vins/alsace/louis-sipp-riesling-alsace-grand-cru-2012-196968/",
+        "https://www.mybettanedesseauve.fr/vins/alsace/louis-sipp-grossberg-alsace-2019-286485/"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "allimant-laugner",
+      "name": "Domaine Allimant-Laugner",
+      "commune": "Orschwiller",
+      "insee": "67362",
+      "lat": 48.24224,
+      "lon": 7.37998,
+      "coord_precision": "commune",
+      "surface_ha": 12,
+      "surface_note": "12 ha sur trois communes, ~40 parcelles (Hachette) ; 13 ha pour Vinatis.",
+      "grands_crus": [
+        "Praelatenberg"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/472/allimant-laugner",
+        "https://www.vinatis.com/maisons/domaine-allimant-laugner",
+        "https://www.humblegrape.co.uk/hero-producers/domaine-allimant-laugner"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "zinck",
+      "name": "Domaine Zinck",
+      "commune": "Eguisheim",
+      "insee": "68078",
+      "lat": 48.0448,
+      "lon": 7.30796,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "Plus de 20 ha (Lifford, The Wine I Love) ; 14 ha (PJ Wine) ; 30 ha (Hachette) : chiffres non datés, incohérents.",
+      "grands_crus": [
+        "Eichberg",
+        "Pfersigberg",
+        "Goldert"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://lifford.com/collections/domaine-zinck",
+        "https://www.thewineilove.com/france/alsace/domaine-zinck.html",
+        "https://www.hachette-vins.com/guide-vins/producteurs/13948/dom-zinck/"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "schoenheitz",
+      "name": "Vins d'Alsace Schoenheitz",
+      "commune": "Wihr-au-Val",
+      "insee": "68368",
+      "lat": 48.05218,
+      "lon": 7.20352,
+      "coord_precision": "commune",
+      "surface_ha": 17,
+      "surface_note": "Un peu plus de 17 ha (Millésime Bio, Winetourism) ; anciennes fiches : 13,5 à 16 ha. Aucun grand cru ; certifié AB en 2023, HVE en 2017.",
+      "grands_crus": [],
+      "lieux_dits": [
+        "Linsenberg",
+        "Herrenreben",
+        "Holder",
+        "Val Saint-Grégoire"
+      ],
+      "certification": "bio",
+      "sources": [
+        "https://millesime-bio.com/en/liste-des-exposants/66e7f118a6acf300885c4377",
+        "https://www.winetourism.com/fr/vignoble/vins-schoenheitz/",
+        "https://www.cavissima.com/en/collections/alsace-schoenheitz"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "stentz-buecher",
+      "name": "Domaine Stentz-Buecher",
+      "commune": "Wettolsheim",
+      "insee": "68365",
+      "lat": 48.05793,
+      "lon": 7.30055,
+      "coord_precision": "commune",
+      "surface_ha": 13,
+      "surface_note": "13 ha (Hachette, Vinotrip) ; 12 ha sur le site du salon Wine Paris ; anciennes fiches : 11 et 14 ha.",
+      "grands_crus": [
+        "Steingrubler",
+        "Hengst",
+        "Pfersigberg"
+      ],
+      "lieux_dits": [],
+      "certification": "bio",
+      "sources": [
+        "https://www.vinotrip.com/en/partners/65-stentz-buecher-domain",
+        "https://www.hachette-vins.com/guide-vins/producteurs/14025/domaine-stentz-buecher/",
+        "https://wineparis.com/newfront/exhibitor/domaine-stentz-buecher"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "bechtold",
+      "name": "Domaine Bechtold",
+      "commune": "Dahlenheim",
+      "insee": "67081",
+      "lat": 48.58616,
+      "lon": 7.50806,
+      "coord_precision": "commune",
+      "surface_ha": 12,
+      "surface_note": "~12 ha à Dahlenheim et alentours (fiche récente) ; anciens Hachette : ~20 ha. Engelberg = parcelles principales, surface non chiffrée.",
+      "grands_crus": [
+        "Engelberg"
+      ],
+      "lieux_dits": [
+        "Obere Hund"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.skurnik.com/producer/domaine-bechtold",
+        "https://madrose.com/producers/france/alsace/domaine-bechtold/",
+        "https://primalwine.com/blogs/natural-wine-producers-primal-wine/domaine-bechtold"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "remy-gresser",
+      "name": "Domaine Rémy Gresser",
+      "commune": "Andlau",
+      "insee": "67010",
+      "lat": 48.38652,
+      "lon": 7.41774,
+      "coord_precision": "commune",
+      "surface_ha": 14.4,
+      "surface_note": "~14,4 ha (35,5 acres, fiche Organic Wine Find) ; ancien Hachette : 11 ha. Kastelberg ~5,82 ha pour l'ensemble du cru, part du domaine non précisée.",
+      "grands_crus": [
+        "Kastelberg",
+        "Wiebelsberg"
+      ],
+      "lieux_dits": [
+        "Brandhof",
+        "Kritt"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://organicwinefind.com/organic-vineyards/domaine-remy-gresser/",
+        "https://winescholarguild.com/producer-guide/france/alsace/2602-domaine-gresser",
+        "https://schiller-wine.blogspot.com/2023/01/tasting-with-remy-gresser-at-domaine.html"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "boeckel",
+      "name": "Domaine Boeckel",
+      "commune": "Mittelbergheim",
+      "insee": "67295",
+      "lat": 48.39667,
+      "lon": 7.4425,
+      "coord_precision": "commune",
+      "surface_ha": 26,
+      "surface_note": "26 ha en propriété (Wine Paris) plus achats sur ~12 ha ; 23 à 25 ha sur d'autres fiches ; Wiebelsberg ~2,5 ha.",
+      "grands_crus": [
+        "Wiebelsberg",
+        "Zotzenberg"
+      ],
+      "lieux_dits": [
+        "Brandluft",
+        "Midelberg"
+      ],
+      "certification": "bio",
+      "sources": [
+        "https://wineparis.com/newfront/exhibitor/domaine-boeckel",
+        "https://www.thewinesociety.com/product/alsace-2024-boeckel-en.aspx",
+        "https://tastingbook.com/p/domaine_boeckel",
+        "https://www.winescholarguild.com/producer-guide/france/alsace/40-domaine-emile-boeckel"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "beck-hartweg",
+      "name": "Domaine Beck-Hartweg",
+      "commune": "Dambach-la-Ville",
+      "insee": "67084",
+      "lat": 48.32366,
+      "lon": 7.42495,
+      "coord_precision": "commune",
+      "surface_ha": 5.5,
+      "surface_note": "5 à 6 ha (Hachette 5 ha, Bettane+Desseauve 6 ha, forum 5,5 ha) ; Frankstein ~1,35 ha.",
+      "grands_crus": [
+        "Frankstein"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/394/florian-beck-hartweg",
+        "https://www.mybettanedesseauve.fr/vins/alsace/domaine-beck-hartweg-pinot-gris-alsace-grand-cru-2013-183074/",
+        "https://www.lapassionduvin.com/alsace/15528-domaine-beck-hartweg"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "mosbach",
+      "name": "Domaine Mosbach",
+      "commune": "Marlenheim",
+      "insee": "67282",
+      "lat": 48.62174,
+      "lon": 7.49006,
+      "coord_precision": "commune",
+      "surface_ha": 23,
+      "surface_note": "~23 ha incluant le Steinklotz (fiche de guide de voyage, source interne non citée) ; à confirmer. Part du domaine dans le Steinklotz non précisée.",
+      "grands_crus": [
+        "Steinklotz"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://french-wine-tour.pages.dev/steinklotz.html",
+        "https://www.hachette-vins.com/guide-vins/producteurs/66921/mosbach/"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "frey-sohler",
+      "name": "Domaine Frey-Sohler",
+      "commune": "Scherwiller",
+      "insee": "67445",
+      "lat": 48.28616,
+      "lon": 7.41954,
+      "coord_precision": "commune",
+      "surface_ha": 30,
+      "surface_note": "~30 ha (Hachette, page famille) ; 29 ha sur d'autres fiches. Domaine vigneron-négociant.",
+      "grands_crus": [
+        "Frankstein"
+      ],
+      "lieux_dits": [
+        "Rittersberg"
+      ],
+      "certification": null,
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/785/frey-sohler",
+        "https://www.wineroute.alsace/222004226-alsace-frey-sohler/",
+        "https://www.winetourism.com/pt/adega/frey-sohler/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "clement-klur",
+      "name": "Domaine Clément Klur",
+      "commune": "Katzenthal",
+      "insee": "68161",
+      "lat": 48.10807,
+      "lon": 7.28475,
+      "coord_precision": "commune",
+      "surface_ha": 7,
+      "surface_note": "7 ha, tous à Katzenthal, dont ~1 ha en Wineck-Schlossberg (cette dernière valeur d'une seule source).",
+      "grands_crus": [
+        "Wineck-Schlossberg"
+      ],
+      "lieux_dits": [],
+      "certification": "biodynamie",
+      "sources": [
+        "https://wineanorak.com/Alsace/Clementl_Klur.htm",
+        "https://www.fauchon.com/en/riesling-2016-dom-clement-klur-5081004/",
+        "https://www.lapassionduvin.com/alsace/20492-vignoble-klur-katzenthal"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "julien-meyer",
+      "name": "Domaine Julien Meyer (Patrick Meyer)",
+      "commune": "Nothalten",
+      "insee": "67337",
+      "lat": 48.35518,
+      "lon": 7.41935,
+      "coord_precision": "commune",
+      "surface_ha": 8,
+      "surface_note": "8 ha (fiche détaillant récente) ; 7 ha sur d'autres fiches (2008).",
+      "grands_crus": [
+        "Muenchberg"
+      ],
+      "lieux_dits": [
+        "Heissenstein",
+        "Grittermatte"
+      ],
+      "certification": "biodynamie",
+      "sources": [
+        "https://chateaumonty.com/domaine-julien-meyer",
+        "https://rawwine.com/profile/domaine-julien-meyer/about",
+        "https://morenaturalwine.co.uk/collections/julien-meyer"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "jean-becker",
+      "name": "Domaine Jean Becker",
+      "commune": "Zellenberg",
+      "insee": "68383",
+      "lat": 48.16987,
+      "lon": 7.32007,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "20 ha dont 4 ha en grands crus (Hachette) ; 25 ha (annuaire Winetourism) ; 16 ha (Big Red Wine) ; liste des grands crus variable selon les sources.",
+      "grands_crus": [
+        "Froehn",
+        "Mandelberg",
+        "Schlossberg",
+        "Schoenenbourg",
+        "Sonnenglanz"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://hachette-vins.com/guide-vins/producteurs/66981/sas-jean-becker",
+        "https://www.winetourism.com/fr/vignoble/vin-becker/",
+        "https://www.bigredwine.co.uk/PP/Becker/becker.asp"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "frederic-mochel",
+      "name": "Domaine Frédéric Mochel",
+      "commune": "Traenheim",
+      "insee": "67492",
+      "lat": 48.59506,
+      "lon": 7.46651,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "10 ha dont ~5 ha en Altenberg de Bergbieten (Hachette, Wine Society). À ne pas confondre avec Mochel-Lorentz (~15 ha).",
+      "grands_crus": [
+        "Altenberg de Bergbieten"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/810/dom-frederic-mochel",
+        "https://thewineilove.com/france/alsace/domaine-frederic-mochel.html",
+        "https://www.thewinesociety.com/product/muscat-domaine-frederic-mochel-2024-en.aspx"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "bernard-haas",
+      "name": "Domaine Bernard Haas et Fils",
+      "commune": "Kaysersberg",
+      "insee": "68162",
+      "lat": 48.15719,
+      "lon": 7.24109,
+      "coord_precision": "commune",
+      "surface_ha": 14,
+      "surface_note": "14 ha de vignes dont certaines parcelles en Schlossberg (fiche Winalist, non datée) ; commune de la cave à confirmer.",
+      "grands_crus": [
+        "Schlossberg"
+      ],
+      "lieux_dits": [],
+      "certification": null,
+      "sources": [
+        "https://www.winalist.fr/hosts/3660/domaine-bernard-haas-fils"
+      ],
+      "confidence": "basse"
+    }
+  ]
+}

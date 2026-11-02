@@ -243,3 +243,24 @@ des départements entiers.
 
 Options : `--scope`, `--raw-dir`, `--download`, `--force-download`, `--out`,
 `--batch-size`, `--commit`, `--dry-run`.
+
+## Vignes plantées, score terroir et domaines — Alsace (ADR 0016)
+
+`scripts/build_alsace_vineyard.py` construit `vine_plots` (vignes RPG + BD TOPO
+dans l'aire AOC, enrichies géologie / relief / sol, notées) et `wine_domains`
+(domaines de `scripts/data/alsace-domains.json`, parcelles estimées). Prérequis :
+la migration `0013`, les fichiers locaux INAO parcellaire, cadastre lieux-dits et
+BD Charm-50 67/68 (`ingest_wine_geodata.py` / `ingest_bdcharm50.py --download`).
+Les téléchargements (WFS IGN/INRAE, RGE ALTI) sont mis en cache dans
+`data/processed/alsace/` (gitignoré) ; `--refresh` les refait.
+
+```bash
+python scripts/build_alsace_vineyard.py                    # dry-run : résumé + data/processed/alsace/
+python scripts/build_alsace_vineyard.py --commit           # remplace vine_plots / wine_domains (Alsace)
+python scripts/build_alsace_vineyard.py --commit --prune   # + supprime aires INAO et lieux-dits sans vigne
+cd scripts && python -m unittest test_terroir_score
+```
+
+Grille du score : `src/data/terroir-score-alsace.json` (partagée avec le
+front). Méthode : `docs/terroir-score.md`. Après une ré-ingestion
+`ingest_wine_geodata.py --commit`, relancer `--commit --prune`.

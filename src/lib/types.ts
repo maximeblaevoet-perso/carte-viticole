@@ -197,7 +197,91 @@ export interface WineLieuDit {
  * node of the hierarchical tree (region → appellation → cru); `parcel` and
  * `lieu-dit` are fine PostGIS geometries shown only at high zoom.
  */
-export type SelectedGeoKind = "area" | "parcel" | "lieu-dit";
+export type SelectedGeoKind = "area" | "parcel" | "lieu-dit" | "vine-plot" | "domain";
+
+/** Reading of the exposition criterion in the terroir score (ADR 0016). */
+export type ScoreMode = "soleil" | "fraicheur";
+
+/** Each terroir criterion of a plot, in [0, 1] (`vine_plots.score_components`). */
+export interface ScoreComponents {
+  geologie: number;
+  exposition_soleil: number;
+  exposition_fraicheur: number;
+  pente: number;
+  altitude: number;
+  sol: number;
+}
+
+/**
+ * Planted vine polygon (`vine_plots`, migration 0013): an RPG parcel declared
+ * in vines, or a BD TOPO "Vigne" zone where the RPG has nothing. Terrain and
+ * score are computed offline by `scripts/build_alsace_vineyard.py`.
+ */
+export interface VinePlot {
+  id: string;
+  source: "rpg" | "bdtopo";
+  isOrganic: boolean | null;
+  communeName: string | null;
+  appellation: string | null;
+  grandCru: string | null;
+  lieuDit: string | null;
+  areaHa: number | null;
+  altitudeM: number | null;
+  slopePct: number | null;
+  /** Downslope direction in degrees, 0 = N. */
+  aspectDeg: number | null;
+  geolNotation: string | null;
+  geolDescr: string | null;
+  geolFamily: string | null;
+  soilName: string | null;
+  scoreSun: number | null;
+  scoreCool: number | null;
+  scoreComponents: ScoreComponents | null;
+  /** Estimated domain — a geographic assignment, never a land registry. */
+  domainId: string | null;
+  domainName: string | null;
+  domainDistanceM: number | null;
+  domainViaCru: boolean | null;
+}
+
+/** Reference estate (`wine_domains`, source_type `manual`) + computed summary. */
+export interface WineDomain {
+  id: string;
+  rootRegionId: string;
+  name: string;
+  commune: string | null;
+  communeInsee: string | null;
+  lon: number;
+  lat: number;
+  coordPrecision: "adresse" | "commune" | null;
+  surfaceHa: number | null;
+  surfaceNote: string | null;
+  grandsCrus: string[];
+  lieuxDits: string[];
+  certification: string | null;
+  sources: string[];
+  sourceConfidence: "haute" | "moyenne" | "basse" | null;
+  assignedHa: number | null;
+  /** assignedHa / surfaceHa — the target is 0.8. */
+  coverage: number | null;
+  nPlots: number | null;
+  reachM: number | null;
+  meanDistanceM: number | null;
+  maxDistanceM: number | null;
+  shareInCrus: number | null;
+  scoreSun: number | null;
+  scoreCool: number | null;
+  sectorScoreSun: number | null;
+  sectorScoreCool: number | null;
+  terroir: {
+    familles?: Record<string, number>;
+    altitude_med_m?: number | null;
+    pente_med_pct?: number | null;
+    crus?: string[];
+  };
+  assignmentConfidence: "haute" | "moyenne" | "basse" | null;
+  sourceType: SourceType;
+}
 
 /**
  * A selection coming from a REAL (PostGIS/MVT) map feature. Synthetic seed
@@ -224,6 +308,10 @@ export interface SelectedGeoFeature {
   cadastreNumero?: string | null;
   cadastreSourceRef?: string | null;
   inaoIdAire?: string | null;
+  /** Payload of a `vine-plot` selection. */
+  vinePlot?: VinePlot;
+  /** Payload of a `domain` selection. */
+  domain?: WineDomain;
   provenance: GeoDataProvenance;
 }
 

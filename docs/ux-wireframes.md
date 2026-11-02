@@ -25,6 +25,16 @@ click selects the geographic feature, recentres the map when appropriate, and
 shows its provenance. Climate remains attached to the root region until finer
 observations exist.
 
+**Alsace, planted vines (ADR 0016).** From zoom 13 the map shows the vines
+actually planted, coloured by terroir score; a bottom-left control switches
+the colouring (score soleil / fraîcheur, géologie, pente, exposition,
+altitude, domaine estimé) and shows its legend. Lieux-dits keep their outline
+and name but no fill. Clicking a vine opens its card (place, terrain, score
+with per-criterion bars and a soleil / fraîcheur toggle, estimated domain).
+Domain cellars are markers (colour = score); clicking one — or a row of the
+"Domaines de référence" ranking in the Alsace region panel — opens the domain
+card and outlines its estimated plots in pink.
+
 ## Mobile — main screen
 
 - Map full screen.

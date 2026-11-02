@@ -54,7 +54,11 @@ export function ExplorerApp() {
 
       <div className="relative flex min-h-0 flex-1">
         <div className="relative min-h-0 flex-1">
-          <WineMap selectedAreaId={areaId} onSelectArea={selectArea} />
+          <WineMap
+            selectedAreaId={areaId}
+            selectedFeature={geoFeature}
+            onSelectArea={selectArea}
+          />
 
           {/* Mobile bottom sheet (hidden on desktop). */}
           <BottomSheet open={open}>

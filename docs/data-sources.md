@@ -202,6 +202,23 @@ soil map, and it answers texture, never depth to rock. For finer French data the
 route would be the Référentiel Régional Pédologique / DoneSol (INRAE,
 1/250 000), which is not served as a key-free public API.
 
+### Planted vines, relief and soils (ADR 0016)
+
+The INAO parcellaire is a delimited area, not the vineyard. Planted vines come
+from the **RPG** (IGN, PAC declarations, crop group 21, with the organic flag)
+and, where the RPG has nothing, from **BD TOPO** `zone_de_vegetation`
+nature « Vigne » (photo-interpreted, > 0.15 ha) — both through the
+Géoplateforme WFS. Each vine is enriched with **RGE ALTI** altitude, slope and
+aspect (5 points, centre ± 30 m — a local value), the dominant **BD Charm-50**
+formation, and the dominant **INRAE RRP** soil (1/250 000 — a soil landscape,
+not the plot's soil). All `source_type = real`; the score derived from them is
+a computed indicator documented in [`terroir-score.md`](terroir-score.md).
+
+**Reference domains** (`scripts/data/alsace-domains.json`) are `manual`: a
+compiled list (estate sites, guides, press) with a URL for every surface. The
+plots attributed to a domain are a geographic **estimate** — the casier
+viticole is confidential and the RPG does not name the farmer.
+
 ### Regional scope (initial)
 
 - **Alsace:** L1 region + sous-appellations (ex. Côtes de Barr) + 51 Grands

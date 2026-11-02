@@ -74,6 +74,12 @@ and the auto profile for each.
   parcel, lieu-dit, and MVT contracts.
 - Python tooling downloads and normalizes Météo-France data, imports project
   climate CSVs, and dry-runs or commits wine geodata from fixtures/local files.
+- Alsace (ADR 0016): the high-zoom parcellaire shows only **vines actually
+  planted** (RPG + BD TOPO), each with slope, aspect, altitude, geology, soil
+  and an indicative **terroir score** (two readings: soleil / fraîcheur).
+  Sixty **reference domains** (manual, sourced) are ranked by the score of an
+  estimated plot set — 80 % of their declared surface, nearest free vines and
+  declared grands crus first, within a size-dependent reach.
 
 ### Prepared but data-dependent
 

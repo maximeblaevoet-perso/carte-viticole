@@ -11,6 +11,7 @@ matches the change you intend to make.
 | Product scope or user-visible features | [`product-spec.md`](product-spec.md) | [`ux-wireframes.md`](ux-wireframes.md) and the relevant ADR |
 | Layout, navigation, map interactions, or responsive behaviour | [`ux-wireframes.md`](ux-wireframes.md) | [`architecture.md`](architecture.md) and ADR 0003/0004/0007 |
 | TypeScript or SQL data shapes | [`data-model.md`](data-model.md) | `src/lib/types.ts` and `supabase/migrations/` |
+| Vine plots, terroir score, or domain attribution | [`terroir-score.md`](terroir-score.md) | `scripts/terroir_score.py`, `src/data/terroir-score-alsace.json`, and ADR 0016 |
 | Climate indicators, flags, confidence, or chart granularity | [`climate-methodology.md`](climate-methodology.md) | `src/lib/indicators.ts`, the Python computation, and ADR 0002/0005/0008 |
 | Weather or geographic provenance | [`data-sources.md`](data-sources.md) | `scripts/README.md` and the ingestion scripts |
 | Wine-area levels or map geometry | [`wine-hierarchy.md`](wine-hierarchy.md) | `src/data/areas.ts`, `src/data/geo.ts`, and ADR 0004/0006/0007 |
@@ -34,6 +35,8 @@ label synthetic data, and keep the TypeScript and SQL models aligned.
   and what is synthetic, real, or manual.
 - [`climate-methodology.md`](climate-methodology.md) is the readable definition
   of climate indicators and profile thresholds.
+- [`terroir-score.md`](terroir-score.md) defines the per-plot terroir score and
+  the estimated plot → domain attribution.
 - [`wine-hierarchy.md`](wine-hierarchy.md) explains the non-uniform geographic
   hierarchy and its PostGIS representation.
 - [`decisions/`](decisions/) contains append-only architecture decision records

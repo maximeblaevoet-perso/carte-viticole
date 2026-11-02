@@ -76,7 +76,8 @@ The map has two stacked sources:
    returns a Mapbox Vector Tile. The Supabase key stays server-side — the client
    only sees the relative tile URL. Layers: `wine-areas-region`,
    `wine-areas-appellation`, `wine-areas-cru`, `wine-parcels`,
-   `wine-lieux-dits(-labels)`. Zoom-gated + zoom-simplified in SQL so no massive
+   `wine-vine-plots` (planted vines with terrain + score, migration 0013 /
+   ADR 0016), `wine-lieux-dits(-labels)`. Zoom-gated + zoom-simplified in SQL so no massive
    GeoJSON ever reaches the browser. See ADR 0007. From migration `0009` /
    ADR 0010, tiles also honour `map_visible` and per-row `zoom_min`/`zoom_max`,
    and appellation layers fade before crus (`z < 11`, MapLibre `maxzoom`
@@ -91,8 +92,13 @@ regions with no real contour, so a rough editorial footprint is never painted
 next to the accurate one (ADR 0012). A failed fetch keeps the synthetic layers
 on — the map degrades toward the placeholder, never toward nothing.
 
+Reference domains are not tiled: `/api/wine/domains?region=` returns the small
+`wine_domains_api` list, drawn as cellar markers (`src/components/map/vineLayers.ts`).
+The score and domain attribution are computed offline
+(`scripts/build_alsace_vineyard.py`) and stored; the client only reads them.
+
 Clicking a real feature produces a `SelectedGeoFeature` (area / parcel /
-lieu-dit + provenance) that the panel renders with a source/provenance card.
+lieu-dit / vine-plot / domain + provenance) that the panel renders with a source/provenance card.
 If Supabase is off, the route returns `204` and only the synthetic base shows.
 
 ### Basemaps (ADR 0011)
