@@ -77,7 +77,8 @@ The map has two stacked sources:
    only sees the relative tile URL. Layers: `wine-areas-region`,
    `wine-areas-appellation`, `wine-areas-cru`, `wine-parcels`,
    `wine-vine-plots` (planted vines with terrain + score, migration 0013 /
-   ADR 0016), `wine-lieux-dits(-labels)`. Zoom-gated + zoom-simplified in SQL so no massive
+   ADR 0016), `wine-lieux-dits` and `wine-lieux-dits-labels` (one centre
+   point per lieu-dit, migration 0014 / ADR 0017). Zoom-gated + zoom-simplified in SQL so no massive
    GeoJSON ever reaches the browser. See ADR 0007. From migration `0009` /
    ADR 0010, tiles also honour `map_visible` and per-row `zoom_min`/`zoom_max`,
    and appellation layers fade before crus (`z < 11`, MapLibre `maxzoom`
@@ -94,7 +95,7 @@ on — the map degrades toward the placeholder, never toward nothing.
 
 Reference domains are not tiled: `/api/wine/domains?region=` returns the small
 `wine_domains_api` list, drawn as cellar markers (`src/components/map/vineLayers.ts`).
-The score and domain attribution are computed offline
+The plot scores and the composed domain scores (ADR 0019) are computed offline
 (`scripts/build_alsace_vineyard.py`) and stored; the client only reads them.
 
 Clicking a real feature produces a `SelectedGeoFeature` (area / parcel /

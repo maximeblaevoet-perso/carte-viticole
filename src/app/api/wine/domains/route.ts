@@ -1,5 +1,6 @@
 /**
- * Reference domains of a region, with their estimated terroir score (ADR 0016).
+ * Reference domains of a region, with their composed terroir score (ADR 0016,
+ * ADR 0019).
  *
  * Reads the `wine_domains_api` view (migration 0013) with the server-side key;
  * the browser only gets the flat list. No backend → empty list, never invented
@@ -7,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import type { WineDomain } from "@/lib/types";
+import type { DomainPlace, WineDomain } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +33,25 @@ const str = (v: unknown): string | null =>
 const strArr = (v: unknown): string[] =>
   Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
 
+function toPlace(r: Row): DomainPlace {
+  return {
+    kind: (str(r.kind) as DomainPlace["kind"]) ?? "reste",
+    name: String(r.name ?? ""),
+    areaHa: num(r.area_ha),
+    basis: (str(r.basis) as DomainPlace["basis"]) ?? null,
+    vineHa: num(r.vine_ha),
+    scoreSun: num(r.score_sun),
+    scoreCool: num(r.score_cool),
+    grandCru: str(r.grand_cru) ?? undefined,
+    lieux: Array.isArray(r.lieux) ? (r.lieux as DomainPlace["lieux"]) : undefined,
+    communes: Array.isArray(r.communes) ? strArr(r.communes) : undefined,
+    distanceM: num(r.distance_m) ?? undefined,
+    lon: num(r.lon) ?? undefined,
+    lat: num(r.lat) ?? undefined,
+    geometry: (r.geometry as DomainPlace["geometry"]) ?? undefined,
+  };
+}
+
 function toDomain(r: Row): WineDomain | null {
   const lon = num(r.lon);
   const lat = num(r.lat);
@@ -49,23 +69,18 @@ function toDomain(r: Row): WineDomain | null {
     surfaceNote: str(r.surface_note),
     grandsCrus: strArr(r.grands_crus),
     lieuxDits: strArr(r.lieux_dits),
+    communes: strArr(r.communes),
     certification: str(r.certification),
     sources: strArr(r.sources),
     sourceConfidence: (str(r.source_confidence) as WineDomain["sourceConfidence"]) ?? null,
-    assignedHa: num(r.assigned_ha),
-    coverage: num(r.coverage),
-    nPlots: num(r.n_plots),
-    reachM: num(r.reach_m),
-    meanDistanceM: num(r.mean_distance_m),
-    maxDistanceM: num(r.max_distance_m),
-    shareInCrus: num(r.share_in_crus),
     scoreSun: num(r.score_sun),
     scoreCool: num(r.score_cool),
     sectorScoreSun: num(r.sector_score_sun),
     sectorScoreCool: num(r.sector_score_cool),
     terroir: (r.terroir as WineDomain["terroir"]) ?? {},
-    assignmentConfidence:
-      (str(r.assignment_confidence) as WineDomain["assignmentConfidence"]) ?? null,
+    composition: Array.isArray(r.composition) ? (r.composition as Row[]).map(toPlace) : [],
+    unresolvedPlaces: strArr(r.unresolved_places),
+    scoreConfidence: (str(r.score_confidence) as WineDomain["scoreConfidence"]) ?? null,
     sourceType: (str(r.source_type) as WineDomain["sourceType"]) ?? "manual",
   };
 }

@@ -9,10 +9,12 @@ import {
   aspectLabel,
   componentValue,
   domainSelection,
+  domainsDeclaringPlot,
   rockFamilyLabel,
   scoreColor,
 } from "@/lib/terroir-score";
 import type {
+  DomainPlace,
   ScoreComponents,
   ScoreMode,
   SelectedGeoFeature,
@@ -87,7 +89,7 @@ function ComponentBars({ c, mode }: { c: ScoreComponents; mode: ScoreMode }) {
   );
 }
 
-/** Card of one planted vine plot: place, terrain, score, estimated domain. */
+/** Card of one planted vine plot: place, terrain, score, domains declaring its place. */
 export function VinePlotDetails({
   plot,
   onSelectDomain,
@@ -96,8 +98,8 @@ export function VinePlotDetails({
   onSelectDomain: (id: string, feature: SelectedGeoFeature) => void;
 }) {
   const [mode, setMode] = useState<ScoreMode>(SCORE_GRID.mode_defaut as ScoreMode);
-  const domains = useDomains(plot.domainId ? "alsace" : null);
-  const domain = domains.find((d) => d.id === plot.domainId);
+  const domains = useDomains("alsace");
+  const claims = domainsDeclaringPlot(domains, plot);
   const score = mode === "soleil" ? plot.scoreSun : plot.scoreCool;
 
   return (
@@ -154,26 +156,28 @@ export function VinePlotDetails({
       </section>
 
       <section>
-        <H3>Domaine estimé</H3>
-        {plot.domainId ? (
-          <div className="rounded-lg border border-slate-200 p-2.5 text-xs text-slate-700">
-            <button
-              type="button"
-              className="font-medium text-wine-700 hover:underline"
-              onClick={() => domain && onSelectDomain(domain.id, domainSelection(domain))}
-            >
-              {plot.domainName ?? plot.domainId}
-            </button>
-            <p className="mt-1 text-[11px] text-slate-500">
-              {plot.domainViaCru ? "Grand cru déclaré par le domaine" : "Parcelle la plus proche du chai encore libre"}
-              {" · "}
-              {fmt(plot.domainDistanceM != null ? plot.domainDistanceM / 1000 : null, 1, " km")} du chai.
-              Estimation géographique, pas le casier viticole.
-            </p>
-          </div>
+        <H3>Domaines de référence</H3>
+        {claims.length ? (
+          <ul className="space-y-1 rounded-lg border border-slate-200 p-2.5 text-xs text-slate-700">
+            {claims.map(({ domain, place }) => (
+              <li key={domain.id}>
+                <button
+                  type="button"
+                  className="font-medium text-wine-700 hover:underline"
+                  onClick={() => onSelectDomain(domain.id, domainSelection(domain))}
+                >
+                  {domain.name}
+                </button>{" "}
+                <span className="text-slate-500">déclare {place.name}</span>
+              </li>
+            ))}
+            <li className="pt-1 text-[10px] leading-snug text-slate-400">
+              Le domaine déclare ce lieu ; rien ne dit que cette parcelle-ci est la sienne.
+            </li>
+          </ul>
         ) : (
           <p className="text-xs text-slate-500">
-            Aucun domaine de référence attribué (la liste ne couvre qu&apos;une soixantaine de domaines).
+            Aucun domaine de la liste (une soixantaine) ne déclare ce grand cru ou ce lieu-dit.
           </p>
         )}
       </section>
@@ -181,26 +185,84 @@ export function VinePlotDetails({
   );
 }
 
-/** Card of one reference domain: declared data, estimated plots, score. */
+const PLACE_COLORS: Record<DomainPlace["kind"], string> = {
+  grand_cru: "#be185d",
+  lieu_dit: "#f472b6",
+  reste: "#cbd5e1",
+};
+
+const BASIS_LABELS: Record<NonNullable<DomainPlace["basis"]>, string> = {
+  declaree: "surface déclarée",
+  repartie: "part du total déclaré en grands crus",
+  defaut: "surface inconnue : valeur par défaut",
+  reste: "moyenne hors grand cru des communes",
+};
+
+/** Card of one reference domain: declared data, composed score, sources. */
 export function DomainDetails({ domain: d }: { domain: WineDomain }) {
+  const [mode, setMode] = useState<ScoreMode>(SCORE_GRID.mode_defaut as ScoreMode);
   const fams = Object.entries(d.terroir.familles ?? {});
+  const total = d.composition.reduce((t, p) => t + (p.areaHa ?? 0), 0);
+  const score = (x: { scoreSun: number | null; scoreCool: number | null }) =>
+    mode === "soleil" ? x.scoreSun : x.scoreCool;
   return (
     <>
       <section className="space-y-1 rounded-lg border border-slate-200 p-2.5">
         <Row label="Commune du chai">{d.commune ?? "—"}{d.coordPrecision === "commune" ? " (centre du village)" : ""}</Row>
         <Row label="Surface déclarée">{fmt(d.surfaceHa, 1, " ha")}</Row>
         {d.surfaceNote && <p className="text-[11px] text-slate-500">{d.surfaceNote}</p>}
-        <Row label="Grands crus déclarés">{d.grandsCrus.length ? d.grandsCrus.join(", ") : "—"}</Row>
-        {d.lieuxDits.length > 0 && <Row label="Lieux-dits / clos">{d.lieuxDits.join(", ")}</Row>}
+        <Row label="Communes des vignes">{d.communes.length ? d.communes.join(", ") : "—"}</Row>
         <Row label="Conduite">{d.certification ?? "—"}</Row>
       </section>
 
       <section>
-        <H3>Score terroir estimé</H3>
-        <div className="space-y-1.5 rounded-lg border border-slate-200 p-2.5">
-          <Row label="Parcelles attribuées (soleil)"><ScorePill score={d.scoreSun} /></Row>
-          <Row label="Parcelles attribuées (fraîcheur)"><ScorePill score={d.scoreCool} /></Row>
-          <Row label="Secteur 1,5 km (soleil)"><ScorePill score={d.sectorScoreSun} /></Row>
+        <div className="mb-2 flex items-center justify-between">
+          <H3>Score terroir estimé</H3>
+          <ModeToggle mode={mode} onChange={setMode} />
+        </div>
+        <div className="space-y-2 rounded-lg border border-slate-200 p-2.5">
+          <div className="flex items-center gap-2 text-sm">
+            <ScorePill score={score(d)} /> <span className="text-slate-500">/ 100</span>
+            <span className="ml-auto text-[11px] text-slate-500">
+              secteur 1,5 km <ScorePill score={mode === "soleil" ? d.sectorScoreSun : d.sectorScoreCool} />
+            </span>
+          </div>
+          {total > 0 && (
+            <div className="flex h-2 overflow-hidden rounded">
+              {d.composition.map((p) => (
+                <div
+                  key={p.name}
+                  title={p.name}
+                  style={{ width: `${((p.areaHa ?? 0) / total) * 100}%`, background: PLACE_COLORS[p.kind] }}
+                  className="border-r border-white last:border-r-0"
+                />
+              ))}
+            </div>
+          )}
+          <ul className="space-y-1">
+            {d.composition.map((p) => (
+              <li key={p.name} className="flex items-start gap-2 text-xs">
+                <span className="mt-1 h-2 w-2 shrink-0 rounded-sm" style={{ background: PLACE_COLORS[p.kind] }} />
+                <span className="min-w-0 flex-1">
+                  <span className="text-slate-800">
+                    {p.kind === "reste" ? `Reste · ${(p.communes ?? []).join(", ")}` : p.name}
+                  </span>
+                  <span className="block text-[10px] text-slate-400">
+                    {p.areaHa != null ? `≈ ${fmt(p.areaHa, 1, " ha")} · ` : ""}
+                    {p.basis ? BASIS_LABELS[p.basis] : "surface du domaine inconnue"}
+                    {p.kind !== "reste" && p.distanceM != null ? ` · ${fmt(p.distanceM / 1000, 1, " km")} du chai` : ""}
+                  </span>
+                </span>
+                <ScorePill score={score(p)} />
+              </li>
+            ))}
+          </ul>
+          {d.unresolvedPlaces.length > 0 && (
+            <p className="text-[11px] text-slate-500">
+              Non localisés (comptés dans le reste) : {d.unresolvedPlaces.join(", ")}
+            </p>
+          )}
+          <Row label="Confiance">{d.scoreConfidence ?? "—"}</Row>
           <Row label="Altitude / pente médianes">
             {fmt(d.terroir.altitude_med_m, 0, " m")} · {fmt(d.terroir.pente_med_pct, 1, " %")}
           </Row>
@@ -209,27 +271,10 @@ export function DomainDetails({ domain: d }: { domain: WineDomain }) {
               {fams.map(([k, share]) => `${rockFamilyLabel(k)} ${Math.round(share * 100)} %`).join(", ")}
             </Row>
           )}
-          {(d.terroir.crus ?? []).length > 0 && <Row label="Grands crus couverts">{d.terroir.crus!.join(", ")}</Row>}
-        </div>
-      </section>
-
-      <section>
-        <H3>Attribution des parcelles</H3>
-        <div className="space-y-1 rounded-lg border border-slate-200 p-2.5">
-          <Row label="Surface attribuée">
-            {fmt(d.assignedHa, 1, " ha")} · {d.coverage != null ? `${Math.round(d.coverage * 100)} %` : "—"} (cible 80 %)
-          </Row>
-          <Row label="Parcelles">{fmt(d.nPlots)}</Row>
-          <Row label="Distance moyenne / max">
-            {fmt(d.meanDistanceM != null ? d.meanDistanceM / 1000 : null, 1)} / {fmt(d.maxDistanceM != null ? d.maxDistanceM / 1000 : null, 1, " km")}
-          </Row>
-          <Row label="Rayon autorisé">{fmt(d.reachM != null ? d.reachM / 1000 : null, 1, " km")}</Row>
-          <Row label="Part via grands crus">{d.shareInCrus != null ? `${Math.round(d.shareInCrus * 100)} %` : "—"}</Row>
-          <Row label="Confiance">{d.assignmentConfidence ?? "—"}</Row>
           <p className="pt-1 text-[10px] leading-snug text-slate-400">
-            Estimation : les grands crus déclarés d&apos;abord (plafonnés), puis les vignes libres les plus
-            proches du chai, jusqu&apos;à 80 % de la surface déclarée, sans dépasser le rayon autorisé
-            (qui croît avec la taille du domaine). Ce n&apos;est pas le casier viticole.
+            Estimation : chaque grand cru ou lieu-dit déclaré compte pour sa surface déclarée (sinon 25 % du
+            lieu, au plus 12 % du domaine) ; le reste de la surface prend la moyenne des vignes hors grand cru
+            de ses communes. Aucune parcelle n&apos;est attribuée : le casier viticole n&apos;est pas public.
           </p>
         </div>
       </section>
@@ -261,7 +306,7 @@ export function DomainRanking({
   onSelectDomain: (id: string, feature: SelectedGeoFeature) => void;
 }) {
   const domains = useDomains(regionId);
-  const [sortBy, setSortBy] = useState<"scoreSun" | "scoreCool" | "surfaceHa" | "coverage">("scoreSun");
+  const [sortBy, setSortBy] = useState<"scoreSun" | "scoreCool" | "surfaceHa">("scoreSun");
   if (!domains.length) return null;
   const sorted = [...domains].sort((a, b) => (b[sortBy] ?? -1) - (a[sortBy] ?? -1));
   const head = (key: typeof sortBy, label: string) => (
@@ -275,7 +320,8 @@ export function DomainRanking({
     <section>
       <H3>Domaines de référence ({domains.length})</H3>
       <p className="mb-2 text-[11px] text-slate-500">
-        Score terroir moyen des parcelles estimées de chaque domaine. Cliquer pour voir ses parcelles.
+        Score terroir estimé à partir des grands crus et lieux-dits déclarés et des communes de chaque
+        domaine. Cliquer pour voir ses lieux sur la carte.
       </p>
       <div className="max-h-80 overflow-y-auto rounded-lg border border-slate-200">
         <table className="w-full text-[11px]">
@@ -285,7 +331,7 @@ export function DomainRanking({
               {head("scoreSun", "Soleil")}
               {head("scoreCool", "Fraîch.")}
               {head("surfaceHa", "ha")}
-              {head("coverage", "Couv.")}
+              <th className="px-1 py-1 text-right font-medium">Conf.</th>
             </tr>
           </thead>
           <tbody>
@@ -302,9 +348,7 @@ export function DomainRanking({
                 <td className="px-1 text-right"><ScorePill score={d.scoreSun} /></td>
                 <td className="px-1 text-right"><ScorePill score={d.scoreCool} /></td>
                 <td className="px-1 text-right text-slate-600">{fmt(d.surfaceHa, 0)}</td>
-                <td className="px-1 text-right text-slate-600">
-                  {d.coverage != null ? `${Math.round(d.coverage * 100)} %` : "—"}
-                </td>
+                <td className="px-1 text-right text-slate-600">{d.scoreConfidence ?? "—"}</td>
               </tr>
             ))}
           </tbody>

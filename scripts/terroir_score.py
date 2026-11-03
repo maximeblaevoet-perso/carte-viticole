@@ -1,4 +1,4 @@
-"""Terroir score of a planted vine plot, and estimated plot → domain assignment.
+"""Terroir score of a planted vine plot, and estimated score of a reference domain.
 
 Pure functions only (no I/O beyond reading the grid), so they can be unit-tested
 and reused by any region. The grid lives in ``src/data/terroir-score-alsace.json``
@@ -18,12 +18,11 @@ reading) and ``fraicheur`` (north-facing favoured, a climate-change reading).
 """
 from __future__ import annotations
 
-import heapq
 import json
 import math
 import re
 import unicodedata
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -155,118 +154,84 @@ def score(plot: dict, grid: dict, mode: str) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Domain assignment
+# Domain score: declared places + communes average (ADR 0019)
 # ---------------------------------------------------------------------------
 @dataclass
-class Plot:
-    id: str
-    x: float          # Lambert-93 metres
-    y: float
+class Place:
+    """A grand cru or lieu-dit a domain declares, resolved to planted vines."""
+    kind: str                       # "grand_cru" | "lieu_dit"
+    name: str
+    vine_ha: float                  # planted vines of the place (all owners)
+    score_sun: Optional[float]
+    score_cool: Optional[float]
+    declared_ha: Optional[float] = None
+    basis: str = "declaree"         # how declared_ha was obtained: declaree | repartie
+
+
+@dataclass
+class Share:
+    """One slice of a domain's surface and the score it carries."""
+    kind: str                       # "grand_cru" | "lieu_dit" | "reste"
+    name: str
     area_ha: float
-    cru: Optional[str] = None   # grand cru name (as in the domain list), if any
+    basis: str                      # declaree | repartie | defaut | reste
+    score_sun: Optional[float]
+    score_cool: Optional[float]
 
 
-@dataclass
-class Domain:
-    id: str
-    x: float
-    y: float
-    surface_ha: Optional[float]
-    crus: frozenset = field(default_factory=frozenset)
+def split_declared_total(places: list[Place], total_ha: Optional[float]) -> None:
+    """Spread a declared grand-cru total ("~70 ha en grands crus") evenly over
+    the declared grands crus that have no surface of their own (in place)."""
+    if not total_ha:
+        return
+    known = sum(p.declared_ha or 0 for p in places if p.kind == "grand_cru")
+    todo = [p for p in places if p.kind == "grand_cru" and p.declared_ha is None]
+    left = total_ha - known
+    if not todo or left <= 0:
+        return
+    for p in todo:
+        p.declared_ha = left / len(todo)
+        p.basis = "repartie"
 
 
-@dataclass
-class Assignment:
-    plot_id: str
-    domain_id: str
-    distance_m: float
-    via_cru: bool
+def place_area_ha(p: Place, surface_ha: float, cfg: dict) -> tuple[float, str]:
+    """Surface of a declared place counted in the domain, and its basis.
 
-
-def max_distance_m(surface_ha: float, rule: dict) -> float:
-    """Reach of a domain around its cellar: grows with the square root of its size.
-
-    A 10 ha estate looks within ``base`` km; a 40 ha one twice as far — the
-    area of a disc scales with r², so this keeps the *density* of the estate's
-    land around the cellar comparable. Clamped to [min, max].
+    A declared surface is kept, capped by the vines actually planted there.
+    Otherwise a default: ``part_max_lieu`` of the place (a cru shared by dozens
+    of growers) and at most ``part_max_domaine`` of the domain.
     """
-    km = rule["base"] * math.sqrt(max(surface_ha, 0.1) / rule["surface_ref_ha"])
-    return 1000 * min(rule["max"], max(rule["min"], km))
+    if p.declared_ha is not None:
+        return min(p.declared_ha, p.vine_ha), p.basis
+    return min(cfg["part_max_lieu"] * p.vine_ha, cfg["part_max_domaine"] * surface_ha), "defaut"
 
 
-def assign_domains(plots: list[Plot], domains: list[Domain], cfg: dict) -> list[Assignment]:
-    """Allocate plots to domains until each reaches ``part_cible`` of its surface.
+def compose_domain(surface_ha: float, places: list[Place], rest_sun: Optional[float],
+                   rest_cool: Optional[float], cfg: dict) -> list[Share]:
+    """Split a domain's declared surface between its declared places and the rest.
 
-    One global queue of (cost, domain, plot) candidates, cheapest first; a plot
-    goes to the first domain that claims it while that domain is still below
-    target. Cost is the cellar distance divided by the domain's own reach, so a
-    130 ha house and a 6 ha grower compete on equal terms in the same village.
-
-    Declared grands crus (``Domain.crus``) are claimed first (cost discounted by
-    ``remise_cout``) up to ``distance_max_km`` — a Turckheim estate really does
-    farm the Rangen 25 km away — but capped per cru, so no listed domain
-    swallows a cru that dozens of growers share:
-    ``min(part_max_cru × cru vine area, part_max_domaine × domain surface)``.
-
-    Never extrapolates beyond the reach: a domain whose surroundings are taken
-    or unplanted ends below target, and its coverage says so.
+    The rest — vines the domain does not name — carries the average of the
+    non-grand-cru vines of the communes where the domain grows: an expected
+    value, not the plots nearest the cellar, which in Alsace are the plain
+    around the village. Places exceeding the surface are scaled down together.
     """
-    target_share = cfg["part_cible"]
-    reach_rule = cfg["distance_max_km"]
-    cru_rule = cfg["cru_declare"]
+    shares = []
+    for p in places:
+        area, basis = place_area_ha(p, surface_ha, cfg)
+        if area > 0:
+            shares.append(Share(p.kind, p.name, area, basis, p.score_sun, p.score_cool))
+    claimed = sum(s.area_ha for s in shares)
+    if claimed > surface_ha:
+        for s in shares:
+            s.area_ha *= surface_ha / claimed
+        claimed = surface_ha
+    if surface_ha - claimed > 1e-9:
+        shares.append(Share("reste", "reste", surface_ha - claimed, "reste", rest_sun, rest_cool))
+    return shares
 
-    cru_area: dict[str, float] = {}
-    for p in plots:
-        if p.cru:
-            cru_area[p.cru] = cru_area.get(p.cru, 0.0) + p.area_ha
 
-    heap: list[tuple[float, int, str, int, float, bool]] = []
-    serial = 0
-    by_id = {d.id: d for d in domains}
-    for d in domains:
-        if not d.surface_ha or d.surface_ha <= 0:
-            continue
-        reach = max_distance_m(d.surface_ha, reach_rule)
-        cru_reach = 1000 * cru_rule["distance_max_km"]
-        for i, p in enumerate(plots):
-            dist = math.hypot(p.x - d.x, p.y - d.y)
-            via_cru = bool(p.cru and p.cru in d.crus)
-            if via_cru and dist <= cru_reach:
-                cost = cru_rule["remise_cout"] * dist / cru_reach
-            elif dist <= reach:
-                cost = dist / reach
-                via_cru = False
-            else:
-                continue
-            heapq.heappush(heap, (cost, serial, d.id, i, dist, via_cru))
-            serial += 1
-
-    target = {d.id: target_share * d.surface_ha for d in domains if d.surface_ha}
-    got = {d_id: 0.0 for d_id in target}
-    cru_got: dict[tuple[str, str], float] = {}
-    taken: set[int] = set()
-    out: list[Assignment] = []
-    while heap:
-        _, _, d_id, i, dist, via_cru = heapq.heappop(heap)
-        if i in taken:
-            continue
-        p = plots[i]
-        # stop at target; accept a last plot if it lands closer to it than not,
-        # but never beyond the declared surface (large RPG plots)
-        if (got[d_id] + p.area_ha / 2 > target[d_id]
-                or got[d_id] + p.area_ha > by_id[d_id].surface_ha):
-            continue
-        if via_cru:
-            key = (d_id, p.cru)
-            cap = min(cru_rule["part_max_cru"] * cru_area[p.cru],
-                      cru_rule["part_max_domaine"] * by_id[d_id].surface_ha)
-            if cru_got.get(key, 0.0) + p.area_ha / 2 > cap:
-                continue
-            cru_got[key] = cru_got.get(key, 0.0) + p.area_ha
-        taken.add(i)
-        got[d_id] += p.area_ha
-        out.append(Assignment(p.id, d_id, round(dist, 1), via_cru))
-    return out
+def composed_score(shares: list[Share], attr: str) -> Optional[float]:
+    return weighted_mean([getattr(s, attr) for s in shares], [s.area_ha for s in shares])
 
 
 def weighted_mean(values: Iterable[float], weights: Iterable[float]) -> Optional[float]:
@@ -279,11 +244,16 @@ def weighted_mean(values: Iterable[float], weights: Iterable[float]) -> Optional
     return round(num / den, 1) if den else None
 
 
-def assignment_confidence(coverage: float, coord_precision: Optional[str],
-                          source_confidence: Optional[str]) -> str:
-    """Readable confidence of an estimated plot set ("haute" | "moyenne" | "basse")."""
-    pts = 0
-    pts += 2 if coverage >= 0.75 else 1 if coverage >= 0.4 else 0
-    pts += 1 if coord_precision == "adresse" else 0
+def score_confidence(shares: list[Share], surface_ha: float, communes_declared: bool,
+                     source_confidence: Optional[str]) -> str:
+    """Readable confidence of a composed score ("haute" | "moyenne" | "basse").
+
+    Counts how much of the surface rests on declared surfaces rather than on
+    defaults or the communes average, whether the communes are declared, and
+    how well sourced the domain sheet is.
+    """
+    known = sum(s.area_ha for s in shares if s.basis in ("declaree", "repartie")) / surface_ha
+    pts = 2 if known >= 0.5 else 1 if known >= 0.15 else 0
+    pts += 1 if communes_declared else 0
     pts += {"haute": 2, "moyenne": 1}.get(source_confidence or "", 0)
     return "haute" if pts >= 4 else "moyenne" if pts >= 2 else "basse"

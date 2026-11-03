@@ -108,9 +108,9 @@
     "_defaut": 0.6
   },
   "domaines": {
-    "part_cible": 0.8,
-    "distance_max_km": { "base": 2.5, "surface_ref_ha": 10, "min": 2, "max": 8 },
-    "cru_declare": { "distance_max_km": 40, "part_max_cru": 0.25, "part_max_domaine": 0.12, "remise_cout": 0.1 },
+    "_aide": "ADR 0019 : surface déclarée d'un cru / lieu-dit, sinon min(part_max_lieu × vignes du lieu ; part_max_domaine × surface du domaine) ; le reste à la moyenne hors grand cru des communes du domaine.",
+    "part_max_lieu": 0.25,
+    "part_max_domaine": 0.12,
     "secteur_rayon_m": 1500
   }
 }

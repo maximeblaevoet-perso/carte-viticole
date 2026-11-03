@@ -1,6 +1,6 @@
 {
   "generated": "2026-11-02",
-  "_aide": "Liste de domaines de référence d'Alsace (surface viticole, cave, grands crus) compilée manuellement à partir de sources publiques : données informatives, source_type manual, à ne pas utiliser comme des données officielles.",
+  "_aide": "Liste de domaines de référence d'Alsace (surface viticole, cave, grands crus) compilée manuellement à partir de sources publiques : données informatives, source_type manual, à ne pas utiliser comme des données officielles. Champs facultatifs (ADR 0019) : communes (où sont les vignes ; défaut = commune du chai), surfaces_ha (surface d'un grand cru ou lieu-dit, milieu de fourchette quand la source en donne une), surface_grands_crus_ha (total en grands crus, réparti entre les crus sans surface), lieux_dits_cadastre (nom d'usage → commune + lieux-dits cadastraux ; un lieu-dit absent reste « non localisé »).",
   "domaines": [
     {
       "id": "zind-humbrecht",
@@ -23,6 +23,42 @@
         "Clos Saint-Urbain",
         "Herrenweg de Turckheim"
       ],
+      "communes": [
+        "Turckheim",
+        "Wintzenheim",
+        "Hunawihr",
+        "Gueberschwihr",
+        "Thann"
+      ],
+      "surfaces_ha": {
+        "Rangen": 5.5
+      },
+      "lieux_dits_cadastre": {
+        "Clos Windsbuhl": [
+          {
+            "commune": "Hunawihr",
+            "cadastre": [
+              "WINDSBUEHL"
+            ]
+          }
+        ],
+        "Clos Saint-Urbain": [
+          {
+            "commune": "Thann",
+            "cadastre": [
+              "RANGEN"
+            ]
+          }
+        ],
+        "Herrenweg de Turckheim": [
+          {
+            "commune": "Turckheim",
+            "cadastre": [
+              "HERRENWEG"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://wineanorak.com/Alsace/zindhumbrecht.htm",
@@ -49,6 +85,7 @@
         "Spiegel"
       ],
       "lieux_dits": [],
+      "surface_grands_crus_ha": 70,
       "certification": null,
       "sources": [
         "https://www.vinatis.com/schlumberger-les-grands-crus",
@@ -75,6 +112,9 @@
       "lieux_dits": [
         "Clos Sainte Hune"
       ],
+      "surfaces_ha": {
+        "Clos Sainte Hune": 1.67
+      },
       "certification": null,
       "sources": [
         "https://www.vinetur.com/en/2025091791272/trimbach-family-marks-four-centuries-of-winemaking-excellence-in-alsace.html",
@@ -126,6 +166,10 @@
       "lieux_dits": [
         "Clos des Capucins"
       ],
+      "surfaces_ha": {
+        "Clos des Capucins": 5,
+        "Schlossberg": 9
+      },
       "certification": "biodynamie",
       "sources": [
         "https://gauntleys.com/producers/domaine-weinbach/",
@@ -175,6 +219,19 @@
       "lieux_dits": [
         "Fronholz"
       ],
+      "surfaces_ha": {
+        "Muenchberg": 2.2
+      },
+      "lieux_dits_cadastre": {
+        "Fronholz": [
+          {
+            "commune": "Epfig",
+            "cadastre": [
+              "FRONHOLZ"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://www.hameaualbert.fr/sites/default/files/2019-09/Domaine%20Ostertag.pdf",
@@ -202,6 +259,17 @@
       "lieux_dits": [
         "Kritt"
       ],
+      "lieux_dits_cadastre": {
+        "Kritt": [
+          {
+            "commune": "Eichhoffen",
+            "cadastre": [
+              "KRITT",
+              "KRITT-SUD"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://primalwine.com/blogs/natural-wine-producers-primal-wine/marc-kreydenweiss",
@@ -226,6 +294,10 @@
         "Brand"
       ],
       "lieux_dits": [],
+      "surfaces_ha": {
+        "Sommerberg": 4,
+        "Brand": 2
+      },
       "certification": null,
       "sources": [
         "https://winescholarguild.com/producer-guide/france/alsace/1-domaine-albert-boxler",
@@ -254,6 +326,25 @@
         "Rosenberg",
         "Herrenweg de Turckheim"
       ],
+      "surface_grands_crus_ha": 3,
+      "lieux_dits_cadastre": {
+        "Rosenberg": [
+          {
+            "commune": "Wettolsheim",
+            "cadastre": [
+              "ROSENBERG"
+            ]
+          }
+        ],
+        "Herrenweg de Turckheim": [
+          {
+            "commune": "Turckheim",
+            "cadastre": [
+              "HERRENWEG"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://www.idealwine.net/barmes-buecher-des-terroirs-a-forte-personnalite/",
@@ -280,6 +371,7 @@
       "lieux_dits": [
         "Les Pierrets"
       ],
+      "surface_grands_crus_ha": 4.25,
       "certification": "biodynamie",
       "sources": [
         "https://wineanorak.com/Alsace/josmeyer.htm",
@@ -307,6 +399,43 @@
         "Clos Saint-Théobald",
         "Harth"
       ],
+      "communes": [
+        "Colmar",
+        "Thann"
+      ],
+      "surfaces_ha": {
+        "Harth": 12.1,
+        "Rangen": 6.5,
+        "Clos Saint-Théobald": 5.55,
+        "Sommerberg": 0.2
+      },
+      "lieux_dits_cadastre": {
+        "Clos Saint-Théobald": [
+          {
+            "commune": "Thann",
+            "cadastre": [
+              "RANGEN"
+            ]
+          }
+        ],
+        "Harth": [
+          {
+            "commune": "Colmar",
+            "cadastre": [
+              "GROSSHARTH",
+              "GROSSHARTH    BEIM    SCHIMMEL",
+              "GROSSHARTH DER   GROSSE   REBGARTEN",
+              "HAUSENHARTH",
+              "MITTELHARTH",
+              "MITTELHARTH KOCHHUETTE",
+              "MITTELHARTH MEIDENHUETTE",
+              "MITTELHARTH MEISENHUETTE",
+              "OBERHARTH",
+              "SPITZHARTH"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://www.winewithseth.com/winewiki/domaine-schoffit/",
@@ -387,6 +516,24 @@
         "Pfoeller",
         "Hinterburg de Katzenthal"
       ],
+      "lieux_dits_cadastre": {
+        "Pfoeller": [
+          {
+            "commune": "Katzenthal",
+            "cadastre": [
+              "PFOELLER"
+            ]
+          }
+        ],
+        "Hinterburg de Katzenthal": [
+          {
+            "commune": "Katzenthal",
+            "cadastre": [
+              "HINTERBURG"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://kermitlynch.com/files/meyer-fonne.pdf",
@@ -411,6 +558,37 @@
         "Oberer Weingarten de Rorschwihr",
         "Silberberg de Rorschwihr"
       ],
+      "communes": [
+        "Rorschwihr",
+        "Bergheim"
+      ],
+      "lieux_dits_cadastre": {
+        "Kappelweg de Rorschwihr": [
+          {
+            "commune": "Rorschwihr",
+            "cadastre": [
+              "KAPPELWEG DE RORSCHWIHR"
+            ]
+          }
+        ],
+        "Oberer Weingarten de Rorschwihr": [
+          {
+            "commune": "Rorschwihr",
+            "cadastre": [
+              "OBERER WEINGARTEN DE RORSCHWIHR"
+            ]
+          }
+        ],
+        "Silberberg de Rorschwihr": [
+          {
+            "commune": "Rorschwihr",
+            "cadastre": [
+              "SILBERBERG DE RORSCHWIHR",
+              "SILBERBERG RORSCHWIHR DE"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://www.lejournaldesentreprises.com/article/la-cathedrale-du-vignoble-de-rolly-gassmann-est-sortie-de-terre-363215",
@@ -436,6 +614,12 @@
         "Schoenenbourg"
       ],
       "lieux_dits": [],
+      "surfaces_ha": {
+        "Geisberg": 1.5,
+        "Kirchberg de Ribeauvillé": 1.63,
+        "Osterberg": 1.15,
+        "Schoenenbourg": 0.12
+      },
       "certification": null,
       "sources": [
         "https://www.idealwine.net/domaine-andre-kientzler-les-artisans-du-grand-cru-geisberg",
@@ -465,6 +649,27 @@
         "Altenbourg",
         "Rosenbourg"
       ],
+      "surfaces_ha": {
+        "Schlossberg": 4
+      },
+      "lieux_dits_cadastre": {
+        "Altenbourg": [
+          {
+            "commune": "Kaysersberg Vignoble",
+            "cadastre": [
+              "ALTENBURG"
+            ]
+          }
+        ],
+        "Rosenbourg": [
+          {
+            "commune": "Kaysersberg Vignoble",
+            "cadastre": [
+              "ROSENBURG"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://www.winewithseth.com/winewiki/paul-blanck/",
@@ -490,6 +695,7 @@
         "Kitterlé"
       ],
       "lieux_dits": [],
+      "surface_grands_crus_ha": 6.3,
       "certification": "biodynamie",
       "sources": [
         "https://www.tourisme-guebwiller.fr/en/fiche-sit/F232005708_dirler-cade-domaine-bergholtz-en/",
@@ -563,6 +769,39 @@
         "Clos Liebenberg",
         "Bollenberg"
       ],
+      "surfaces_ha": {
+        "Clos Liebenberg": 3.25
+      },
+      "lieux_dits_cadastre": {
+        "Clos Liebenberg": [
+          {
+            "commune": "Orschwihr",
+            "cadastre": [
+              "LIEBENBERG"
+            ]
+          }
+        ],
+        "Bollenberg": [
+          {
+            "commune": "Westhalten",
+            "cadastre": [
+              "BOLLENBERG"
+            ]
+          },
+          {
+            "commune": "Rouffach",
+            "cadastre": [
+              "BOLLENBERG"
+            ]
+          },
+          {
+            "commune": "Orschwihr",
+            "cadastre": [
+              "BOLLENBERG"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://www.hameaualbert.fr/sites/default/files/2019-09/Valentin%20Zusslin.pdf",
@@ -612,6 +851,22 @@
       "lieux_dits": [
         "Bildstoecklé"
       ],
+      "communes": [
+        "Husseren-les-Châteaux",
+        "Eguisheim",
+        "Obermorschwihr"
+      ],
+      "lieux_dits_cadastre": {
+        "Bildstoecklé": [
+          {
+            "commune": "Obermorschwihr",
+            "cadastre": [
+              "BILDSTOECKLE",
+              "OBERES BILDSTOECKLE"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://primalwine.com/blogs/natural-wine-producers-primal-wine/bruno-schueller-a-natural-wine-figure-of-alsace",
@@ -679,6 +934,28 @@
       "lieux_dits": [
         "Bollenberg"
       ],
+      "lieux_dits_cadastre": {
+        "Bollenberg": [
+          {
+            "commune": "Westhalten",
+            "cadastre": [
+              "BOLLENBERG"
+            ]
+          },
+          {
+            "commune": "Rouffach",
+            "cadastre": [
+              "BOLLENBERG"
+            ]
+          },
+          {
+            "commune": "Orschwihr",
+            "cadastre": [
+              "BOLLENBERG"
+            ]
+          }
+        ]
+      },
       "certification": "bio",
       "sources": [
         "https://www.idealwine.net/agathe-bursin-lenergie-bio-sur-le-mont-du-soleil/",
@@ -726,6 +1003,19 @@
       "lieux_dits": [
         "Clos Saint-Landelin"
       ],
+      "surfaces_ha": {
+        "Clos Saint-Landelin": 12
+      },
+      "lieux_dits_cadastre": {
+        "Clos Saint-Landelin": [
+          {
+            "commune": "Rouffach",
+            "cadastre": [
+              "CLOS SAINT-LANDELIN"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://www.winewithseth.com/winewiki/domaine-mure/",
@@ -750,6 +1040,12 @@
       "lieux_dits": [
         "Clos Saint-Imer"
       ],
+      "communes": [
+        "Gueberschwihr"
+      ],
+      "surfaces_ha": {
+        "Goldert": 7
+      },
       "certification": null,
       "sources": [
         "https://www.tourisme-eguisheim-rouffach.com/EN/Domaine-Ernest-BURN-Clos-Saint-Imer-f253002322.html",
@@ -776,6 +1072,17 @@
       "lieux_dits": [
         "Muehlforst"
       ],
+      "lieux_dits_cadastre": {
+        "Muehlforst": [
+          {
+            "commune": "Hunawihr",
+            "cadastre": [
+              "MUEHLFORST",
+              "OBERE MUEHLFORST"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/13962/dom-mittnacht-fra-res",
@@ -801,6 +1108,17 @@
       "lieux_dits": [
         "Silberberg de Rorschwihr"
       ],
+      "lieux_dits_cadastre": {
+        "Silberberg de Rorschwihr": [
+          {
+            "commune": "Rorschwihr",
+            "cadastre": [
+              "SILBERBERG DE RORSCHWIHR",
+              "SILBERBERG RORSCHWIHR DE"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/5637/dom-fernand-engel",
@@ -847,6 +1165,23 @@
       "lieux_dits": [
         "Bruderbach - Clos des Frères"
       ],
+      "communes": [
+        "Westhoffen",
+        "Traenheim",
+        "Bergbieten",
+        "Balbronn",
+        "Scharrachbergheim-Irmstett"
+      ],
+      "lieux_dits_cadastre": {
+        "Bruderbach - Clos des Frères": [
+          {
+            "commune": "Westhoffen",
+            "cadastre": [
+              "BRUDERBACH"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://fr.gaultmillau.com/fr/news/partez-a-la-decouverte-d-un-vignoble-alsacien-meconnu",
@@ -895,6 +1230,16 @@
       "lieux_dits": [
         "Stein"
       ],
+      "lieux_dits_cadastre": {
+        "Stein": [
+          {
+            "commune": "Mittelbergheim",
+            "cadastre": [
+              "STEIN"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/795/domaine-rietsch/",
@@ -917,6 +1262,9 @@
         "Engelberg"
       ],
       "lieux_dits": [],
+      "surfaces_ha": {
+        "Engelberg": 1.3
+      },
       "certification": "bio",
       "sources": [
         "https://winescholarguild.com/producer-guide/france/alsace/29-melanie-pfister",
@@ -966,6 +1314,12 @@
         "Zinnkoepflé"
       ],
       "lieux_dits": [],
+      "communes": [
+        "Soultzmatt"
+      ],
+      "surfaces_ha": {
+        "Zinnkoepflé": 2
+      },
       "certification": "bio",
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/5639/dom-riefle-landmann",
@@ -1013,6 +1367,10 @@
         "Brand"
       ],
       "lieux_dits": [],
+      "surfaces_ha": {
+        "Schoenenbourg": 9,
+        "Brand": 3.26
+      },
       "certification": null,
       "sources": [
         "https://www.dopff-au-moulin.fr/en/notre-maison/le-domaine",
@@ -1037,6 +1395,10 @@
         "Kanzlerberg"
       ],
       "lieux_dits": [],
+      "surfaces_ha": {
+        "Altenberg de Bergheim": 12.75,
+        "Kanzlerberg": 1.6
+      },
       "certification": null,
       "sources": [
         "https://www.idealwine.com/uk/domain/5738-Domaine-Gustave-Lorentz.jsp",
@@ -1086,6 +1448,14 @@
         "Rosacker"
       ],
       "lieux_dits": [],
+      "communes": [
+        "Hunawihr",
+        "Ribeauvillé",
+        "Bergheim"
+      ],
+      "surfaces_ha": {
+        "Rosacker": 1.55
+      },
       "certification": null,
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/465/domaine-sipp-mack/",
@@ -1179,6 +1549,32 @@
         "Holder",
         "Val Saint-Grégoire"
       ],
+      "lieux_dits_cadastre": {
+        "Linsenberg": [
+          {
+            "commune": "Wihr-au-Val",
+            "cadastre": [
+              "LINSENBERG"
+            ]
+          }
+        ],
+        "Herrenreben": [
+          {
+            "commune": "Wihr-au-Val",
+            "cadastre": [
+              "HERRENREBEN"
+            ]
+          }
+        ],
+        "Holder": [
+          {
+            "commune": "Wihr-au-Val",
+            "cadastre": [
+              "HOLDER"
+            ]
+          }
+        ]
+      },
       "certification": "bio",
       "sources": [
         "https://millesime-bio.com/en/liste-des-exposants/66e7f118a6acf300885c4377",
@@ -1227,6 +1623,19 @@
       "lieux_dits": [
         "Obere Hund"
       ],
+      "communes": [
+        "Dahlenheim"
+      ],
+      "lieux_dits_cadastre": {
+        "Obere Hund": [
+          {
+            "commune": "Dahlenheim",
+            "cadastre": [
+              "OBERE HUND"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://www.skurnik.com/producer/domaine-bechtold",
@@ -1253,6 +1662,25 @@
         "Brandhof",
         "Kritt"
       ],
+      "lieux_dits_cadastre": {
+        "Brandhof": [
+          {
+            "commune": "Andlau",
+            "cadastre": [
+              "BRANDHOF"
+            ]
+          }
+        ],
+        "Kritt": [
+          {
+            "commune": "Eichhoffen",
+            "cadastre": [
+              "KRITT",
+              "KRITT-SUD"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://organicwinefind.com/organic-vineyards/domaine-remy-gresser/",
@@ -1279,6 +1707,19 @@
         "Brandluft",
         "Midelberg"
       ],
+      "surfaces_ha": {
+        "Wiebelsberg": 2.5
+      },
+      "lieux_dits_cadastre": {
+        "Brandluft": [
+          {
+            "commune": "Mittelbergheim",
+            "cadastre": [
+              "BRANDLUFF"
+            ]
+          }
+        ]
+      },
       "certification": "bio",
       "sources": [
         "https://wineparis.com/newfront/exhibitor/domaine-boeckel",
@@ -1302,6 +1743,9 @@
         "Frankstein"
       ],
       "lieux_dits": [],
+      "surfaces_ha": {
+        "Frankstein": 1.35
+      },
       "certification": null,
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/394/florian-beck-hartweg",
@@ -1347,6 +1791,16 @@
       "lieux_dits": [
         "Rittersberg"
       ],
+      "lieux_dits_cadastre": {
+        "Rittersberg": [
+          {
+            "commune": "Scherwiller",
+            "cadastre": [
+              "RITTERSBERG"
+            ]
+          }
+        ]
+      },
       "certification": null,
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/785/frey-sohler",
@@ -1369,6 +1823,12 @@
         "Wineck-Schlossberg"
       ],
       "lieux_dits": [],
+      "communes": [
+        "Katzenthal"
+      ],
+      "surfaces_ha": {
+        "Wineck-Schlossberg": 1
+      },
       "certification": "biodynamie",
       "sources": [
         "https://wineanorak.com/Alsace/Clementl_Klur.htm",
@@ -1394,6 +1854,16 @@
         "Heissenstein",
         "Grittermatte"
       ],
+      "lieux_dits_cadastre": {
+        "Heissenstein": [
+          {
+            "commune": "Nothalten",
+            "cadastre": [
+              "HEISSENSTEIN"
+            ]
+          }
+        ]
+      },
       "certification": "biodynamie",
       "sources": [
         "https://chateaumonty.com/domaine-julien-meyer",
@@ -1420,6 +1890,7 @@
         "Sonnenglanz"
       ],
       "lieux_dits": [],
+      "surface_grands_crus_ha": 4,
       "certification": null,
       "sources": [
         "https://hachette-vins.com/guide-vins/producteurs/66981/sas-jean-becker",
@@ -1442,6 +1913,9 @@
         "Altenberg de Bergbieten"
       ],
       "lieux_dits": [],
+      "surfaces_ha": {
+        "Altenberg de Bergbieten": 5
+      },
       "certification": null,
       "sources": [
         "https://www.hachette-vins.com/guide-vins/producteurs/810/dom-frederic-mochel",

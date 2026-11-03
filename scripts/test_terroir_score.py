@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the terroir score and the plot → domain assignment (no I/O)."""
+"""Tests for the terroir score and the domain score composition (no I/O)."""
 
 from __future__ import annotations
 
@@ -63,49 +63,54 @@ class TestScore(unittest.TestCase):
         self.assertEqual(ts.soil_value(None, GRID), GRID["sol"]["_defaut"])
 
 
-class TestAssignment(unittest.TestCase):
-    def test_reach_grows_with_size_and_is_clamped(self) -> None:
-        rule = CFG["distance_max_km"]
-        self.assertLess(ts.max_distance_m(5, rule), ts.max_distance_m(40, rule))
-        self.assertEqual(ts.max_distance_m(0.5, rule), rule["min"] * 1000)
-        self.assertEqual(ts.max_distance_m(1000, rule), rule["max"] * 1000)
+class TestDomainComposition(unittest.TestCase):
+    def place(self, name: str, vine_ha: float, sun: float, declared: float | None = None,
+              kind: str = "grand_cru") -> ts.Place:
+        return ts.Place(kind, name, vine_ha, sun, sun, declared)
 
-    def test_stops_at_target_share(self) -> None:
-        plots = [ts.Plot(f"p{i}", 100.0 * i, 0, 1.0) for i in range(1, 30)]
-        d = ts.Domain("d", 0, 0, 10.0)
-        got = ts.assign_domains(plots, [d], CFG)
-        self.assertEqual(len(got), 8)  # 80 % of 10 ha, 1 ha plots
-        self.assertEqual([a.plot_id for a in got], [f"p{i}" for i in range(1, 9)])  # nearest first
+    def test_zind_humbrecht_like(self) -> None:
+        # Rangen declared 5.5 ha, Brand unknown (default), rest at the communes average
+        places = [self.place("Rangen", 16.9, 82.4, 5.5), self.place("Brand", 44.3, 88.2)]
+        shares = ts.compose_domain(40.0, places, 66.0, 66.0, CFG)
+        by = {s.name: s for s in shares}
+        self.assertEqual(by["Rangen"].basis, "declaree")
+        self.assertAlmostEqual(by["Rangen"].area_ha, 5.5)
+        default = min(CFG["part_max_lieu"] * 44.3, CFG["part_max_domaine"] * 40)
+        self.assertAlmostEqual(by["Brand"].area_ha, default)
+        self.assertAlmostEqual(by["reste"].area_ha, 40 - 5.5 - default)
+        self.assertAlmostEqual(sum(s.area_ha for s in shares), 40.0)
+        expected = (5.5 * 82.4 + default * 88.2 + (40 - 5.5 - default) * 66.0) / 40
+        self.assertAlmostEqual(ts.composed_score(shares, "score_sun"), round(expected, 1))
 
-    def test_never_beyond_reach(self) -> None:
-        plots = [ts.Plot("far", 50_000, 0, 1.0)]
-        self.assertEqual(ts.assign_domains(plots, [ts.Domain("d", 0, 0, 10.0)], CFG), [])
+    def test_declared_surface_capped_by_planted_vines(self) -> None:
+        shares = ts.compose_domain(10.0, [self.place("Clos", 2.0, 90, 5.0, "lieu_dit")], 60, 60, CFG)
+        self.assertAlmostEqual(shares[0].area_ha, 2.0)
 
-    def test_plot_goes_to_one_domain_only(self) -> None:
-        plots = [ts.Plot("p", 500, 0, 1.0)]
-        doms = [ts.Domain("a", 0, 0, 10.0), ts.Domain("b", 400, 0, 10.0)]
-        got = ts.assign_domains(plots, doms, CFG)
-        self.assertEqual([(a.plot_id, a.domain_id) for a in got], [("p", "b")])
+    def test_places_beyond_surface_are_scaled_down(self) -> None:
+        places = [self.place("A", 50, 90, 8.0), self.place("B", 50, 80, 8.0)]
+        shares = ts.compose_domain(10.0, places, 50, 50, CFG)
+        self.assertEqual([s.name for s in shares], ["A", "B"])  # no rest left
+        self.assertAlmostEqual(sum(s.area_ha for s in shares), 10.0)
 
-    def test_declared_cru_far_away_is_claimed_but_capped(self) -> None:
-        cru = [ts.Plot(f"r{i}", 20_000, 10.0 * i, 0.5, "rangen") for i in range(40)]  # 20 ha cru, 20 km away
-        d = ts.Domain("zh", 0, 0, 40.0, frozenset({"rangen"}))
-        got = ts.assign_domains(cru, [d], CFG)
-        self.assertTrue(all(a.via_cru for a in got))
-        cap = min(CFG["cru_declare"]["part_max_cru"] * 20, CFG["cru_declare"]["part_max_domaine"] * 40)
-        self.assertLessEqual(0.5 * len(got), cap + 0.25)
-        self.assertGreater(len(got), 0)
+    def test_split_declared_total_only_fills_unknown_crus(self) -> None:
+        places = [self.place("A", 50, 90, 4.0), self.place("B", 50, 80), self.place("C", 50, 80),
+                  self.place("L", 5, 70, kind="lieu_dit")]
+        ts.split_declared_total(places, 10.0)
+        self.assertEqual([p.declared_ha for p in places], [4.0, 3.0, 3.0, None])
+        self.assertEqual(places[1].basis, "repartie")
 
-    def test_domain_without_surface_gets_nothing(self) -> None:
-        plots = [ts.Plot("p", 10, 0, 1.0)]
-        self.assertEqual(ts.assign_domains(plots, [ts.Domain("d", 0, 0, None)], CFG), [])
+    def test_no_rest_score_leaves_places_only(self) -> None:
+        shares = ts.compose_domain(10.0, [self.place("A", 40, 90, 2.0)], None, None, CFG)
+        self.assertEqual(ts.composed_score(shares, "score_sun"), 90.0)
 
 
 class TestConfidence(unittest.TestCase):
     def test_levels(self) -> None:
-        self.assertEqual(ts.assignment_confidence(0.8, "adresse", "haute"), "haute")
-        self.assertEqual(ts.assignment_confidence(0.8, "commune", "moyenne"), "moyenne")
-        self.assertEqual(ts.assignment_confidence(0.2, "commune", "basse"), "basse")
+        known = [ts.Share("grand_cru", "A", 6, "declaree", 90, 90), ts.Share("reste", "reste", 4, "reste", 60, 60)]
+        guessed = [ts.Share("grand_cru", "A", 1, "defaut", 90, 90), ts.Share("reste", "reste", 9, "reste", 60, 60)]
+        self.assertEqual(ts.score_confidence(known, 10, True, "haute"), "haute")
+        self.assertEqual(ts.score_confidence(guessed, 10, False, "moyenne"), "basse")
+        self.assertEqual(ts.score_confidence(guessed, 10, True, "haute"), "moyenne")
 
 
 if __name__ == "__main__":

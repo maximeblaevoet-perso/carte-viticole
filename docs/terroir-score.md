@@ -1,7 +1,7 @@
 # Score terroir des vignes plantées et domaines estimés
 
-Méthode du score de potentiel terroir par parcelle et de l'attribution des
-parcelles aux domaines de référence. Décision : ADR 0016. Code :
+Méthode du score de potentiel terroir par parcelle et du score composé des
+domaines de référence. Décisions : ADR 0016, ADR 0019. Code :
 `scripts/terroir_score.py` (calcul), `src/lib/terroir-score.ts` (affichage).
 Grille : `src/data/terroir-score-alsace.json`.
 
@@ -44,39 +44,56 @@ pas une moyenne de parcelle ; le sol RRP décrit un paysage de sols au
 ## 3. Les domaines
 
 `scripts/data/alsace-domains.json`, compilé à la main (sites des domaines,
-guides, presse) : commune du chai, surface déclarée, grands crus, sources,
-confiance. `source_type = manual`.
+guides, presse) : commune du chai, surface déclarée, grands crus, lieux-dits,
+sources, confiance. `source_type = manual`. Champs facultatifs (ADR 0019) :
+`communes` (où sont les vignes), `surfaces_ha` (surface d'un cru ou lieu-dit,
+milieu de la fourchette publiée), `surface_grands_crus_ha` (total en grands
+crus), `lieux_dits_cadastre` (nom d'usage → commune + lieux-dits cadastraux).
 
-### Attribution des parcelles (estimation)
+### Score composé (estimation, ADR 0019)
 
-1. **Cible** : 80 % de la surface déclarée (le reste : vignes louées loin,
-   jeunes plantations, écarts entre sources).
-2. **Rayon** du domaine : 2,5 km × √(surface / 10 ha), borné à [2 ; 8] km.
-3. **Grands crus déclarés** d'abord, jusqu'à 40 km du chai, plafonnés par cru
-   à min(25 % des vignes du cru ; 12 % de la surface du domaine).
-4. Puis les vignes **libres** les plus proches du chai, en distance relative
-   au rayon. Une file unique pour tous les domaines : à distance relative égale,
-   le premier servi garde la parcelle ; une parcelle n'a qu'un domaine.
-5. Arrêt à la cible, ou au rayon. Jamais d'extrapolation au-delà.
+Aucune parcelle n'est attribuée à un domaine : on ne sait pas lesquelles il
+exploite. Sa note est composée de ce qu'il déclare :
+
+1. **Grands crus et lieux-dits déclarés** : chacun compte pour sa surface
+   déclarée, plafonnée par les vignes plantées du lieu ; sinon pour
+   min(25 % des vignes du lieu ; 12 % de la surface du domaine). Un total
+   déclaré en grands crus est réparti entre les crus sans surface propre. Le
+   lieu est noté à la moyenne de ses vignes.
+2. Un lieu-dit déclaré situé surtout dans un cru déclaré **épingle** ce cru
+   (Clos Saint-Urbain → Rangen côté Thann).
+3. **Reste** de la surface : moyenne des vignes hors grand cru des communes du
+   domaine (déclarées, sinon celle du chai). Les anciennes communes fusionnées
+   (Kaysersberg, Kientzheim, Sigolsheim) sont lues comme Kaysersberg
+   Vignoble.
+4. Score = moyenne des tranches pondérée par leur surface. Si les lieux
+   dépassent la surface du domaine, ils sont réduits proportionnellement.
+
+Exemple, Zind-Humbrecht (40 ha) : Rangen côté Thann 5,5 ha déclarés (83),
+Brand, Hengst, Goldert 4,8 ha chacun par défaut (88, 87, 86), Windsbuehl
+1,1 ha (95), Herrenweg de Turckheim 4,6 ha (49), reste 14,4 ha à la moyenne de
+Turckheim, Wintzenheim, Hunawihr, Gueberschwihr et Thann (66) → **74,8**.
 
 ### Indicateurs publiés
 
 | Indicateur | Définition |
 | --- | --- |
-| Score (soleil / fraîcheur) | Moyenne des scores des parcelles attribuées, pondérée par la surface |
-| Score secteur | Toutes les vignes à 1,5 km du chai (ne dépend pas de l'attribution) |
-| Couverture | Surface attribuée / surface déclarée (cible 0,8) |
-| Part via grands crus | Part de la surface attribuée prise dans un grand cru déclaré |
-| Confiance | Haute / moyenne / basse : couverture ≥ 75 %, chai géocodé à l'adresse, surface bien sourcée |
+| Score (soleil / fraîcheur) | Moyenne des tranches de la composition, pondérée par leur surface |
+| Composition | Par tranche : lieu, surface retenue et sa base (déclarée, répartie, défaut, reste), score, contour |
+| Non localisés | Lieux déclarés introuvables sur les vignes plantées (comptés dans le reste) |
+| Score secteur | Toutes les vignes à 1,5 km du chai, pour comparaison |
+| Confiance | Haute / moyenne / basse : part de surface déclarée, communes déclarées, fiche bien sourcée |
 
-Les parcelles d'un domaine ne sont **jamais** présentées comme un relevé : le
-casier viticole est confidentiel et le RPG anonymise l'exploitant.
+La fiche ne présente **jamais** une parcelle comme celle d'un domaine : le
+casier viticole est confidentiel et le RPG anonymise l'exploitant. Une vigne
+indique seulement les domaines qui déclarent son cru ou son lieu-dit.
 
 ## 4. Mettre à jour
 
 ```bash
 python scripts/build_alsace_vineyard.py                    # dry-run, résumé
 python scripts/build_alsace_vineyard.py --commit --prune   # écrit vine_plots / wine_domains, allège
+python scripts/build_alsace_vineyard.py --domains-only --commit  # domaines seuls, depuis le cache
 cd scripts && python -m unittest test_terroir_score
 ```
 

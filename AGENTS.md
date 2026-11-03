@@ -102,6 +102,7 @@ python scripts/import_meteo_france_to_supabase.py --commit   # write (idempotent
 # Alsace planted vines + terroir score + domains (ADR 0016, docs/terroir-score.md)
 python scripts/build_alsace_vineyard.py                      # dry-run
 python scripts/build_alsace_vineyard.py --commit --prune     # write + lighten the DB
+python scripts/build_alsace_vineyard.py --domains-only --commit  # domain scores only (ADR 0019)
 ```
 
 ## 9. Files to read before modifying

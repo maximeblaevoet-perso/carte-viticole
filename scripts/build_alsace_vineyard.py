@@ -1,4 +1,4 @@
-"""Planted Alsace vineyard: vine plots, terroir score, estimated domain plots.
+"""Planted Alsace vineyard: vine plots, terroir score, estimated domain scores.
 
 The INAO "parcellaire" is a *delimited* area (commune × denomination): it holds
 forest, orchards and houses as well as vines. This script builds the layer of
@@ -12,8 +12,9 @@ vines actually planted, as the Taillades map does (ADR 0016):
    dominant BD Charm-50 formation, altitude / slope / aspect (RGE ALTI, centre
    ± 30 m) and INRAE RRP dominant soil.
 4. Scored with ``src/data/terroir-score-alsace.json`` (scripts/terroir_score.py).
-5. Plots assigned to the domains of ``scripts/data/alsace-domains.json`` until
-   80 % of each declared surface (estimate, never presented as a land registry).
+5. Reference domains of ``scripts/data/alsace-domains.json`` scored from what
+   they declare: grands crus and lieux-dits, the rest at the average of their
+   communes (ADR 0019). No plot is attributed to a domain.
 
 Every network step is cached in ``data/processed/alsace/`` (gitignored): a
 re-run only recomputes what is missing. ``--refresh`` drops the caches.
@@ -22,7 +23,12 @@ Usage:
     python scripts/build_alsace_vineyard.py                 # build + summary (dry-run)
     python scripts/build_alsace_vineyard.py --commit        # + replace vine_plots / wine_domains
     python scripts/build_alsace_vineyard.py --commit --prune
-        # + delete the Alsace INAO aire "parcels" and the lieux-dits without vines
+        # + delete the Alsace INAO aire "parcels" and the lieux-dits without vines,
+        #   and clip the remaining lieux-dits to their planted part
+    python scripts/build_alsace_vineyard.py --lieux-dits-only
+        # only the lieu-dit clipping, from the cached vine_plots.gpkg
+    python scripts/build_alsace_vineyard.py --domains-only [--commit]
+        # only the domain scores, from the cached vine_plots.gpkg
 """
 from __future__ import annotations
 
@@ -72,6 +78,9 @@ ALTI = "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json"
 UA = {"User-Agent": "carte-viticole/1.0 (build_alsace_vineyard)"}
 HALF_STEP_M = 30  # slope/aspect from centre ± 30 m
 BDTOPO_MIN_M2 = 1500  # BD TOPO crumbs < 0.15 ha are RPG plot edges
+LIEU_MIN_VINE_M2 = 1000  # a lieu-dit with < 0.1 ha of vines is forest / village
+LIEU_MIN_PART_M2 = 100  # clipped pieces < 1 a are overlap crumbs
+LIEU_SLIVER_M = 2  # pieces thinner than 4 m are boundary slivers
 
 try:
     import certifi
@@ -328,68 +337,179 @@ def build_plots(refresh: bool) -> gpd.GeoDataFrame:
 
 def load_domains() -> list[dict]:
     if not DOMAINS_PATH.exists():
-        print(f"  ! {DOMAINS_PATH.name} absent : pas d'attribution aux domaines")
+        print(f"  ! {DOMAINS_PATH.name} absent : pas de domaines")
         return []
     return json.loads(DOMAINS_PATH.read_text(encoding="utf-8"))["domaines"]
 
 
+# Former communes merged into a commune nouvelle: the cadastre and the RPG use
+# the new name, domain sheets often the old one.
+COMMUNES_NOUVELLES = {
+    "kaysersberg": "kaysersberg vignoble",
+    "kientzheim": "kaysersberg vignoble",
+    "sigolsheim": "kaysersberg vignoble",
+}
+
+
+def _norm(name: str) -> str:
+    """Commune key: accents, case and hyphens folded ("Wihr-au-Val" = "Wihr-Au-Val")."""
+    key = ts.fold(name).replace("-", " ").strip()
+    return COMMUNES_NOUVELLES.get(key, key)
+
+
+def _to_lonlat(geom: shapely.Geometry) -> shapely.Geometry:
+    return gpd.GeoSeries([geom], crs=L93).to_crs(4326).iloc[0]
+
+
+def _geojson(geom: shapely.Geometry) -> dict:
+    """Light outline of a place for the map: gaps closed, 10 m simplified, ~1 m precision."""
+    g = _to_lonlat(geom.buffer(10).buffer(-10).simplify(10))
+    return json.loads(json.dumps(shapely.geometry.mapping(g)), parse_float=lambda x: round(float(x), 5))
+
+
+def _weighted_median(x: pd.Series, w: pd.Series) -> float | None:
+    ok = x.notna() & (w > 0)
+    if not ok.any():
+        return None
+    order = np.argsort(x[ok].values)
+    xs, cw = x[ok].values[order], np.cumsum(w[ok].values[order])
+    return float(xs[np.searchsorted(cw, cw[-1] / 2)])
+
+
+def resolve_places(d: dict, v: gpd.GeoDataFrame) -> tuple[list[tuple[ts.Place, pd.Series, dict]], list[str]]:
+    """Declared grands crus and lieux-dits of a domain -> (place, plot mask, map info).
+
+    A lieu-dit is found only through ``lieux_dits_cadastre`` (commune + cadastral
+    names): the name in use ("Clos Windsbuhl") rarely equals the cadastre's
+    ("WINDSBUEHL"), and the same name exists in many communes. A declared
+    lieu-dit lying mostly in a declared grand cru pins that cru to it (Clos
+    Saint-Urbain -> the Thann side of the Rangen) instead of counting twice.
+    Returns the places and the declared names found nowhere.
+    """
+    sizes = {ts.fold(k): x for k, x in (d.get("surfaces_ha") or {}).items()}
+    specs = d.get("lieux_dits_cadastre") or {}
+    unresolved: list[str] = []
+    lieux: dict[str, pd.Series] = {}
+    for name in d.get("lieux_dits") or []:
+        mask = pd.Series(False, index=v.index)
+        for s in specs.get(name, []):
+            mask |= (v._com == _norm(s["commune"])) & v.lieu_dit.isin(s["cadastre"])
+        if mask.any():
+            lieux[name] = mask
+        else:
+            unresolved.append(name)
+
+    out = []
+    for cru in d.get("grands_crus") or []:
+        mask = v._cru == ts.fold(cru)
+        if not mask.any():
+            unresolved.append(cru)
+            continue
+        pins = [n for n, m in lieux.items() if (v.loc[m, "_cru"] == ts.fold(cru)).mean() >= 0.5]
+        declared = sizes.get(ts.fold(cru))
+        label = cru
+        if pins:
+            mask = mask & np.logical_or.reduce([lieux.pop(n) for n in pins])
+            if declared is None:
+                declared = next((sizes[ts.fold(n)] for n in pins if ts.fold(n) in sizes), None)
+            label = f"{cru} ({', '.join(pins)})"
+        out.append((ts.Place("grand_cru", label, 0, None, None, declared), mask,
+                    {"grand_cru": cru, "pinned": bool(pins)}))
+    for name, mask in lieux.items():
+        out.append((ts.Place("lieu_dit", name, 0, None, None, sizes.get(ts.fold(name))), mask, {}))
+
+    for p, mask, info in out:
+        m = v[mask]
+        p.vine_ha = float(m.area_ha.sum())
+        p.score_sun = ts.weighted_mean(m.score_sun, m.area_ha)
+        p.score_cool = ts.weighted_mean(m.score_cool, m.area_ha)
+        if p.kind == "lieu_dit" or info.pop("pinned", False):
+            info["lieux"] = [{"commune": c, "lieu_dit": ld}
+                             for c, ld in m[["commune_name", "lieu_dit"]].drop_duplicates().itertuples(index=False)]
+    return out, unresolved
+
+
 def build_domains(v: gpd.GeoDataFrame, raw: list[dict]) -> list[dict]:
-    """Assign plots to domains (in place on ``v``) and summarise each domain."""
-    grid = ts.load_grid()
-    cfg = grid["domaines"]
-    v["domain_id"] = None
-    v["domain_distance_m"] = np.nan
-    v["domain_via_cru"] = None
+    """Score each reference domain from what it declares (ADR 0019).
+
+    Declared grands crus and lieux-dits count for their declared surface (or a
+    capped default); the rest of the surface carries the average of the
+    non-grand-cru vines of the domain's communes. No plot is attributed.
+    """
+    cfg = ts.load_grid()["domaines"]
     located = [d for d in raw if d.get("lat") is not None and d.get("lon") is not None]
     if not located:
         return []
+    v = v.copy()
+    v["_com"] = v.commune_name.fillna("").map(_norm)
+    v["_cru"] = v.grand_cru.map(lambda c: ts.fold(c) if isinstance(c, str) else None)
+    rp = v.representative_point()
     xy = gpd.GeoSeries(gpd.points_from_xy([d["lon"] for d in located], [d["lat"] for d in located]),
                        crs=4326).to_crs(L93)
-    domains = [ts.Domain(d["id"], p.x, p.y, d.get("surface_ha"),
-                         frozenset(ts.fold(c) for c in d.get("grands_crus") or []))
-               for d, p in zip(located, xy)]
-    rp = v.representative_point()
-    plots = [ts.Plot(i, p.x, p.y, a, ts.fold(c) if isinstance(c, str) else None)
-             for i, p, a, c in zip(v["id"], rp, v["area_ha"], v["grand_cru"])]
-    t0 = time.time()
-    assigned = ts.assign_domains(plots, domains, cfg)
-    print(f"  {len(assigned)} parcelles attribuées en {time.time() - t0:.0f} s")
-    a = pd.DataFrame([x.__dict__ for x in assigned]).set_index("plot_id") if assigned else pd.DataFrame()
-    if len(a):
-        v["domain_id"] = v["id"].map(a.domain_id)
-        v["domain_distance_m"] = v["id"].map(a.distance_m)
-        v["domain_via_cru"] = v["id"].map(a.via_cru)
 
     out = []
-    for d, dm in zip(located, domains):
-        mine = v[v.domain_id == d["id"]]
-        sector = v[np.hypot(rp.x - dm.x, rp.y - dm.y) <= cfg["secteur_rayon_m"]]
+    for d, cellar in zip(located, xy):
         surface = d.get("surface_ha")
-        got = float(mine.area_ha.sum())
-        coverage = got / surface if surface else 0.0
-        fam = (mine.groupby("geol_family").area_ha.sum() / got).round(3).sort_values(ascending=False) if got else pd.Series(dtype=float)
+        places, unresolved = resolve_places(d, v)
+        ts.split_declared_total([p for p, _, _ in places], d.get("surface_grands_crus_ha"))
+
+        communes = d.get("communes") or ([d["commune"]] if d.get("commune") else [])
+        rest = v[v._com.isin({_norm(c) for c in communes}) & v._cru.isna()]
+        if communes and rest.empty:
+            print(f"  ! {d['id']} : aucune vigne hors grand cru dans {communes}")
+        rest_sun = ts.weighted_mean(rest.score_sun, rest.area_ha)
+        rest_cool = ts.weighted_mean(rest.score_cool, rest.area_ha)
+
+        shares = ts.compose_domain(surface, [p for p, _, _ in places], rest_sun, rest_cool, cfg) if surface else []
+        share_of = {s.name: s for s in shares}
+        weight = pd.Series(0.0, index=v.index)  # each plot's part of the domain surface
+        items = []
+        for p, mask, info in places:
+            s = share_of.get(p.name)
+            if s and p.vine_ha:
+                weight[mask] += s.area_ha * v.area_ha[mask] / p.vine_ha
+            centre = _to_lonlat(rp[mask].union_all().centroid)
+            items.append({
+                "kind": p.kind, "name": p.name, **info,
+                "area_ha": round(s.area_ha, 2) if s else None, "basis": s.basis if s else None,
+                "vine_ha": round(p.vine_ha, 2), "score_sun": p.score_sun, "score_cool": p.score_cool,
+                "distance_m": round(shapely.union_all(v.geometry[mask].values).distance(cellar)),
+                "lon": round(centre.x, 5), "lat": round(centre.y, 5),
+                "geometry": _geojson(shapely.union_all(v.geometry[mask].values)),
+            })
+        s = share_of.get("reste")
+        if s:
+            if len(rest):
+                weight[rest.index] += s.area_ha * rest.area_ha / rest.area_ha.sum()
+            items.append({"kind": "reste", "name": "reste", "communes": communes,
+                          "area_ha": round(s.area_ha, 2), "basis": "reste",
+                          "vine_ha": round(float(rest.area_ha.sum()), 2),
+                          "score_sun": rest_sun, "score_cool": rest_cool})
+
+        w = weight[weight > 0]
+        fam = (v.loc[w.index].assign(w=w).groupby("geol_family").w.sum() / w.sum()).round(3) \
+            .sort_values(ascending=False) if len(w) else pd.Series(dtype=float)
+        alt = _weighted_median(v.loc[w.index, "altitude_m"], w) if len(w) else None
+        slope = _weighted_median(v.loc[w.index, "slope_pct"], w) if len(w) else None
+        sector = v[np.hypot(rp.x - cellar.x, rp.y - cellar.y) <= cfg["secteur_rayon_m"]]
         out.append({
             **{k: d.get(k) for k in ("id", "name", "commune", "insee", "lat", "lon", "coord_precision",
                                      "surface_ha", "surface_note", "grands_crus", "lieux_dits",
                                      "certification", "sources", "confidence")},
-            "assigned_ha": round(got, 2),
-            "coverage": round(coverage, 3),
-            "n_plots": int(len(mine)),
-            "reach_m": round(ts.max_distance_m(surface, cfg["distance_max_km"])) if surface else None,
-            "mean_distance_m": round(float(np.average(mine.domain_distance_m, weights=mine.area_ha))) if got else None,
-            "max_distance_m": round(float(mine.domain_distance_m.max())) if got else None,
-            "share_in_crus": round(float(mine[mine.domain_via_cru == True].area_ha.sum() / got), 3) if got else None,  # noqa: E712
-            "score_sun": ts.weighted_mean(mine.score_sun, mine.area_ha),
-            "score_cool": ts.weighted_mean(mine.score_cool, mine.area_ha),
+            "communes": communes,
+            "composition": items,
+            "unresolved_places": unresolved,
+            "score_sun": ts.composed_score(shares, "score_sun") if shares else None,
+            "score_cool": ts.composed_score(shares, "score_cool") if shares else None,
             "sector_score_sun": ts.weighted_mean(sector.score_sun, sector.area_ha),
             "sector_score_cool": ts.weighted_mean(sector.score_cool, sector.area_ha),
             "terroir": {
                 "familles": fam.head(4).to_dict(),
-                "altitude_med_m": round(float(mine.altitude_m.median())) if got else None,
-                "pente_med_pct": round(float(mine.slope_pct.median()), 1) if got else None,
-                "crus": mine.grand_cru.dropna().value_counts().head(8).index.tolist(),
+                "altitude_med_m": round(alt) if alt is not None else None,
+                "pente_med_pct": round(slope, 1) if slope is not None else None,
             },
-            "assignment_confidence": ts.assignment_confidence(coverage, d.get("coord_precision"), d.get("confidence")),
+            "score_confidence": ts.score_confidence(shares, surface, bool(d.get("communes")), d.get("confidence"))
+            if shares else "basse",
         })
     return out
 
@@ -418,8 +538,6 @@ def plot_rows(v: gpd.GeoDataFrame) -> list[dict]:
             "geol_dominant_share": _num(r.geol_dominant_share), "soil_name": r.soil_name,
             "score_sun": r.score_sun, "score_cool": r.score_cool,
             "score_components": json.loads(r.score_components),
-            "domain_id": r.domain_id, "domain_distance_m": _num(r.domain_distance_m),
-            "domain_via_cru": _num(r.domain_via_cru),
             "source_dataset_id": "ign-rpg" if r.source == "rpg" else "ign-bdtopo",
             "source_type": "real",
         })
@@ -438,9 +556,8 @@ def domain_rows(domains: list[dict]) -> list[dict]:
             "grands_crus": d.get("grands_crus") or [], "lieux_dits": d.get("lieux_dits") or [],
             "certification": d.get("certification"), "sources": d.get("sources") or [],
             "source_confidence": d.get("confidence"),
-            **{k: d[k] for k in ("assigned_ha", "coverage", "n_plots", "reach_m", "mean_distance_m",
-                                 "max_distance_m", "share_in_crus", "score_sun", "score_cool",
-                                 "sector_score_sun", "sector_score_cool", "terroir", "assignment_confidence")},
+            **{k: d[k] for k in ("communes", "composition", "unresolved_places", "score_sun", "score_cool",
+                                 "sector_score_sun", "sector_score_cool", "terroir", "score_confidence")},
             "source_type": "manual", "computed_at": now,
         })
     return rows
@@ -453,19 +570,88 @@ def _request(method: str, url: str, key: str, body: object | None = None) -> Non
         r.read()
 
 
-def commit(v: gpd.GeoDataFrame, domains: list[dict], prune: bool) -> int:
+def _get_rows(url: str, key: str, path: str, page: int = 1000) -> list[dict]:
+    rows: list[dict] = []
+    while True:
+        headers = {**_headers(key), "Range": f"{len(rows)}-{len(rows) + page - 1}"}
+        req = urllib.request.Request(f"{url}/{path}", headers=headers)
+        with urllib.request.urlopen(req, timeout=600, context=SSL_CTX) as r:
+            batch = json.load(r)
+        rows += batch
+        if len(batch) < page:
+            return rows
+
+
+def clip_lieux_dits(ld: gpd.GeoDataFrame, v: gpd.GeoDataFrame) -> tuple[gpd.GeoDataFrame, list[str]]:
+    """Reduce each lieu-dit to its planted part (ADR 0017).
+
+    A cadastral lieu-dit spans forest, houses and meadows as well as vines: the
+    map would fill all of it. Keep ``lieu-dit ∩ vines`` minus slivers along the
+    boundaries; a lieu-dit left with less than LIEU_MIN_VINE_M2 is dropped.
+    Returns (clipped rows, ids to delete). Clipping an already clipped lieu-dit
+    is a no-op, so a re-run is safe.
+    """
+    vg = v.geometry.values
+    l_idx, v_idx = v.sindex.query(ld.geometry.values, predicate="intersects")
+    geoms = np.full(len(ld), None, dtype=object)
+    for i in np.unique(l_idx):
+        piece = ld.geometry.values[i].intersection(shapely.union_all(vg[v_idx[l_idx == i]]))
+        parts = [p for p in getattr(piece, "geoms", [piece])
+                 if p.geom_type == "Polygon" and p.area >= LIEU_MIN_PART_M2
+                 and not p.buffer(-LIEU_SLIVER_M).is_empty]
+        if parts and sum(p.area for p in parts) >= LIEU_MIN_VINE_M2:
+            geoms[i] = shapely.MultiPolygon(parts).simplify(1.0)
+    keep = np.array([g is not None and not g.is_empty for g in geoms])
+    out = ld[keep].copy()
+    out["geometry"] = list(geoms[keep])
+    return out, ld.loc[~keep, "id"].tolist()
+
+
+def prune_lieux_dits(v: gpd.GeoDataFrame, url: str, key: str) -> int:
+    base = url.rstrip("/") + "/rest/v1"
+    rows = _get_rows(base, key, "wine_lieux_dits?select=*&or=(commune_insee.like.67*,commune_insee.like.68*)&order=id")
+    if not rows:
+        return 0
+    ld = gpd.GeoDataFrame(rows, geometry=[shapely.geometry.shape(r["geom"]) for r in rows], crs=4326).to_crs(L93)
+    ld["geometry"] = ld.geometry.make_valid()
+    before = ld.area.sum() / 1e4
+    clipped, gone = clip_lieux_dits(ld, v)
+    print(f"lieux-dits : {len(ld)} → {len(clipped)} ({before:.0f} ha → {clipped.area.sum() / 1e4:.0f} ha plantés)")
+    for i in range(0, len(gone), 150):
+        ids = ",".join(f'"{x}"' for x in gone[i:i + 150])
+        _request("DELETE", f"{base}/wine_lieux_dits?id=in.({urllib.parse.quote(ids)})", key)
+    w = clipped.to_crs(4326)
+    centers = clipped.representative_point().to_crs(4326)
+    now = datetime.now(timezone.utc).isoformat()
+    out = []
+    for r, g, c in zip(rows_by_id(rows, w["id"]), w.geometry, centers):
+        out.append({**r, "geom": geometry_to_ewkt(g), "center": geometry_to_ewkt(c, kind="point"), "updated_at": now})
+    _, err = upsert_rows("wine_lieux_dits", "id", out, url, key, 200)
+    print(f"table=wine_lieux_dits clipped={len(out)} deleted={len(gone)} errors={err}")
+    return 1 if err else 0
+
+
+def rows_by_id(rows: list[dict], ids: pd.Series) -> list[dict]:
+    by_id = {r["id"]: r for r in rows}
+    return [by_id[i] for i in ids]
+
+
+def commit(v: gpd.GeoDataFrame | None, domains: list[dict], prune: bool) -> int:
+    """Replace the derived Alsace rows (``v`` None: the domains only)."""
     _load_project_env()
     url, key = _resolve_env()
     if not url or not key:
         print("ERROR: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY manquants", file=sys.stderr)
         return 1
     base = url.rstrip("/") + "/rest/v1"
-    # Full replace of the derived Alsace rows: a re-run with a newer RPG must not
-    # leave plots that no longer exist. Plots first (FK to domains).
-    _request("DELETE", f"{base}/vine_plots?root_region_id=eq.alsace", key)
+    # Full replace: a re-run with a newer RPG or domain list must not leave
+    # plots or domains that no longer exist.
     _request("DELETE", f"{base}/wine_domains?root_region_id=eq.alsace", key)
-    w, e1 = upsert_rows("wine_domains", "id", domain_rows(domains), url, key, 200)
+    w, e1 = upsert_rows("wine_domains", "id", domain_rows(domains), url, key, 50)
     print(f"table=wine_domains upserted={w} errors={e1}")
+    if v is None:
+        return 1 if e1 else 0
+    _request("DELETE", f"{base}/vine_plots?root_region_id=eq.alsace", key)
     w, e2 = upsert_rows("vine_plots", "id", plot_rows(v), url, key, 500)
     print(f"table=vine_plots upserted={w} errors={e2}")
     if e1 or e2:
@@ -473,7 +659,17 @@ def commit(v: gpd.GeoDataFrame, domains: list[dict], prune: bool) -> int:
     if prune:
         _request("POST", f"{base}/rpc/prune_alsace_vineless_geodata", key, {})
         print("prune: aires INAO « parcelles » et lieux-dits sans vigne supprimés (Alsace)")
+        return prune_lieux_dits(v, url, key)
     return 0
+
+
+def print_domains(domains: list[dict]) -> None:
+    print("\nDomaines (score composé · secteur 1,5 km · confiance)")
+    for d in sorted(domains, key=lambda d: -(d["score_sun"] or 0)):
+        named = sum(i["area_ha"] or 0 for i in d["composition"] if i["kind"] != "reste")
+        print(f"  {d['name'][:34]:34} {d['surface_ha'] or 0:6.1f} ha  lieux nommés {named:5.1f} ha"
+              f"  score {d['score_sun']}  secteur {d['sector_score_sun']}  [{d['score_confidence']}]"
+              + (f"  non localisés : {', '.join(d['unresolved_places'])}" if d["unresolved_places"] else ""))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -481,22 +677,40 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--refresh", action="store_true", help="re-télécharge RPG / BD TOPO / sols / relief")
     ap.add_argument("--commit", action="store_true", help="remplace vine_plots et wine_domains (Alsace)")
     ap.add_argument("--prune", action="store_true", help="avec --commit : supprime les aires INAO et lieux-dits sans vigne")
+    ap.add_argument("--lieux-dits-only", action="store_true",
+                    help="découpe seulement les lieux-dits sur les vignes déjà construites (cache), sans réécrire vine_plots")
+    ap.add_argument("--domains-only", action="store_true",
+                    help="recalcule seulement les domaines à partir des vignes en cache (avec --commit : réécrit wine_domains)")
     args = ap.parse_args(argv)
 
-    v = build_plots(args.refresh)
+    if args.lieux_dits_only:
+        _load_project_env()
+        url, key = _resolve_env()
+        if not url or not key:
+            print("ERROR: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY manquants", file=sys.stderr)
+            return 1
+        return prune_lieux_dits(gpd.read_file(CACHE / "vine_plots.gpkg").to_crs(L93), url, key)
+
+    if args.domains_only:
+        v = gpd.read_file(CACHE / "vine_plots.gpkg").to_crs(L93)
+        v = v.drop(columns=[c for c in ("domain_id", "domain_distance_m", "domain_via_cru") if c in v])
+    else:
+        v = build_plots(args.refresh)
+        v.to_crs(4326).to_file(CACHE / "vine_plots.gpkg", driver="GPKG")
     domains = build_domains(v, load_domains())
-    v.to_crs(4326).to_file(CACHE / "vine_plots.gpkg", driver="GPKG")
     (CACHE / "domains.json").write_text(json.dumps(domains, ensure_ascii=False, indent=1), encoding="utf-8")
+    print_domains(domains)
+    if args.domains_only:
+        if args.commit:
+            return commit(None, domains, False)
+        print("\nDry-run : rien n'est écrit dans Supabase (ajouter --commit).")
+        return 0
 
     print(f"\n{len(v)} vignes, {v.area_ha.sum():.0f} ha "
           f"(RPG {v[v.source == 'rpg'].area_ha.sum():.0f} ha, BD TOPO {v[v.source == 'bdtopo'].area_ha.sum():.0f} ha)")
     print(f"score soleil médian {v.score_sun.median():.1f} · grands crus {v[v.grand_cru.notna()].score_sun.median():.1f}"
           f" · hors GC {v[v.grand_cru.isna()].score_sun.median():.1f}")
     print(v.groupby("geol_family").area_ha.sum().sort_values(ascending=False).head(10).round(0).to_string())
-    for d in sorted(domains, key=lambda d: -(d["score_sun"] or 0)):
-        print(f"  {d['name'][:34]:34} {d['surface_ha'] or 0:6.1f} ha  attribué {d['assigned_ha']:6.1f}"
-              f" ({d['coverage'] * 100:3.0f} %)  score {d['score_sun']}  secteur {d['sector_score_sun']}"
-              f"  [{d['assignment_confidence']}]")
     if args.commit:
         return commit(v, domains, args.prune)
     print("\nDry-run : rien n'est écrit dans Supabase (ajouter --commit).")

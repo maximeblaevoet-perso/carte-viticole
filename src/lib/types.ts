@@ -6,6 +6,8 @@
  * both the SQL migrations and this file, and document the change in `docs/`.
  */
 
+import type { MultiPolygon, Polygon } from "geojson";
+
 /**
  * Provenance of any piece of data. This MUST be carried end-to-end so the UI can
  * always tell the user where a number comes from. Never silently mix `synthetic`
@@ -237,11 +239,34 @@ export interface VinePlot {
   scoreSun: number | null;
   scoreCool: number | null;
   scoreComponents: ScoreComponents | null;
-  /** Estimated domain — a geographic assignment, never a land registry. */
-  domainId: string | null;
-  domainName: string | null;
-  domainDistanceM: number | null;
-  domainViaCru: boolean | null;
+}
+
+/**
+ * One slice of a domain's declared surface (ADR 0019): a declared grand cru or
+ * lieu-dit, or the rest at the average of the domain's communes.
+ */
+export interface DomainPlace {
+  kind: "grand_cru" | "lieu_dit" | "reste";
+  name: string;
+  /** Surface counted in the domain; null when the domain has no surface. */
+  areaHa: number | null;
+  /** declaree | repartie (share of a declared grand-cru total) | defaut | reste */
+  basis: "declaree" | "repartie" | "defaut" | "reste" | null;
+  /** Planted vines of the place, all owners (communes: non-grand-cru vines). */
+  vineHa: number | null;
+  scoreSun: number | null;
+  scoreCool: number | null;
+  /** Grand cru name, when the place is (part of) one. */
+  grandCru?: string;
+  /** Cadastral lieux-dits the place covers. */
+  lieux?: { commune: string; lieu_dit: string }[];
+  /** Communes of the rest. */
+  communes?: string[];
+  distanceM?: number;
+  lon?: number;
+  lat?: number;
+  /** Planted outline of the place (GeoJSON, simplified). */
+  geometry?: Polygon | MultiPolygon;
 }
 
 /** Reference estate (`wine_domains`, source_type `manual`) + computed summary. */
@@ -258,17 +283,12 @@ export interface WineDomain {
   surfaceNote: string | null;
   grandsCrus: string[];
   lieuxDits: string[];
+  /** Communes where the domain's vines are (declared, else the cellar's). */
+  communes: string[];
   certification: string | null;
   sources: string[];
   sourceConfidence: "haute" | "moyenne" | "basse" | null;
-  assignedHa: number | null;
-  /** assignedHa / surfaceHa — the target is 0.8. */
-  coverage: number | null;
-  nPlots: number | null;
-  reachM: number | null;
-  meanDistanceM: number | null;
-  maxDistanceM: number | null;
-  shareInCrus: number | null;
+  /** Composed score: declared places + communes average (ADR 0019). */
   scoreSun: number | null;
   scoreCool: number | null;
   sectorScoreSun: number | null;
@@ -277,9 +297,11 @@ export interface WineDomain {
     familles?: Record<string, number>;
     altitude_med_m?: number | null;
     pente_med_pct?: number | null;
-    crus?: string[];
   };
-  assignmentConfidence: "haute" | "moyenne" | "basse" | null;
+  composition: DomainPlace[];
+  /** Declared crus / lieux-dits not found on the planted vines. */
+  unresolvedPlaces: string[];
+  scoreConfidence: "haute" | "moyenne" | "basse" | null;
   sourceType: SourceType;
 }
 

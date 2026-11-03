@@ -248,8 +248,8 @@ Options : `--scope`, `--raw-dir`, `--download`, `--force-download`, `--out`,
 
 `scripts/build_alsace_vineyard.py` construit `vine_plots` (vignes RPG + BD TOPO
 dans l'aire AOC, enrichies géologie / relief / sol, notées) et `wine_domains`
-(domaines de `scripts/data/alsace-domains.json`, parcelles estimées). Prérequis :
-la migration `0013`, les fichiers locaux INAO parcellaire, cadastre lieux-dits et
+(domaines de `scripts/data/alsace-domains.json`, score composé de leurs lieux
+déclarés et de leurs communes, ADR 0019). Prérequis : les migrations `0013` à `0015`, les fichiers locaux INAO parcellaire, cadastre lieux-dits et
 BD Charm-50 67/68 (`ingest_wine_geodata.py` / `ingest_bdcharm50.py --download`).
 Les téléchargements (WFS IGN/INRAE, RGE ALTI) sont mis en cache dans
 `data/processed/alsace/` (gitignoré) ; `--refresh` les refait.
@@ -257,7 +257,9 @@ Les téléchargements (WFS IGN/INRAE, RGE ALTI) sont mis en cache dans
 ```bash
 python scripts/build_alsace_vineyard.py                    # dry-run : résumé + data/processed/alsace/
 python scripts/build_alsace_vineyard.py --commit           # remplace vine_plots / wine_domains (Alsace)
-python scripts/build_alsace_vineyard.py --commit --prune   # + supprime aires INAO et lieux-dits sans vigne
+python scripts/build_alsace_vineyard.py --commit --prune   # + supprime aires INAO et lieux-dits sans vigne, découpe les autres sur les vignes
+python scripts/build_alsace_vineyard.py --lieux-dits-only  # seulement le découpage des lieux-dits (cache vine_plots.gpkg, ADR 0017)
+python scripts/build_alsace_vineyard.py --domains-only [--commit]  # seulement le score composé des domaines (cache, ADR 0019)
 cd scripts && python -m unittest test_terroir_score
 ```
 

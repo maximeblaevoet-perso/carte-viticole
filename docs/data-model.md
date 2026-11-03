@@ -111,12 +111,15 @@ PostGIS `geom`. Provenance columns as above. Read point-by-point through the
 ### `wine_domains`
 Reference estates (migration 0013, ADR 0016), `source_type = manual`: name,
 commune of the cellar, `location` point + `coord_precision` (`adresse` |
-`commune`), declared `surface_ha`, `grands_crus[]`, `sources` (URLs),
-`source_confidence`. Computed by `scripts/build_alsace_vineyard.py`:
-`assigned_ha`, `coverage` (target 0.8), `reach_m`, distances, `share_in_crus`,
-`score_sun` / `score_cool` (area-weighted plot scores), `sector_score_*`
-(every vine within 1.5 km), `terroir` jsonb, `assignment_confidence`. Read
-through the flat view `wine_domains_api` and `/api/wine/domains`.
+`commune`), declared `surface_ha`, `grands_crus[]`, `lieux_dits[]`,
+`communes[]` (where the vines are), `sources` (URLs), `source_confidence`.
+Computed by `scripts/build_alsace_vineyard.py` (migration 0015, ADR 0019):
+`composition` jsonb (slices of the surface — declared grand cru / lieu-dit or
+the communes rest — with area, basis, score, outline), `unresolved_places[]`,
+`score_sun` / `score_cool` (area-weighted over the composition),
+`sector_score_*` (every vine within 1.5 km), `terroir` jsonb,
+`score_confidence`. No plot is attributed to a domain. Read through the flat
+view `wine_domains_api` and `/api/wine/domains` (`WineDomain`, `DomainPlace`).
 
 ### `vine_plots`
 Planted vines (migration 0013, ADR 0016) — RPG parcels (crop group 21) plus BD
@@ -125,13 +128,15 @@ TOPO "Vigne" zones outside the RPG, clipped to the AOC aire. `source`
 `wine_area_id`, `lieu_dit`, `area_ha`, `geom`; terrain `altitude_m`,
 `slope_pct`, `aspect_deg`, `geol_notation` / `geol_descr` / `geol_family`,
 `soil_name`; `score_sun`, `score_cool`, `score_components` (each criterion in
-[0, 1]); estimated `domain_id`, `domain_distance_m`, `domain_via_cru`.
+[0, 1]). No domain column since migration 0015 (ADR 0019).
 Streamed as the `wine-vine-plots` MVT layer from z13. Method:
 [`terroir-score.md`](terroir-score.md).
 
 `prune_alsace_vineless_geodata()` deletes the Alsace INAO `wine_parcels`
 (aires, no longer drawn) and the Alsace lieux-dits that touch no vine; it
-refuses to run while `vine_plots` has no Alsace row.
+refuses to run while `vine_plots` has no Alsace row. `build_alsace_vineyard.py`
+then clips each remaining Alsace lieu-dit `geom` to its planted part
+(lieu-dit ∩ `vine_plots`) and drops those left with < 0.1 ha (ADR 0017).
 
 ### `wine_real_coverage` (view)
 Root regions holding at least one real PostGIS contour. Read through

@@ -28,12 +28,23 @@ observations exist.
 **Alsace, planted vines (ADR 0016).** From zoom 13 the map shows the vines
 actually planted, coloured by terroir score; a bottom-left control switches
 the colouring (score soleil / fraîcheur, géologie, pente, exposition,
-altitude, domaine estimé) and shows its legend. Lieux-dits keep their outline
+altitude) and shows its legend. The exposition legend is a
+compass rose (8 sectors, flat slopes in the centre) whose colours follow the
+sun reading of the score: warm at S/SE, cool at N. Lieux-dits keep their outline
 and name but no fill. Clicking a vine opens its card (place, terrain, score
-with per-criterion bars and a soleil / fraîcheur toggle, estimated domain).
-Domain cellars are markers (colour = score); clicking one — or a row of the
-"Domaines de référence" ranking in the Alsace region panel — opens the domain
-card and outlines its estimated plots in pink.
+with per-criterion bars and a soleil / fraîcheur toggle, and the reference
+domains that declare its grand cru or lieu-dit). Domain cellars are markers
+(colour = score); clicking one — or a row of the "Domaines de référence"
+ranking in the Alsace region panel — opens the domain card (composition bar
+and list, soleil / fraîcheur toggle) and outlines **only the declared grands
+crus and lieux-dits**, dashed pink, labelled "name · ≈ n ha". Declared places
+outside the view become chips at the top left ("Rangen · 33 km ↓") that fly to
+them. No plot is outlined as the domain's (ADR 0019).
+
+**Grand cru boundary over the parcellaire (ADR 0018).** From zoom 13 the
+grand cru fill fades to a faint wash and its boundary is redrawn above
+parcels, lieux-dits and vines as a red line on a light casing, on every
+basemap, so the cru stays readable without hiding the plots.
 
 ## Mobile — main screen
 

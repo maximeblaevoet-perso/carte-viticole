@@ -27,9 +27,10 @@ import {
   VINE_SOURCE_LAYER,
   addDomainLayers,
   addVineLayers,
-  highlightDomainPlots,
+  highlightDomain,
   setVineColor,
 } from "@/components/map/vineLayers";
+import { OffscreenPlaces } from "@/components/map/OffscreenPlaces";
 import type { VineColorBy } from "@/components/map/vineLayers";
 import { fetchDomains } from "@/hooks/useDomains";
 import {
@@ -96,6 +97,15 @@ const PREMIER_CRU_COLOR = "#d9736f";
  */
 const CRU_OPACITY_BOOST = 0.18;
 const CRU_WIDTH_BOOST = 1.2;
+
+/**
+ * Grand cru boundary redrawn above parcels / lieux-dits / vines (ADR 0018).
+ * Already styled for every basemap (light casing + tier red): the basemap
+ * theme must not repaint them.
+ */
+const GRAND_CRU_CASING = "real-outline-grand-cru-casing";
+const GRAND_CRU_OUTLINE = "real-outline-grand-cru";
+const GRAND_CRU_OUTLINE_LAYERS = new Set([GRAND_CRU_CASING, GRAND_CRU_OUTLINE]);
 
 /** `+boost` on a grand cru, unchanged otherwise. Works on MVT properties. */
 function cruBoost(
@@ -247,6 +257,9 @@ const SRC = {
   cru: "wine-areas-cru",
   parcels: "wine-parcels",
   lieux: "wine-lieux-dits",
+  // One point per lieu-dit (migration 0014): a clipped Alsace lieu-dit is a
+  // multipolygon and a polygon label would repeat on every vine (ADR 0017).
+  lieuxLabels: "wine-lieux-dits-labels",
   vines: VINE_SOURCE_LAYER,
 } as const;
 
@@ -292,7 +305,7 @@ export function WineMap({
   onSelectArea,
 }: {
   selectedAreaId: string | null;
-  /** Rich real selection — a domain or a vine plot highlights the domain's plots. */
+  /** Rich real selection — a domain outlines its declared places. */
   selectedFeature?: SelectedGeoFeature | null;
   onSelectArea: (areaId: string, feature?: SelectedGeoFeature) => void;
 }) {
@@ -704,25 +717,25 @@ export function WineMap({
     else map.once("idle", run);
   }, [selectedAreaId]);
 
-  // A selected domain — or the estimated domain of a selected vine plot —
-  // outlines all its plots; selecting a domain also flies to its cellar.
+  // A selected domain outlines the grands crus and lieux-dits it declares
+  // (ADR 0019) and flies to its cellar; places off-screen become chips.
+  const selectedDomain = selectedFeature?.kind === "domain" ? selectedFeature.domain ?? null : null;
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !USE_REAL) return;
-    const domainId =
-      selectedFeature?.kind === "domain"
-        ? selectedFeature.id
-        : selectedFeature?.vinePlot?.domainId ?? null;
     const run = () => {
-      highlightDomainPlots(map, domainId);
-      const d = selectedFeature?.domain;
-      if (d) {
-        map.easeTo({ center: [d.lon, d.lat], zoom: Math.max(map.getZoom(), 13.2), duration: 700 });
+      highlightDomain(map, selectedDomain);
+      if (selectedDomain) {
+        map.easeTo({
+          center: [selectedDomain.lon, selectedDomain.lat],
+          zoom: Math.max(map.getZoom(), 12.5),
+          duration: 700,
+        });
       }
     };
     if (mapReadyRef.current) run();
     else map.once("idle", run);
-  }, [selectedFeature]);
+  }, [selectedDomain]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -791,6 +804,7 @@ export function WineMap({
       <div ref={containerRef} className="h-full w-full" />
       <BasemapSwitcher basemap={basemap} onBasemapChange={setBasemap} />
       {USE_REAL && <VineColorSwitcher value={vineColorBy} onChange={setVineColorBy} />}
+      {USE_REAL && <OffscreenPlaces map={mapRef.current} domain={selectedDomain} />}
       <GeologyReadout
         geology={geology}
         onClose={() => {
@@ -846,7 +860,12 @@ function applyWineTheme(
   basePaint: Map<string, { color: unknown; width: unknown }>
 ) {
   for (const layer of map.getStyle().layers ?? []) {
-    if (BASE_LAYER_IDS.has(layer.id) || THEME_EXEMPT_LAYERS.has(layer.id)) continue;
+    if (
+      BASE_LAYER_IDS.has(layer.id) ||
+      THEME_EXEMPT_LAYERS.has(layer.id) ||
+      GRAND_CRU_OUTLINE_LAYERS.has(layer.id)
+    )
+      continue;
 
     if (layer.type === "line") {
       let base = basePaint.get(layer.id);
@@ -904,11 +923,10 @@ function applyWineTheme(
 }
 
 function domainPopupHtml(d: WineDomain): string {
-  const cov = d.coverage != null ? `${Math.round(d.coverage * 100)} %` : "—";
   return (
     `<div class="wp-name">${d.name}</div>` +
     `<div class="wp-meta">${d.commune ?? ""}${d.surfaceHa != null ? ` · ${d.surfaceHa} ha déclarés` : ""}</div>` +
-    `<div class="wp-data">Score estimé ${d.scoreSun ?? "—"} · couverture ${cov}</div>` +
+    `<div class="wp-data">Score estimé ${d.scoreSun ?? "—"} · confiance ${d.scoreConfidence ?? "—"}</div>` +
     `<div class="wp-hint">Cliquer pour la fiche du domaine</div>`
   );
 }
@@ -991,10 +1009,6 @@ function featureFromProps(
       scoreSun: num(p.score_sun),
       scoreCool: num(p.score_cool),
       scoreComponents: parseComponents(p.score_components),
-      domainId: str(p.domain_id),
-      domainName: str(p.domain_name),
-      domainDistanceM: num(p.domain_distance_m),
-      domainViaCru: p.domain_via_cru == null ? null : bool(p.domain_via_cru),
     };
     return {
       kind: "vine-plot",
@@ -1060,7 +1074,6 @@ function popupHtml(sourceLayer: string, f: SelectedGeoFeature): string {
       `<div class="wp-meta">${rockFamilyLabel(v.geolFamily)} · pente ${fmt1(v.slopePct, "%")}` +
       ` · ${aspectLabel(v.aspectDeg, v.slopePct)} · ${fmt1(v.altitudeM, "m")}</div>` +
       `<div class="wp-data">Score ${v.scoreSun ?? "—"} (soleil) · ${v.scoreCool ?? "—"} (fraîcheur)</div>` +
-      (v.domainName ? `<div class="wp-meta">Domaine estimé : ${v.domainName}</div>` : "") +
       `<div class="wp-hint">Cliquer pour la fiche</div>`
     );
   }
@@ -1134,12 +1147,25 @@ function addRealLayers(
     minzoom: number,
     maxzoom: number,
     baseOpacity: number,
-    labelSize: number
+    labelSize: number,
+    /** Zoom from which the fill fades to a faint wash (one zoom level). */
+    fadeFillFrom?: number
   ) => {
     const fillId = `real-fill-${sourceLayer}`;
     const lineId = `real-line-${sourceLayer}`;
     const labelId = `real-label-${sourceLayer}`;
 
+    const fillOpacity = cruBoost(
+      [
+        "case",
+        ["boolean", ["feature-state", "selected"], false],
+        0.55,
+        ["boolean", ["feature-state", "hover"], false],
+        baseOpacity + 0.16,
+        baseOpacity,
+      ] as unknown as maplibregl.ExpressionSpecification,
+      CRU_OPACITY_BOOST
+    );
     map.addLayer({
       id: fillId,
       type: "fill",
@@ -1149,17 +1175,18 @@ function addRealLayers(
       maxzoom,
       paint: {
         "fill-color": areaColor,
-        "fill-opacity": cruBoost(
-          [
-            "case",
-            ["boolean", ["feature-state", "selected"], false],
-            0.55,
-            ["boolean", ["feature-state", "hover"], false],
-            baseOpacity + 0.16,
-            baseOpacity,
-          ] as unknown as maplibregl.ExpressionSpecification,
-          CRU_OPACITY_BOOST
-        ),
+        "fill-opacity":
+          fadeFillFrom === undefined
+            ? fillOpacity
+            : ([
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                fadeFillFrom,
+                fillOpacity,
+                fadeFillFrom + 1,
+                ["*", fillOpacity, 0.2],
+              ] as unknown as maplibregl.ExpressionSpecification),
       },
     });
     map.addLayer({
@@ -1213,7 +1240,9 @@ function addRealLayers(
   // Zoom bands mirror LEVEL_ZOOM + wine_mvt hard gates (ADR 0010).
   addAreaSet(SRC.region, LEVEL_ZOOM[1].min, LEVEL_ZOOM[1].max, 0.14, 14);
   addAreaSet(SRC.appellation, LEVEL_ZOOM[2].min, LEVEL_ZOOM[2].max, 0.22, 12);
-  addAreaSet(SRC.cru, LEVEL_ZOOM[4].min, LEVEL_ZOOM[4].max, 0.3, 11);
+  // Once the parcellaire shows (z13) a cru wash would tint every plot: fade it
+  // and let the grand cru outline above the parcels carry the boundary.
+  addAreaSet(SRC.cru, LEVEL_ZOOM[4].min, LEVEL_ZOOM[4].max, 0.3, 11, 12.5);
 
   // Parcels (fine INAO parcellaire) — outline emphasis, high zoom only.
   map.addLayer({
@@ -1286,11 +1315,48 @@ function addRealLayers(
   });
   // Planted vines above the lieux-dits, below their names.
   addVineLayers(map, handles.vineColorBy);
+  // Grand cru boundary redrawn above the parcellaire: from zoom 13 its own
+  // outline sits under parcels, lieux-dits and vines and gets lost. Outline
+  // only (light casing + red line), no fill, so the plots stay readable
+  // (ADR 0018).
+  const grandCruOnly: maplibregl.FilterSpecification = [
+    "==",
+    ["get", "region_type"],
+    "grand-cru",
+  ];
+  map.addLayer({
+    id: GRAND_CRU_CASING,
+    type: "line",
+    source: "wine",
+    "source-layer": SRC.cru,
+    minzoom: 12.5,
+    filter: grandCruOnly,
+    layout: { "line-join": "round" },
+    paint: {
+      "line-color": "#fbf7ef",
+      "line-width": ["interpolate", ["linear"], ["zoom"], 12.5, 3.5, 16, 6],
+      "line-opacity": ["interpolate", ["linear"], ["zoom"], 12.5, 0, 13.2, 0.85],
+    },
+  });
+  map.addLayer({
+    id: GRAND_CRU_OUTLINE,
+    type: "line",
+    source: "wine",
+    "source-layer": SRC.cru,
+    minzoom: 12.5,
+    filter: grandCruOnly,
+    layout: { "line-join": "round" },
+    paint: {
+      "line-color": GRAND_CRU_COLOR,
+      "line-width": ["interpolate", ["linear"], ["zoom"], 12.5, 1.8, 16, 3],
+      "line-opacity": ["interpolate", ["linear"], ["zoom"], 12.5, 0, 13.2, 1],
+    },
+  });
   map.addLayer({
     id: "wine-lieux-dits-labels",
     type: "symbol",
     source: "wine",
-    "source-layer": SRC.lieux,
+    "source-layer": SRC.lieuxLabels,
     minzoom: 13.5,
     layout: {
       "text-field": ["get", "name"],

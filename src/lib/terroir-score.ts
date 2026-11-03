@@ -8,9 +8,11 @@
  */
 import grid from "@/data/terroir-score-alsace.json";
 import type {
+  DomainPlace,
   ScoreComponents,
   ScoreMode,
   SelectedGeoFeature,
+  VinePlot,
   WineDomain,
 } from "@/lib/types";
 
@@ -158,4 +160,32 @@ export function parseComponents(raw: unknown): ScoreComponents | null {
   } catch {
     return null;
   }
+}
+
+const foldName = (s: string) =>
+  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+/**
+ * Domains that declare the grand cru or lieu-dit a vine plot lies in (ADR 0019).
+ * A place pinned to cadastral lieux-dits (Clos Saint-Urbain in the Rangen)
+ * matches only there. Never says the plot belongs to the domain.
+ */
+export function domainsDeclaringPlot(
+  domains: WineDomain[],
+  plot: VinePlot
+): { domain: WineDomain; place: DomainPlace }[] {
+  const out: { domain: WineDomain; place: DomainPlace }[] = [];
+  for (const domain of domains) {
+    const place = domain.composition.find((p) => {
+      if (p.kind === "reste") return false;
+      if (p.lieux) {
+        return p.lieux.some(
+          (l) => l.lieu_dit === plot.lieuDit && foldName(l.commune) === foldName(plot.communeName ?? "")
+        );
+      }
+      return !!p.grandCru && !!plot.grandCru && foldName(p.grandCru) === foldName(plot.grandCru);
+    });
+    if (place) out.push({ domain, place });
+  }
+  return out;
 }

@@ -215,9 +215,11 @@ not the plot's soil). All `source_type = real`; the score derived from them is
 a computed indicator documented in [`terroir-score.md`](terroir-score.md).
 
 **Reference domains** (`scripts/data/alsace-domains.json`) are `manual`: a
-compiled list (estate sites, guides, press) with a URL for every surface. The
-plots attributed to a domain are a geographic **estimate** — the casier
-viticole is confidential and the RPG does not name the farmer.
+compiled list (estate sites, guides, press) with a URL for every surface. A
+domain's score is composed from the grands crus and lieux-dits it declares
+and the average of its communes (ADR 0019): an **estimate** — no plot is
+attributed, the casier viticole is confidential and the RPG does not name the
+farmer.
 
 ### Regional scope (initial)
 
