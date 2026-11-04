@@ -28,7 +28,10 @@ observations exist.
 **Alsace, planted vines (ADR 0016).** From zoom 13 the map shows the vines
 actually planted, coloured by terroir score; a bottom-left control switches
 the colouring (score soleil / fraîcheur, géologie, pente, exposition,
-altitude) and shows its legend. The exposition legend is a
+altitude) and shows its legend. The géologie legend groups rock families
+the way wine talks about soils (calcaires et craies, marnes et argiles,
+sables et grès, granites, métamorphiques, volcaniques, then formations
+superficielles), one hue per group, light → dark inside (ADR 0020). The exposition legend is a
 compass rose (8 sectors, flat slopes in the centre) whose colours follow the
 sun reading of the score: warm at S/SE, cool at N. Lieux-dits keep their outline
 and name but no fill. Clicking a vine opens its card (place, terrain, score

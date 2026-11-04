@@ -4,7 +4,7 @@ import {
   ALTITUDE_RAMP,
   ASPECT_COLORS,
   ASPECT_SECTORS,
-  FAMILY_COLORS,
+  GEOLOGY_GROUPS,
   SLOPE_RAMP,
   VINE_COLOR_OPTIONS,
 } from "@/components/map/vineLayers";
@@ -30,9 +30,23 @@ function Swatches({ items }: { items: [string, string][] }) {
   return (
     <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
       {items.map(([label, color]) => (
-        <div key={label} className="flex items-center gap-1 text-[10px] text-slate-600">
-          <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: color }} />
-          <span className="truncate">{label}</span>
+        <div key={label} className="flex items-start gap-1 text-[10px] leading-tight text-slate-600">
+          <span className="mt-px h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: color }} />
+          <span>{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Geology legend: one titled block per group, scrollable when long. */
+function GeologyLegend() {
+  return (
+    <div className="max-h-64 space-y-1.5 overflow-y-auto pr-1">
+      {GEOLOGY_GROUPS.map((g) => (
+        <div key={g.label}>
+          <p className="text-[10px] font-semibold text-slate-700">{g.label}</p>
+          <Swatches items={g.families.map(([k, c]) => [ROCK_FAMILY_LABELS[k] ?? k, c])} />
         </div>
       ))}
     </div>
@@ -118,12 +132,7 @@ export function VineColorSwitcher({
   else if (value === "pente") legend = <Ramp stops={SLOPE_RAMP} unit=" %" />;
   else if (value === "altitude") legend = <Ramp stops={ALTITUDE_RAMP} unit=" m" />;
   else if (value === "exposition") legend = <AspectCompass />;
-  else if (value === "geologie")
-    legend = (
-      <Swatches
-        items={Object.entries(FAMILY_COLORS).map(([k, c]) => [ROCK_FAMILY_LABELS[k] ?? k, c])}
-      />
-    );
+  else if (value === "geologie") legend = <GeologyLegend />;
   else
     legend = (
       <Swatches
@@ -136,7 +145,7 @@ export function VineColorSwitcher({
     );
 
   return (
-    <div className="pointer-events-auto absolute bottom-8 left-3 z-10 w-56 rounded-lg border border-slate-200 bg-white/95 p-2 text-xs shadow-md ring-1 ring-black/5">
+    <div className={`pointer-events-auto absolute bottom-8 left-3 z-10 ${value === "geologie" ? "w-72" : "w-56"} rounded-lg border border-slate-200 bg-white/95 p-2 text-xs shadow-md ring-1 ring-black/5`}>
       <label className="mb-1 flex items-center justify-between gap-2 font-medium text-slate-700">
         <span>Vignes plantées</span>
         <select

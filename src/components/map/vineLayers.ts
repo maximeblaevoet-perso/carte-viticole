@@ -42,30 +42,70 @@ export const VINE_COLOR_OPTIONS: { id: VineColorBy; label: string }[] = [
   { id: "altitude", label: "Altitude" },
 ];
 
-/** Rock family colours (keys of the score grid). */
-export const FAMILY_COLORS: Record<string, string> = {
-  alluvions: "#cfc9a6",
-  cailloutis: "#d99a2b",
-  colluvions: "#a85d22",
-  eboulis: "#8c4a1c",
-  solifluxion: "#b8743a",
-  loess: "#e9dcae",
-  limons: "#efe6c4",
-  calcaire: "#4f78ad",
-  marne: "#8fa7b8",
-  marnes_gypse: "#b3c4d1",
-  conglomerat: "#8e6249",
-  gres: "#c98b5a",
-  sable: "#f7e9a6",
-  argile: "#9d8f7a",
-  granite: "#e07b91",
-  gneiss: "#c76b9a",
-  micaschiste: "#a56cc1",
-  schiste: "#6d5a8a",
-  grauwacke: "#5b6b73",
-  volcanique: "#6b4e8f",
-  autre: "#a8a8a8",
-};
+/** A wine-reading group of rock families: one hue, light → dark inside (ADR 0020). */
+export interface GeologyGroup {
+  label: string;
+  /** [score-grid key, colour], in legend order. */
+  families: [string, string][];
+}
+
+/**
+ * Rock families grouped the way winegrowers talk about soils — calcaire,
+ * argilo-calcaire, siliceux, granitique, schisteux, volcanique, alluvial —
+ * one hue per group so neighbours on the map read as related. Every key of
+ * `terroir_score.FAMILIES` has a colour; none falls back to "autre" grey.
+ */
+export const GEOLOGY_GROUPS: GeologyGroup[] = [
+  {
+    label: "Calcaires et craies",
+    families: [["craie", "#dbe9f6"], ["travertin", "#93bde3"], ["calcaire", "#2f6db3"]],
+  },
+  {
+    label: "Marnes et argiles",
+    families: [["marnes_gypse", "#b9e4d8"], ["marne", "#5fb39c"], ["argile", "#2e7d5b"]],
+  },
+  {
+    label: "Sables et grès",
+    families: [
+      ["sable", "#fbe58a"], ["gaize", "#f6c453"], ["gres", "#ee9b3a"],
+      ["conglomerat", "#d0661f"], ["breche", "#b3401a"], ["grauwacke", "#7c2d12"],
+    ],
+  },
+  {
+    label: "Granites",
+    families: [["granite", "#ee7fa6"], ["magmatique", "#b3245f"]],
+  },
+  {
+    label: "Roches métamorphiques",
+    families: [
+      ["quartzite", "#ddd2f7"], ["gneiss", "#b9a3ec"], ["micaschiste", "#9473d6"],
+      ["schiste", "#6a45b0"], ["metamorphique_basique", "#3f2a78"],
+    ],
+  },
+  {
+    label: "Roches volcaniques",
+    families: [["volcanique", "#2f2f35"]],
+  },
+  {
+    // Transported cover rather than bedrock: browns on slopes, olives in
+    // valleys and on terraces, pale sands for wind-blown silts.
+    label: "Formations superficielles",
+    families: [
+      ["eboulis", "#6b4a2e"], ["solifluxion", "#b07d4b"], ["colluvions", "#d9b98c"],
+      ["glaciaire", "#5f6e2c"], ["cailloutis", "#93a24a"], ["alluvions", "#c5cf8a"],
+      ["loess", "#d8c79a"], ["limons", "#efe7cf"],
+    ],
+  },
+  {
+    label: "Autres",
+    families: [["eau", "#9edcf0"], ["tourbe", "#2b211a"], ["remblais", "#cfcfcf"], ["autre", "#a3a3a3"]],
+  },
+];
+
+/** Rock family colours (keys of the score grid), flattened from the groups. */
+export const FAMILY_COLORS: Record<string, string> = Object.fromEntries(
+  GEOLOGY_GROUPS.flatMap((g) => g.families)
+);
 
 /**
  * Cyclic wheel following the sun reading of the score grid: warmest at S/SE,
