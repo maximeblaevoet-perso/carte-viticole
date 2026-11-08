@@ -7,11 +7,11 @@
  *   zoom 11 ─ 13     crus (premier = doré, grand = orange brique)
  *   zoom 13 +        planted vines, lieux-dits
  *
- * Each level fades in as the previous one fades to a faint wash; its
- * **outline never disappears** and, once the level is no longer the one being
- * read, its name runs along that outline in the same colour — the user always
- * knows which secteur / village they are in, and never zooms through a blank
- * band (Mâconnais z11–13 before this).
+ * Each level fades in as the previous one fades to a faint wash, so the user
+ * never zooms through a blank band (Mâconnais z11–13 before this). Only the
+ * level **right above** the one being read keeps its outline, in a neutral
+ * brown, with its name along it: région around the villages' secteurs no
+ * more, secteur around the villages, village around the crus and vines.
  *
  * Colours: `map_color_idx` (migration 0017) picks a pastel so two touching
  * siblings never share one. Crus are a quality tier, not a place: one colour
@@ -43,6 +43,14 @@ export const AREA_INK = [
   "#9c3a3a", "#5b3f99", "#2f7a3a", "#2b6596",
   "#a35a17", "#7d6a0c", "#1d7a66", "#8a3b74",
 ];
+
+/**
+ * Outline / edge-name colour of a level once its children are being read: a
+ * coloured parent outline around differently coloured children (violet
+ * Bourgogne around a pale yellow secteur) clashes. Parents are then told
+ * apart by line width and name size, not by hue.
+ */
+export const PARENT_EDGE_COLOR = "#3d3530";
 
 /** MVT source-layers carrying the hierarchy (migration 0017). */
 export const AREA_SRC = {
@@ -115,6 +123,17 @@ interface LineSpec {
   width: Expr;
   casing?: Expr;
   dash?: number[];
+  /**
+   * Zoom past which the outline fades out: only the level right above the
+   * one being read keeps its outline (no stack of grandparent lines).
+   */
+  visibleUntil?: number;
+}
+
+/** Constant opacity, or a fade-out ending half a zoom after `until`. */
+function lineOpacity(base: number, until?: number): Expr | number {
+  if (until === undefined) return base;
+  return e(["interpolate", ["linear"], ["zoom"], until, base, until + 0.5, 0]);
 }
 
 /**
@@ -140,7 +159,12 @@ function addLine(map: MlMap, spec: LineSpec) {
       minzoom: spec.minzoom,
       ...(spec.filter ? { filter: spec.filter } : {}),
       layout: { "line-join": "round" },
-      paint: { "line-color": "#fbf7ef", "line-width": spec.casing, "line-opacity": 0.7 },
+      ...(spec.visibleUntil !== undefined ? { maxzoom: spec.visibleUntil + 0.5 } : {}),
+      paint: {
+        "line-color": "#fbf7ef",
+        "line-width": spec.casing,
+        "line-opacity": lineOpacity(0.65, spec.visibleUntil),
+      },
     });
     HIERARCHY_LAYERS.add(casingId);
     INK_LAYERS.push({ id: casingId, ink: "#fbf7ef", kind: "casing" });
@@ -151,12 +175,13 @@ function addLine(map: MlMap, spec: LineSpec) {
     source: "wine",
     "source-layer": spec.sourceLayer,
     minzoom: spec.minzoom,
+    ...(spec.visibleUntil !== undefined ? { maxzoom: spec.visibleUntil + 0.5 } : {}),
     ...(spec.filter ? { filter: spec.filter } : {}),
     layout: { "line-join": "round" },
     paint: {
       "line-color": spec.color,
       "line-width": spec.width,
-      "line-opacity": 0.95,
+      "line-opacity": lineOpacity(0.95, spec.visibleUntil),
       ...(spec.dash ? { "line-dasharray": spec.dash } : {}),
     },
   });
@@ -228,7 +253,9 @@ export function addAreaFills(map: MlMap, regionColor: Expr): { layerId: string; 
     maxzoom: 11,
     paint: {
       "fill-color": regionColor,
-      "fill-opacity": fade([[4, 0.22], [7, 0.18], [9, 0.06], [11, 0]]),
+      // Gone once the secteurs carry the colour: a violet wash under a pale
+      // pastel turns it muddy.
+      "fill-opacity": fade([[4, 0.22], [7, 0.16], [8.2, 0.03], [10, 0]]),
     },
   });
   // Sous-régions: the coarse reading, then a faint wash that still says
@@ -299,6 +326,10 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
       ]),
     ]);
 
+  /** Own colour while the level is read, neutral once its children are. */
+  const handOver = (own: Expr | string, readUntil: number) =>
+    e(["interpolate", ["linear"], ["zoom"], readUntil - 0.3, own, readUntil + 0.5, PARENT_EDGE_COLOR]);
+
   // --- outlines (bottom → top: finest first, so parents stay on top) -----
   addLine(map, {
     id: "real-line-cru",
@@ -313,7 +344,7 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     sourceLayer: AREA_SRC.appellation,
     filter: isLevel(3),
     minzoom: 9.4,
-    color: ink,
+    color: handOver(ink, AREA_BANDS.village.to),
     width: width([[9.4, 0.5], [11, 1.1], [14, 1.8]]),
   });
   addLine(map, {
@@ -321,7 +352,9 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     sourceLayer: AREA_SRC.appellation,
     filter: isLevel(2),
     minzoom: 6.5,
-    color: tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, ink),
+    color: handOver(tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, ink), AREA_BANDS.secteur.to),
+    // Parent of the villages only: gone once the crus are read.
+    visibleUntil: AREA_BANDS.village.to,
     width: width([[6.5, 0.8], [10, 1.8], [14, 2.6]]),
     casing: zoomWidth(6.5, 1.6, 10, 3.4, 14, 4.6),
   });
@@ -329,7 +362,9 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     id: "real-line-region",
     sourceLayer: AREA_SRC.region,
     minzoom: 0,
-    color: regionColor,
+    color: handOver(regionColor, AREA_BANDS.region.to),
+    // Parent of the secteurs only: gone once the villages are read.
+    visibleUntil: AREA_BANDS.secteur.to,
     width: width([[4, 1.2], [9, 2.4], [14, 3.2]]),
     casing: zoomWidth(4, 2.4, 9, 4.2, 14, 5.2),
   });
@@ -392,9 +427,10 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     id: "real-label-region-edge",
     sourceLayer: AREA_SRC.region,
     minzoom: AREA_BANDS.region.to,
+    maxzoom: AREA_BANDS.secteur.to + 0.3,
     text: name,
     size: 12,
-    ink: regionColor,
+    ink: PARENT_EDGE_COLOR,
     upper: true,
     alongLine: true,
     spacing: 520,
@@ -404,9 +440,10 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     sourceLayer: AREA_SRC.appellation,
     filter: isLevel(2),
     minzoom: AREA_BANDS.secteur.to,
+    maxzoom: AREA_BANDS.village.to + 0.3,
     text: name,
     size: 12,
-    ink: tier(GRAND_CRU_DARK, PREMIER_CRU_DARK, ink),
+    ink: PARENT_EDGE_COLOR,
     upper: true,
     alongLine: true,
     spacing: 460,
@@ -418,7 +455,7 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     minzoom: AREA_BANDS.village.to,
     text: name,
     size: 11.5,
-    ink,
+    ink: PARENT_EDGE_COLOR,
     alongLine: true,
     spacing: 380,
   });
@@ -439,7 +476,6 @@ export function applyHierarchyTheme(map: MlMap, theme: WineLayerTheme) {
       map.setPaintProperty(l.id, "text-halo-width", dark ? 2 : 1.6);
     } else if (l.kind === "casing") {
       map.setPaintProperty(l.id, "line-color", dark ? "#ffffff" : "#fbf7ef");
-      map.setPaintProperty(l.id, "line-opacity", dark ? 0.55 : 0.7);
     }
   }
 }

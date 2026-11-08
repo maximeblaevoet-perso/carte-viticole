@@ -55,8 +55,12 @@ one fading to a faint wash but never disappearing: région (≤ 7.5) → secteur
 (7–10.3) → villages / appellations (9.6–12.8) → crus (≥ 10.8) → vines and
 lieux-dits (≥ 13). Each zone has its own pastel (touching neighbours differ)
 and a single name at its centre; once a level is no longer the one being
-read, its outline stays above the vines and its name runs along the outline
-in the same colour. Cru labels show the short name plus a small "1ER CRU" /
+read, its outline stays above the vines, turns a neutral brown (a coloured
+parent around differently coloured children clashed) and its name runs along
+the outline in the same brown; parents differ by line width and name size.
+Only the level right above the one being read keeps its outline (région while
+reading secteurs, secteur while reading villages, village while reading crus
+and vines). Cru labels show the short name plus a small "1ER CRU" /
 "GRAND CRU" line; a lieu-dit label is smaller, grey, and hidden when it only
 repeats its cru's name.
 

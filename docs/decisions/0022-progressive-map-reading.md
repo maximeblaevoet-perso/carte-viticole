@@ -33,7 +33,13 @@ Revue de la carte en Bourgogne (retour utilisateur) :
    `wine_mvt`) : région, secteurs et villages sont servis à tous les zooms
    (géométrie découpée à la tuile avant simplification). Leurs contours sont
    dessinés **au-dessus** des vignes ; quand le niveau n'est plus celui qu'on
-   lit, son nom court le long de son contour, de la même couleur.
+   lit, son contour passe à un brun neutre (`PARENT_EDGE_COLOR`) et son nom
+   court le long du contour, de la même couleur : un contour violet
+   (Bourgogne) autour d'un secteur jaune pâle jurait. Les parents se
+   distinguent alors par l'épaisseur du trait et la taille du nom. Seul le
+   niveau **juste au-dessus** garde son contour (empiler région + secteur +
+   village faisait trop de traits) : la région s'efface quand on lit les
+   villages, le secteur quand on lit les crus.
 3. **Une étiquette par zone** : nouvelle couche MVT `wine-areas-labels`,
    un point par aire (`wine_areas.label_point`, sur la plus grande partie).
 4. **Une couleur par zone** : `wine_areas.map_color_idx` (0–7), coloration
