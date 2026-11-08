@@ -1,13 +1,16 @@
 /**
  * Terroir score of a planted vine plot — display side (ADR 0016).
  *
- * The score is computed offline by `scripts/terroir_score.py` from the grid in
- * `src/data/terroir-score-alsace.json`, and stored per plot with its five
- * components in [0, 1]. This module only re-weights stored components and
- * labels them: the step tables and family values are never duplicated here.
+ * The score is computed offline by `scripts/terroir_score.py` from the grid of
+ * the plot's region (`src/data/terroir-score-<region>.json`), and stored per
+ * plot with its five components in [0, 1]. This module only re-weights stored
+ * components and labels them: the step tables and family values are never
+ * duplicated here.
  */
 import grid from "@/data/terroir-score-alsace.json";
+import gridBourgogne from "@/data/terroir-score-bourgogne.json";
 import type {
+  CruLevel,
   DomainPlace,
   ScoreComponents,
   ScoreMode,
@@ -16,9 +19,43 @@ import type {
   WineDomain,
 } from "@/lib/types";
 
+/** Alsace grid: the default, and the reference for the criteria keys. */
 export const SCORE_GRID = grid;
 
 export type Criterion = keyof typeof grid.poids;
+
+export interface ScoreGridView {
+  version: string;
+  mode_defaut: string;
+  poids: Record<Criterion, number>;
+  exposition: { plat_pente_max: number };
+}
+
+const GRIDS: Record<string, ScoreGridView> = {
+  alsace: grid,
+  bourgogne: gridBourgogne,
+};
+
+/** Score grid of a region (ADR 0021); the Alsace grid when it has none. */
+export function gridFor(regionId: string | null | undefined): ScoreGridView {
+  return (regionId && GRIDS[regionId]) || grid;
+}
+
+export const CRU_LEVEL_LABELS: Record<CruLevel, string> = {
+  grand_cru: "Grand cru",
+  premier_cru: "Premier cru",
+  village: "Village / communale",
+  regional: "Régionale",
+};
+
+/** Readable appellation of a plot: "Grand cru Chambertin", "Meursault 1er cru Les Perrières"… */
+export function cruLabel(v: VinePlot): string {
+  if (v.grandCru) return `Grand cru ${v.grandCru}`;
+  if (v.cruLevel === "premier_cru") {
+    return v.premierCru ? `${v.village ?? ""} 1er cru ${v.premierCru}`.trim() : v.appellation ?? "Premier cru";
+  }
+  return v.appellation ?? "—";
+}
 
 export const CRITERIA: { key: Criterion; label: string }[] = [
   { key: "geologie", label: "Géologie" },
@@ -65,10 +102,11 @@ const SECTORS = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"] as const;
 /** Aspect sector, or "plat" under the grid's flat-slope threshold. */
 export function aspectLabel(
   aspectDeg: number | null,
-  slopePct: number | null
+  slopePct: number | null,
+  regionId?: string | null
 ): string {
   if (aspectDeg == null || slopePct == null) return "—";
-  if (slopePct < grid.exposition.plat_pente_max) return "plat";
+  if (slopePct < gridFor(regionId).exposition.plat_pente_max) return "plat";
   return SECTORS[Math.floor((((aspectDeg % 360) + 360) % 360 + 22.5) / 45) % 8];
 }
 
@@ -140,7 +178,7 @@ export function domainSelection(d: WineDomain): SelectedGeoFeature {
     areaHa: d.surfaceHa,
     domain: d,
     provenance: {
-      sourceDatasetId: "manual-alsace-domains",
+      sourceDatasetId: `manual-${d.rootRegionId}-domains`,
       sourceType: d.sourceType,
       isOfficial: false,
       isInformative: true,
@@ -166,7 +204,8 @@ const foldName = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
 /**
- * Domains that declare the grand cru or lieu-dit a vine plot lies in (ADR 0019).
+ * Domains that declare the grand cru, premier cru, village appellation or
+ * lieu-dit a vine plot lies in (ADR 0019, 0021).
  * A place pinned to cadastral lieux-dits (Clos Saint-Urbain in the Rangen)
  * matches only there. Never says the plot belongs to the domain.
  */
@@ -183,7 +222,13 @@ export function domainsDeclaringPlot(
           (l) => l.lieu_dit === plot.lieuDit && foldName(l.commune) === foldName(plot.communeName ?? "")
         );
       }
-      return !!p.grandCru && !!plot.grandCru && foldName(p.grandCru) === foldName(plot.grandCru);
+      if (p.premierCru) return !!plot.appellation && foldName(p.premierCru) === foldName(plot.appellation);
+      if (p.village) {
+        return plot.cruLevel === "village" && !!plot.village && foldName(p.village) === foldName(plot.village);
+      }
+      if (!p.grandCru || !plot.grandCru) return false;
+      const cru = foldName(p.grandCru);
+      return cru === foldName(plot.grandCru) || cru === foldName(plot.appellation ?? "");
     });
     if (place) out.push({ domain, place });
   }

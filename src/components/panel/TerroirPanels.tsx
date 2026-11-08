@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useDomains } from "@/hooks/useDomains";
 import {
   CRITERIA,
-  SCORE_GRID,
+  CRU_LEVEL_LABELS,
   SCORE_MODE_LABELS,
   aspectLabel,
   componentValue,
+  cruLabel,
+  gridFor,
   domainSelection,
   domainsDeclaringPlot,
   rockFamilyLabel,
@@ -68,7 +70,8 @@ function ModeToggle({ mode, onChange }: { mode: ScoreMode; onChange: (m: ScoreMo
   );
 }
 
-function ComponentBars({ c, mode }: { c: ScoreComponents; mode: ScoreMode }) {
+function ComponentBars({ c, mode, regionId }: { c: ScoreComponents; mode: ScoreMode; regionId: string }) {
+  const weights = gridFor(regionId).poids;
   return (
     <div className="space-y-1">
       {CRITERIA.map(({ key, label }) => {
@@ -76,7 +79,7 @@ function ComponentBars({ c, mode }: { c: ScoreComponents; mode: ScoreMode }) {
         return (
           <div key={key} className="flex items-center gap-2 text-[11px]">
             <span className="w-20 shrink-0 text-slate-500">
-              {label} <span className="text-slate-400">({SCORE_GRID.poids[key]})</span>
+              {label} <span className="text-slate-400">({weights[key]})</span>
             </span>
             <div className="h-1.5 flex-1 rounded bg-slate-100">
               <div className="h-1.5 rounded bg-wine-600" style={{ width: `${Math.round(v * 100)}%` }} />
@@ -97,15 +100,16 @@ export function VinePlotDetails({
   plot: VinePlot;
   onSelectDomain: (id: string, feature: SelectedGeoFeature) => void;
 }) {
-  const [mode, setMode] = useState<ScoreMode>(SCORE_GRID.mode_defaut as ScoreMode);
-  const domains = useDomains("alsace");
+  const [mode, setMode] = useState<ScoreMode>(gridFor(plot.rootRegionId).mode_defaut as ScoreMode);
+  const domains = useDomains(plot.rootRegionId);
   const claims = domainsDeclaringPlot(domains, plot);
   const score = mode === "soleil" ? plot.scoreSun : plot.scoreCool;
 
   return (
     <>
       <section className="space-y-1 rounded-lg border border-slate-200 p-2.5">
-        <Row label="Appellation">{plot.grandCru ? `Grand cru ${plot.grandCru}` : plot.appellation ?? "—"}</Row>
+        <Row label="Appellation">{cruLabel(plot)}</Row>
+        {plot.cruLevel && <Row label="Niveau">{CRU_LEVEL_LABELS[plot.cruLevel]}</Row>}
         <Row label="Lieu-dit">{plot.lieuDit ?? "—"}</Row>
         <Row label="Commune">{plot.communeName ?? "—"}</Row>
         <Row label="Surface">{fmt(plot.areaHa, 2, " ha")}</Row>
@@ -132,7 +136,7 @@ export function VinePlotDetails({
           <Row label="Altitude">{fmt(plot.altitudeM, 0, " m")}</Row>
           <Row label="Pente">{fmt(plot.slopePct, 1, " %")}</Row>
           <Row label="Exposition">
-            {aspectLabel(plot.aspectDeg, plot.slopePct)}
+            {aspectLabel(plot.aspectDeg, plot.slopePct, plot.rootRegionId)}
             {plot.aspectDeg != null && plot.slopePct != null && plot.slopePct >= 2 ? ` (${fmt(plot.aspectDeg)}°)` : ""}
           </Row>
         </div>
@@ -147,7 +151,7 @@ export function VinePlotDetails({
           <div className="mb-2 flex items-center gap-2 text-sm">
             <ScorePill score={score} /> <span className="text-slate-500">/ 100</span>
           </div>
-          {plot.scoreComponents && <ComponentBars c={plot.scoreComponents} mode={mode} />}
+          {plot.scoreComponents && <ComponentBars c={plot.scoreComponents} mode={mode} regionId={plot.rootRegionId} />}
           <p className="mt-2 text-[10px] leading-snug text-slate-400">
             Indicatif : lecture homogène de critères publics (géologie 1/50 000, relief, sol
             1/250 000), pas un classement officiel. Pondération entre parenthèses.
@@ -177,7 +181,7 @@ export function VinePlotDetails({
           </ul>
         ) : (
           <p className="text-xs text-slate-500">
-            Aucun domaine de la liste (une soixantaine) ne déclare ce grand cru ou ce lieu-dit.
+            Aucun domaine de la liste ne déclare ce cru, ce village ou ce lieu-dit.
           </p>
         )}
       </section>
@@ -187,6 +191,8 @@ export function VinePlotDetails({
 
 const PLACE_COLORS: Record<DomainPlace["kind"], string> = {
   grand_cru: "#be185d",
+  premier_cru: "#db2777",
+  village: "#f9a8d4",
   lieu_dit: "#f472b6",
   reste: "#cbd5e1",
 };
@@ -195,12 +201,12 @@ const BASIS_LABELS: Record<NonNullable<DomainPlace["basis"]>, string> = {
   declaree: "surface déclarée",
   repartie: "part du total déclaré en grands crus",
   defaut: "surface inconnue : valeur par défaut",
-  reste: "moyenne hors grand cru des communes",
+  reste: "moyenne des vignes village et régionales des communes",
 };
 
 /** Card of one reference domain: declared data, composed score, sources. */
 export function DomainDetails({ domain: d }: { domain: WineDomain }) {
-  const [mode, setMode] = useState<ScoreMode>(SCORE_GRID.mode_defaut as ScoreMode);
+  const [mode, setMode] = useState<ScoreMode>(gridFor(d.rootRegionId).mode_defaut as ScoreMode);
   const fams = Object.entries(d.terroir.familles ?? {});
   const total = d.composition.reduce((t, p) => t + (p.areaHa ?? 0), 0);
   const score = (x: { scoreSun: number | null; scoreCool: number | null }) =>
@@ -272,9 +278,9 @@ export function DomainDetails({ domain: d }: { domain: WineDomain }) {
             </Row>
           )}
           <p className="pt-1 text-[10px] leading-snug text-slate-400">
-            Estimation : chaque grand cru ou lieu-dit déclaré compte pour sa surface déclarée (sinon 25 % du
-            lieu, au plus 12 % du domaine) ; le reste de la surface prend la moyenne des vignes hors grand cru
-            de ses communes. Aucune parcelle n&apos;est attribuée : le casier viticole n&apos;est pas public.
+            Estimation : chaque cru, village ou lieu-dit déclaré compte pour sa surface déclarée (sinon 25 % du
+            lieu, au plus 12 % du domaine) ; le reste de la surface prend la moyenne des vignes village et
+            régionales de ses communes. Aucune parcelle n&apos;est attribuée : le casier viticole n&apos;est pas public.
           </p>
         </div>
       </section>

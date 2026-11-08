@@ -217,15 +217,23 @@ export interface ScoreComponents {
 /**
  * Planted vine polygon (`vine_plots`, migration 0013): an RPG parcel declared
  * in vines, or a BD TOPO "Vigne" zone where the RPG has nothing. Terrain and
- * score are computed offline by `scripts/build_alsace_vineyard.py`.
+ * score are computed offline by `scripts/build_vineyard.py`.
  */
 export interface VinePlot {
   id: string;
+  /** Region of the plot (`alsace`, `bourgogne`): picks the score grid. */
+  rootRegionId: string;
   source: "rpg" | "bdtopo";
   isOrganic: boolean | null;
   communeName: string | null;
   appellation: string | null;
   grandCru: string | null;
+  /** Highest INAO rank of the plot (migration 0016). Never a score input. */
+  cruLevel: CruLevel | null;
+  /** Premier cru climat name (Bourgogne), null if none or unnamed. */
+  premierCru: string | null;
+  /** Communal appellation the plot belongs to (Bourgogne). */
+  village: string | null;
   lieuDit: string | null;
   areaHa: number | null;
   altitudeM: number | null;
@@ -245,8 +253,10 @@ export interface VinePlot {
  * One slice of a domain's declared surface (ADR 0019): a declared grand cru or
  * lieu-dit, or the rest at the average of the domain's communes.
  */
+export type CruLevel = "grand_cru" | "premier_cru" | "village" | "regional";
+
 export interface DomainPlace {
-  kind: "grand_cru" | "lieu_dit" | "reste";
+  kind: "grand_cru" | "premier_cru" | "village" | "lieu_dit" | "reste";
   name: string;
   /** Surface counted in the domain; null when the domain has no surface. */
   areaHa: number | null;
@@ -258,6 +268,10 @@ export interface DomainPlace {
   scoreCool: number | null;
   /** Grand cru name, when the place is (part of) one. */
   grandCru?: string;
+  /** Exact INAO premier cru denomination (Bourgogne). */
+  premierCru?: string;
+  /** Communal appellation (Bourgogne), counted on its village-level vines. */
+  village?: string;
   /** Cadastral lieux-dits the place covers. */
   lieux?: { commune: string; lieu_dit: string }[];
   /** Communes of the rest. */
@@ -282,6 +296,9 @@ export interface WineDomain {
   surfaceHa: number | null;
   surfaceNote: string | null;
   grandsCrus: string[];
+  /** Declared premiers crus / villages (Bourgogne, exact INAO names). */
+  premiersCrus: string[];
+  villages: string[];
   lieuxDits: string[];
   /** Communes where the domain's vines are (declared, else the cellar's). */
   communes: string[];

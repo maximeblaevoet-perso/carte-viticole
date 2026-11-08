@@ -1,0 +1,353 @@
+{
+  "_aide": "Grille du score de potentiel terroir (0-100) des vignes plantées de Bourgogne. Lue par scripts/terroir_score.py (calcul des parcelles et des domaines) et par src/lib/terroir-score.ts (affichage). Indicatif : lecture homogène de critères publics, pas un classement officiel — le classement INAO ne sert qu'au test de hiérarchie (docs/mode-op-replication-region.md). Dérivée de la grille alsacienne : la Côte regarde l'est, le mi-coteau prime, les marno-calcaires jurassiques font le terroir ; l'altitude est lue par secteur car le niveau de base va de 130 m (Chablis) à 240 m (Côte d'Or). Voir docs/terroir-score.md et ADR 0021.",
+  "version": "bourgogne-2026-11",
+  "mode_defaut": "soleil",
+  "poids": {
+    "geologie": 30,
+    "exposition": 20,
+    "pente": 20,
+    "altitude": 15,
+    "sol": 15
+  },
+  "geologie_motifs": [
+    [
+      "virgula|kimmeridgien moyen",
+      1.0
+    ],
+    [
+      "astartes|kimmeridgien inf",
+      0.85
+    ],
+    [
+      "portlandien|barrois",
+      0.75
+    ],
+    [
+      "^colluvions diverses",
+      0.75
+    ],
+    [
+      "saint-cosme|complexe .saumon|fluvio-lacustre",
+      0.4
+    ]
+  ],
+  "geologie": {
+    "eboulis": 0.9,
+    "solifluxion": 0.7,
+    "colluvions": 0.6,
+    "alluvions": 0.15,
+    "loess": 0.45,
+    "cailloutis": 0.5,
+    "limons": 0.35,
+    "eau": 0,
+    "glaciaire": 0.5,
+    "tourbe": 0,
+    "remblais": 0.2,
+    "travertin": 0.75,
+    "craie": 0.85,
+    "calcaire": 0.95,
+    "marne": 0.9,
+    "marnes_gypse": 0.7,
+    "conglomerat": 0.8,
+    "gres": 0.7,
+    "argile": 0.5,
+    "sable": 0.45,
+    "volcanique": 0.8,
+    "granite": 0.8,
+    "magmatique": 0.75,
+    "gneiss": 0.75,
+    "micaschiste": 0.75,
+    "schiste": 0.8,
+    "grauwacke": 0.75,
+    "gaize": 0.7,
+    "breche": 0.8,
+    "quartzite": 0.6,
+    "metamorphique_basique": 0.7,
+    "autre": 0.5
+  },
+  "pente": [
+    [
+      1,
+      0.15
+    ],
+    [
+      2,
+      0.35
+    ],
+    [
+      4,
+      0.65
+    ],
+    [
+      8,
+      0.9
+    ],
+    [
+      40,
+      1.0
+    ],
+    [
+      999,
+      0.75
+    ]
+  ],
+  "altitude": [
+    [
+      200,
+      0.4
+    ],
+    [
+      230,
+      0.7
+    ],
+    [
+      260,
+      0.9
+    ],
+    [
+      350,
+      1.0
+    ],
+    [
+      420,
+      0.75
+    ],
+    [
+      9999,
+      0.55
+    ]
+  ],
+  "altitude_secteurs": {
+    "chablis": [
+      [
+        140,
+        0.35
+      ],
+      [
+        160,
+        0.75
+      ],
+      [
+        230,
+        1.0
+      ],
+      [
+        270,
+        0.8
+      ],
+      [
+        310,
+        0.6
+      ],
+      [
+        9999,
+        0.5
+      ]
+    ],
+    "grand-auxerrois": [
+      [
+        130,
+        0.35
+      ],
+      [
+        150,
+        0.7
+      ],
+      [
+        230,
+        1.0
+      ],
+      [
+        280,
+        0.8
+      ],
+      [
+        9999,
+        0.6
+      ]
+    ],
+    "chatillonnais": [
+      [
+        230,
+        0.5
+      ],
+      [
+        260,
+        0.8
+      ],
+      [
+        330,
+        1.0
+      ],
+      [
+        9999,
+        0.8
+      ]
+    ],
+    "cote-de-nuits": [
+      [
+        235,
+        0.3
+      ],
+      [
+        250,
+        0.6
+      ],
+      [
+        265,
+        0.85
+      ],
+      [
+        330,
+        1.0
+      ],
+      [
+        360,
+        0.8
+      ],
+      [
+        400,
+        0.6
+      ],
+      [
+        9999,
+        0.45
+      ]
+    ],
+    "cote-de-beaune": [
+      [
+        220,
+        0.3
+      ],
+      [
+        235,
+        0.6
+      ],
+      [
+        250,
+        0.85
+      ],
+      [
+        340,
+        1.0
+      ],
+      [
+        370,
+        0.8
+      ],
+      [
+        420,
+        0.6
+      ],
+      [
+        9999,
+        0.45
+      ]
+    ],
+    "cote-chalonnaise": [
+      [
+        220,
+        0.4
+      ],
+      [
+        240,
+        0.65
+      ],
+      [
+        260,
+        0.85
+      ],
+      [
+        350,
+        1.0
+      ],
+      [
+        400,
+        0.8
+      ],
+      [
+        9999,
+        0.6
+      ]
+    ],
+    "maconnais": [
+      [
+        200,
+        0.4
+      ],
+      [
+        230,
+        0.7
+      ],
+      [
+        260,
+        0.9
+      ],
+      [
+        380,
+        1.0
+      ],
+      [
+        430,
+        0.85
+      ],
+      [
+        9999,
+        0.7
+      ]
+    ]
+  },
+  "exposition": {
+    "plat_pente_max": 2,
+    "plat": 0.5,
+    "soleil": {
+      "N": 0.3,
+      "NE": 0.5,
+      "E": 0.95,
+      "SE": 1.0,
+      "S": 0.95,
+      "SO": 0.95,
+      "O": 0.6,
+      "NO": 0.35
+    },
+    "fraicheur": {
+      "N": 0.9,
+      "NE": 1.0,
+      "NO": 0.85,
+      "E": 0.85,
+      "O": 0.6,
+      "SE": 0.65,
+      "S": 0.5,
+      "SO": 0.5
+    }
+  },
+  "sol": {
+    "CALCOSOL": 0.9,
+    "CALCISOL": 0.85,
+    "RENDOSOL": 0.9,
+    "RENDISOL": 0.9,
+    "RANKOSOL": 0.7,
+    "LITHOSOL": 0.7,
+    "REGOSOL": 0.7,
+    "BRUNISOL": 0.65,
+    "ALOCRISOL": 0.6,
+    "PEYROSOL": 0.8,
+    "ARENOSOL": 0.55,
+    "COLLUVIOSOL": 0.55,
+    "PELOSOL": 0.45,
+    "NEOLUVISOL": 0.45,
+    "LUVISOL": 0.4,
+    "PODZOSOL": 0.35,
+    "FLUVIOSOL": 0.15,
+    "REDOXISOL": 0.2,
+    "REDUCTISOL": 0.1,
+    "_defaut": 0.55
+  },
+  "domaines": {
+    "_aide": "ADR 0019 / 0021 : surface déclarée d'un cru / climat / village, sinon min(part_max_lieu × vignes du lieu ; part_max_domaine × surface du domaine) ; le reste à la moyenne des vignes village et régionales des communes du domaine.",
+    "part_max_lieu": 0.25,
+    "part_max_domaine": 0.12,
+    "secteur_rayon_m": 1500
+  },
+  "_motifs_aide": "geologie_motifs : regex sur le libellé BD Charm-50 replié (sans accents, minuscules), testées dans l'ordre, prioritaires sur la famille de roche (mode op A3, A10)."
+}

@@ -99,10 +99,12 @@ npm run lint        # next lint
 python scripts/import_meteo_france_to_supabase.py            # dry-run (all project CSVs)
 python scripts/import_meteo_france_to_supabase.py --commit   # write (idempotent upsert)
 
-# Alsace planted vines + terroir score + domains (ADR 0016, docs/terroir-score.md)
-python scripts/build_alsace_vineyard.py                      # dry-run
-python scripts/build_alsace_vineyard.py --commit --prune     # write + lighten the DB
-python scripts/build_alsace_vineyard.py --domains-only --commit  # domain scores only (ADR 0019)
+# Planted vines + terroir score + domains, per region (ADR 0016, 0021,
+# docs/terroir-score.md, docs/mode-op-replication-region.md)
+python scripts/build_vineyard.py --region bourgogne               # dry-run + hierarchy test
+python scripts/build_vineyard.py --region bourgogne --commit      # areas, vines, lieux-dits, domains
+python scripts/build_vineyard.py --region alsace --commit --prune # write + lighten the DB
+python scripts/build_vineyard.py --region alsace --domains-only --commit  # domain scores only (ADR 0019)
 ```
 
 ## 9. Files to read before modifying

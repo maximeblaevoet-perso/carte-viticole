@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   ALTITUDE_RAMP,
   ASPECT_COLORS,
   ASPECT_SECTORS,
+  CRU_COLORS,
   GEOLOGY_GROUPS,
   SLOPE_RAMP,
   VINE_COLOR_OPTIONS,
@@ -133,21 +135,32 @@ export function VineColorSwitcher({
   else if (value === "altitude") legend = <Ramp stops={ALTITUDE_RAMP} unit=" m" />;
   else if (value === "exposition") legend = <AspectCompass />;
   else if (value === "geologie") legend = <GeologyLegend />;
-  else
-    legend = (
-      <Swatches
-        items={[
-          ["Attribuée (proximité)", "#d81b60"],
-          ["Attribuée (grand cru déclaré)", "#7b1fa2"],
-          ["Non attribuée", "#cfcfcf"],
-        ]}
-      />
-    );
+  else legend = <Swatches items={CRU_COLORS.map(([, label, c]) => [label, c] as [string, string])} />;
+
+  // The legend folds away: on a phone it would cover a third of the map.
+  // Folded by default on small screens, open on desktop.
+  const [showLegend, setShowLegend] = useState(true);
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) setShowLegend(false);
+  }, []);
 
   return (
-    <div className={`pointer-events-auto absolute bottom-8 left-3 z-10 ${value === "geologie" ? "w-72" : "w-56"} rounded-lg border border-slate-200 bg-white/95 p-2 text-xs shadow-md ring-1 ring-black/5`}>
-      <label className="mb-1 flex items-center justify-between gap-2 font-medium text-slate-700">
-        <span>Vignes plantées</span>
+    <div
+      className={`pointer-events-auto absolute bottom-14 left-3 z-10 md:bottom-8 ${
+        showLegend ? (value === "geologie" ? "w-72" : "w-56") : "w-auto"
+      } max-w-[calc(100%-1.5rem)] rounded-lg border border-slate-200 bg-white/95 p-2 text-xs shadow-md ring-1 ring-black/5`}
+    >
+      <label className={`flex items-center justify-between gap-2 font-medium text-slate-700 ${showLegend ? "mb-1" : ""}`}>
+        <button
+          type="button"
+          onClick={() => setShowLegend((v) => !v)}
+          aria-expanded={showLegend}
+          aria-label={showLegend ? "Replier la légende" : "Afficher la légende"}
+          className="flex items-center gap-1 whitespace-nowrap rounded px-0.5 hover:bg-slate-100"
+        >
+          <span className="text-[10px] text-slate-400">{showLegend ? "▾" : "▸"}</span>
+          Vignes
+        </button>
         <select
           value={value}
           onChange={(e) => onChange(e.target.value as VineColorBy)}
@@ -160,8 +173,12 @@ export function VineColorSwitcher({
           ))}
         </select>
       </label>
-      {legend}
-      <p className="mt-1 text-[10px] text-slate-400">Visibles à partir du zoom 13 (RPG + BD TOPO).</p>
+      {showLegend && (
+        <>
+          {legend}
+          <p className="mt-1 text-[10px] text-slate-400">Visibles à partir du zoom 13 (RPG + BD TOPO).</p>
+        </>
+      )}
     </div>
   );
 }

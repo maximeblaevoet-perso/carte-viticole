@@ -31,7 +31,8 @@ export type VineColorBy =
   | "geologie"
   | "pente"
   | "exposition"
-  | "altitude";
+  | "altitude"
+  | "cru";
 
 export const VINE_COLOR_OPTIONS: { id: VineColorBy; label: string }[] = [
   { id: "score_sun", label: "Score (soleil)" },
@@ -40,6 +41,16 @@ export const VINE_COLOR_OPTIONS: { id: VineColorBy; label: string }[] = [
   { id: "pente", label: "Pente" },
   { id: "exposition", label: "Exposition" },
   { id: "altitude", label: "Altitude" },
+  { id: "cru", label: "Niveau de cru" },
+];
+
+/** Official INAO rank of a plot (migration 0016): a check on the score, never an input. */
+/** Same tier colours as the cru areas (doré / orange brique, ADR 0022). */
+export const CRU_COLORS: [string, string, string][] = [
+  ["grand_cru", "Grand cru", "#b5532a"],
+  ["premier_cru", "Premier cru", "#c9a133"],
+  ["village", "Village / communale", "#8fb3d9"],
+  ["regional", "Régionale", "#dcd6c8"],
 ];
 
 /** A wine-reading group of rock families: one hue, light → dark inside (ADR 0020). */
@@ -144,6 +155,12 @@ export function vineColorExpression(by: VineColorBy): ExpressionSpecification {
       return ramp("slope_pct", SLOPE_RAMP, 0);
     case "altitude":
       return ramp("altitude_m", ALTITUDE_RAMP, 0);
+    case "cru":
+      return [
+        "match", ["coalesce", ["get", "cru_level"], "regional"],
+        ...CRU_COLORS.flatMap(([k, , c]) => [k, c]),
+        "#cfcfcf",
+      ] as unknown as ExpressionSpecification;
     case "geologie":
       return [
         "match", ["coalesce", ["get", "geol_family"], "autre"],

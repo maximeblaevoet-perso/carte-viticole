@@ -113,5 +113,34 @@ class TestConfidence(unittest.TestCase):
         self.assertEqual(ts.score_confidence(guessed, 10, True, "haute"), "moyenne")
 
 
+class TestRegionGridExtensions(unittest.TestCase):
+    """geologie_motifs and altitude_secteurs (ADR 0021), absent from the Alsace grid."""
+
+    BGY = ts.load_grid(ts.ROOT / "src" / "data" / "terroir-score-bourgogne.json")
+
+    def plot(self, **kw) -> dict:
+        base = {"geol_family": "calcaire", "slope_pct": 10, "aspect_deg": 120, "altitude_m": 180,
+                "soil_name": "CALCOSOL"}
+        return {**base, **kw}
+
+    def test_label_motif_beats_rock_family(self) -> None:
+        kimm = self.plot(geol_descr="Calcaires et marnes à Exogyra virgula (Kimméridgien moyen et supérieur)")
+        port = self.plot(geol_descr="Calcaires du Barrois (Portlandien)")
+        self.assertEqual(ts.components(kimm, self.BGY, "soleil")["geologie"], 1.0)
+        self.assertEqual(ts.components(port, self.BGY, "soleil")["geologie"], 0.75)
+
+    def test_sector_altitude_table(self) -> None:
+        chablis = ts.components(self.plot(secteur="chablis"), self.BGY, "soleil")["altitude"]
+        nuits = ts.components(self.plot(secteur="cote-de-nuits"), self.BGY, "soleil")["altitude"]
+        self.assertEqual(chablis, 1.0)   # 180 m: Chablis mid-slope
+        self.assertEqual(nuits, 0.3)     # 180 m would be the Saône plain below the Côte
+
+    def test_alsace_grid_ignores_extensions(self) -> None:
+        grid = ts.load_grid()
+        p = self.plot(geol_descr="Calcaires du Barrois (Portlandien)", secteur="chablis")
+        self.assertEqual(ts.components(p, grid, "soleil"),
+                         ts.components({k: p[k] for k in p if k not in ("geol_descr", "secteur")}, grid, "soleil"))
+
+
 if __name__ == "__main__":
     unittest.main()

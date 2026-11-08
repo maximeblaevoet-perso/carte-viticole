@@ -124,20 +124,43 @@ def soil_value(soil: Optional[str], grid: dict) -> float:
     return float(grid["sol"].get(head, grid["sol"]["_defaut"]))
 
 
+def geology_value(plot: dict, grid: dict) -> float:
+    """Rock-family value, unless a label motif of the grid matches first.
+
+    ``geologie_motifs`` (optional, ordered ``[regex, value]`` pairs on the
+    accent-folded BD Charm-50 label) carries the stages that make a local
+    terroir and that the rock family cannot tell apart, e.g. Kimmeridgian
+    against Portlandian in Chablis (mode op A3).
+    """
+    descr = plot.get("geol_descr")
+    if isinstance(descr, str) and descr:
+        folded = fold(descr)
+        for rx, value in grid.get("geologie_motifs") or []:
+            if re.search(rx, folded):
+                return float(value)
+    return float(grid["geologie"].get(plot.get("geol_family") or "autre", grid["geologie"]["autre"]))
+
+
+def altitude_table(plot: dict, grid: dict) -> list:
+    """The sector's altitude table (``altitude_secteurs``) or the region's (mode op A2)."""
+    return (grid.get("altitude_secteurs") or {}).get(plot.get("secteur") or "", grid["altitude"])
+
+
 def components(plot: dict, grid: dict, mode: str) -> dict[str, float]:
     """The five criteria of one plot, each in [0, 1].
 
-    ``plot`` keys: geol_family, slope_pct, aspect_deg, altitude_m, soil_name.
+    ``plot`` keys: geol_family, slope_pct, aspect_deg, altitude_m, soil_name;
+    optional geol_descr (label motifs) and secteur (sector altitude table).
     """
     expo = grid["exposition"]
     slope = plot.get("slope_pct")
     flat = slope is None or (isinstance(slope, float) and math.isnan(slope)) or slope < expo["plat_pente_max"]
     sec = sector(plot.get("aspect_deg"))
     return {
-        "geologie": float(grid["geologie"].get(plot.get("geol_family") or "autre", grid["geologie"]["autre"])),
+        "geologie": geology_value(plot, grid),
         "exposition": float(expo["plat"] if flat or sec is None else expo[mode][sec]),
         "pente": step(slope, grid["pente"]),
-        "altitude": step(plot.get("altitude_m"), grid["altitude"]),
+        "altitude": step(plot.get("altitude_m"), altitude_table(plot, grid)),
         "sol": soil_value(plot.get("soil_name"), grid),
     }
 
@@ -159,7 +182,7 @@ def score(plot: dict, grid: dict, mode: str) -> float:
 @dataclass
 class Place:
     """A grand cru or lieu-dit a domain declares, resolved to planted vines."""
-    kind: str                       # "grand_cru" | "lieu_dit"
+    kind: str                       # "grand_cru" | "premier_cru" | "village" | "lieu_dit"
     name: str
     vine_ha: float                  # planted vines of the place (all owners)
     score_sun: Optional[float]

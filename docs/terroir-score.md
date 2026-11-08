@@ -1,9 +1,10 @@
 # Score terroir des vignes plantées et domaines estimés
 
 Méthode du score de potentiel terroir par parcelle et du score composé des
-domaines de référence. Décisions : ADR 0016, ADR 0019. Code :
-`scripts/terroir_score.py` (calcul), `src/lib/terroir-score.ts` (affichage).
-Grille : `src/data/terroir-score-alsace.json`.
+domaines de référence. Décisions : ADR 0016, ADR 0019, ADR 0021. Code :
+`scripts/terroir_score.py` (calcul), `scripts/build_vineyard.py` (chaîne par
+région), `src/lib/terroir-score.ts` (affichage). Grilles :
+`src/data/terroir-score-alsace.json`, `src/data/terroir-score-bourgogne.json`.
 
 > **Indicatif.** Le score est une lecture homogène de critères publics. Ce
 > n'est ni un classement officiel, ni une mesure de la qualité d'un vin. Il
@@ -40,6 +41,36 @@ Limites connues : pente et exposition sont des valeurs **locales** (5 points),
 pas une moyenne de parcelle ; le sol RRP décrit un paysage de sols au
 1/250 000, pas le sol de la parcelle ; la géologie est la formation
 **dominante** (la part est stockée dans `geol_dominant_share`).
+
+## 2 bis. Bourgogne (ADR 0021)
+
+Grille `src/data/terroir-score-bourgogne.json`. Mêmes cinq critères,
+pondération géologie 30, exposition 20, pente 20, altitude 15, sol 15.
+
+| Différence avec l'Alsace | Raison |
+| --- | --- |
+| Exposition : E 0,95, SE 1,0, S 0,95, SO 0,95 | La Côte regarde l'est ; la colline des grands crus de Chablis le sud-ouest |
+| Pente : 1,0 de 8 à 40 % | Les grands crus de Chablis et Corton-Charlemagne sont raides |
+| Altitude **par secteur** (`altitude_secteurs`) | Niveau de base 130 m à Chablis, 240 m en Côte d'Or ; Hautes-Côtes (350-500 m) plus fraîches |
+| **Motifs de libellé** (`geologie_motifs`) | Kimméridgien 1,0 / Astartes 0,85 / Portlandien 0,75 ; « Colluvions diverses » de la Côte 0,75 ; remplissages tertiaires de plaine 0,4 |
+
+Chaque vigne porte aussi son **niveau de cru** INAO (`cru_level`). Il n'entre
+pas dans le score : il sert à le **contrôler** (médiane par niveau et par
+secteur à chaque run). Résultat au 2026-11-06 :
+
+| Secteur | Grand cru | 1er cru | Village | Régional |
+| --- | --- | --- | --- | --- |
+| Côte de Beaune | 94,5 | 92,5 | 84,0 | 77,8 |
+| Côte de Nuits | 88,0 | 89,0 | 83,0 | 80,2 |
+| Chablis | 93,8 | 95,5 | 85,5 | — |
+| Côte Chalonnaise | — | 92,2 | 85,5 | 80,8 |
+| Mâconnais | — | 94,5 | 86,0 | 85,2 |
+| Grand Auxerrois | — | — | 85,8 | 92,5 |
+
+Grands et premiers crus se valent à 2 points près (les critères publics ne
+séparent pas deux climats voisins) ; l'Auxerrois est une exception attendue
+(Saint-Bris et Irancy sont des AOC village par le cépage). Voir
+`docs/mode-op-replication-region.md` (A10, A11).
 
 ## 3. Les domaines
 

@@ -35,6 +35,7 @@ SKIP_TITLE_RE = re.compile(r"martinique|rhum", re.I)
 SCOPE_DEPARTMENTS: dict[str, tuple[str, ...]] = {
     "alsace": ("67", "68"),
     "champagne": ("08", "10", "51", "52"),
+    "bourgogne": ("21", "71", "89"),
     "all-initial": ("08", "10", "51", "52", "67", "68"),
 }
 

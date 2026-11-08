@@ -244,9 +244,10 @@ des départements entiers.
 Options : `--scope`, `--raw-dir`, `--download`, `--force-download`, `--out`,
 `--batch-size`, `--commit`, `--dry-run`.
 
-## Vignes plantées, score terroir et domaines — Alsace (ADR 0016)
+## Vignes plantées, score terroir et domaines — par région (ADR 0016, 0021)
 
-`scripts/build_alsace_vineyard.py` construit `vine_plots` (vignes RPG + BD TOPO
+`scripts/build_vineyard.py --region alsace|bourgogne` (alias Alsace :
+`build_alsace_vineyard.py`) construit `vine_plots` (vignes RPG + BD TOPO
 dans l'aire AOC, enrichies géologie / relief / sol, notées) et `wine_domains`
 (domaines de `scripts/data/alsace-domains.json`, score composé de leurs lieux
 déclarés et de leurs communes, ADR 0019). Prérequis : les migrations `0013` à `0015`, les fichiers locaux INAO parcellaire, cadastre lieux-dits et
@@ -263,6 +264,13 @@ python scripts/build_alsace_vineyard.py --domains-only [--commit]  # seulement l
 cd scripts && python -m unittest test_terroir_score
 ```
 
-Grille du score : `src/data/terroir-score-alsace.json` (partagée avec le
-front). Méthode : `docs/terroir-score.md`. Après une ré-ingestion
+Grille du score : `src/data/terroir-score-<region>.json` (partagée avec le
+front).
+
+**Bourgogne** : prérequis migration `0016`, BD Charm-50 21/71/89 et cadastre
+lieux-dits 21/71/89 (téléchargé avec `curl`, voir mode op A1). Le script
+construit aussi les `wine_areas` Bourgogne et les lieux-dits découpés aux
+vignes ; chaque run imprime le **test de hiérarchie** (médiane du score par
+niveau de cru et par secteur). Domaines : `scripts/data/bourgogne-domains.json`.
+Procédure complète : `docs/mode-op-replication-region.md`. Méthode : `docs/terroir-score.md`. Après une ré-ingestion
 `ingest_wine_geodata.py --commit`, relancer `--commit --prune`.

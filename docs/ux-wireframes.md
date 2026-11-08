@@ -44,17 +44,32 @@ crus and lieux-dits**, dashed pink, labelled "name · ≈ n ha". Declared places
 outside the view become chips at the top left ("Rangen · 33 km ↓") that fly to
 them. No plot is outlined as the domain's (ADR 0019).
 
-**Grand cru boundary over the parcellaire (ADR 0018).** From zoom 13 the
-grand cru fill fades to a faint wash and its boundary is redrawn above
-parcels, lieux-dits and vines as a red line on a light casing, on every
-basemap, so the cru stays readable without hiding the plots.
+**Cru boundary over the parcellaire (ADR 0018, 0022).** From zoom 13 the
+cru fill fades to a faint wash and its boundary is redrawn above parcels,
+lieux-dits and vines on a light casing, on every basemap, so the cru stays
+readable without hiding the plots. Premiers crus are gold, grands crus brick
+orange, in every region.
+
+**Progressive reading (ADR 0022).** One level is read at a time, the previous
+one fading to a faint wash but never disappearing: région (≤ 7.5) → secteurs
+(7–10.3) → villages / appellations (9.6–12.8) → crus (≥ 10.8) → vines and
+lieux-dits (≥ 13). Each zone has its own pastel (touching neighbours differ)
+and a single name at its centre; once a level is no longer the one being
+read, its outline stays above the vines and its name runs along the outline
+in the same colour. Cru labels show the short name plus a small "1ER CRU" /
+"GRAND CRU" line; a lieu-dit label is smaller, grey, and hidden when it only
+repeats its cru's name.
 
 ## Mobile — main screen
 
-- Map full screen.
+- Map full screen: no top header (ADR 0022). Region + vintage selects sit in a
+  thin bar at the bottom of the map; the vintage timeline is also in the fiche.
 - Tap a region → bottom sheet appears with the summary (peek state ~42%).
-- Tap the handle → expanded state (~85%) for detail. The component copy calls
-  this a two-snap bottom sheet; gesture-driven dragging is not implemented yet.
+- Tap the handle → expanded state (~85%) for detail. ▾ folds the sheet to a
+  one-line bar (selection name, tap to reopen) so the map and its controls
+  are free; × closes the fiche and clears the selection. Gesture-driven
+  dragging is not implemented yet.
+- The vine colouring control folds to one line (folded by default on a phone).
 - The bottom sheet reuses the exact same content component as the desktop panel.
 
 ## Vintage fiche (`/regions/[region]/vintage/[year]`)

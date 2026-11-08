@@ -10,6 +10,7 @@ const DATASET_LABELS: Record<string, string> = {
   "ign-rpg": "RPG — IGN (vignes déclarées PAC)",
   "ign-bdtopo": "BD TOPO — IGN (vignes photo-interprétées)",
   "manual-alsace-domains": "Domaines de référence — compilation manuelle",
+  "manual-bourgogne-domains": "Domaines de référence — compilation manuelle",
   "etalab-cadastre": "Cadastre — Etalab / DGFiP",
 };
 

@@ -1,0 +1,1652 @@
+{
+  "generated": "2026-11-06",
+  "_aide": "Liste de domaines de référence de Bourgogne (Chablis/Auxerrois, Côte de Nuits, Côte de Beaune, Côte Chalonnaise, Mâconnais) compilée manuellement à partir de sources publiques (sites des domaines, Wikipedia, importateurs, guides) : données informatives, source_type manual, surfaces déclarées publiquement et non vérifiées. Les noms de grands_crus, premiers_crus, villages et regionales reprennent exactement les appellations (app) ou dénominations (denom) INAO ; quand un premier cru n'existe pas comme dénomination distincte (ex. sous-climats de Chablis), l'ombrelle la plus proche est utilisée et signalée dans surface_note. Champs : surface_ha (surface totale déclarée, milieu de fourchette si les sources divergent), communes (où sont les vignes ; défaut = commune du chai), surfaces_ha (surface d'un cru ou d'une appellation quand une source la publie), surface_grands_crus_ha (total en grands crus, réparti entre les crus sans surface), coord_precision (commune = centre de la commune du chai), certification (bio, biodynamie ou null ; mode de culture déclaré, certification non vérifiée), confidence (haute, moyenne, basse).",
+  "domaines": [
+    {
+      "id": "raveneau",
+      "name": "Domaine François et Jean-Marie Raveneau",
+      "commune": "Chablis",
+      "insee": "89068",
+      "lat": 47.806,
+      "lon": 3.7932,
+      "coord_precision": "commune",
+      "surface_ha": 9.29,
+      "surface_note": "9,29 ha selon Wikipedia (tableau des parcelles) ; d'autres fiches donnent 8 à 10 ha. Grands crus : Les Clos 0,54 ha, Blanchot 0,60 ha, Valmur 0,75 ha. Premiers crus Montée de Tonnerre (~3,2 ha), Butteaux (1,5), Forêt (0,6), Vaillons (0,5), Montmains (0,35), Chapelot (0,3) : aucun n'est une dénomination INAO distincte dans le fichier, d'où l'ombrelle « Chablis premier cru » (somme ~6,45 ha).",
+      "grands_crus": [
+        "Chablis Grand Cru Les Clos",
+        "Chablis Grand Cru Blanchot",
+        "Chablis Grand Cru Valmur"
+      ],
+      "premiers_crus": [
+        "Chablis premier cru"
+      ],
+      "villages": [
+        "Chablis"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chablis"
+      ],
+      "surfaces_ha": {
+        "Chablis Grand Cru Les Clos": 0.54,
+        "Chablis Grand Cru Blanchot": 0.6,
+        "Chablis Grand Cru Valmur": 0.75,
+        "Chablis premier cru": 6.45
+      },
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Domaine_Raveneau",
+        "https://www.frw.co.uk/producer/612ec280060000000000060f/domaine-raveneau"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "vincent-dauvissat",
+      "name": "Domaine Vincent Dauvissat",
+      "commune": "Chablis",
+      "insee": "89068",
+      "lat": 47.806,
+      "lon": 3.7932,
+      "coord_precision": "commune",
+      "surface_ha": 12,
+      "surface_note": "11 à 12,7 ha selon les sources (importateurs, Inside Burgundy) ; ~12 ha retenus. Les Clos ~1,4 ha (Inside Burgundy, Decanter), Preuses ~1 ha, premier cru La Forest ~3,7 ha (plus Séchet, Vaillons) rangés sous l'ombrelle « Chablis premier cru » (sous-climats non listés comme dénominations INAO).",
+      "grands_crus": [
+        "Chablis Grand Cru Les Clos",
+        "Chablis Grand Cru Preuses"
+      ],
+      "premiers_crus": [
+        "Chablis premier cru"
+      ],
+      "villages": [
+        "Chablis"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chablis"
+      ],
+      "surfaces_ha": {
+        "Chablis Grand Cru Les Clos": 1.4,
+        "Chablis Grand Cru Preuses": 1.0
+      },
+      "certification": null,
+      "sources": [
+        "https://insideburgundy.com/overview/domaine-vincent-dauvissat",
+        "https://www.decanter.com/premium/dauvissat-the-wizard-of-chablis-560535/",
+        "https://onshorecellars.com/collections/producer-domaine-vincent-dauvissat",
+        "https://www.leaandsandeman.co.uk/wine/2017-CHABLIS-1er-Cru-Forest-Domaine-Vincent-Dauvissat-29969-00.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "william-fevre",
+      "name": "Domaine William Fèvre",
+      "commune": "Chablis",
+      "insee": "89068",
+      "lat": 47.806,
+      "lon": 3.7932,
+      "coord_precision": "commune",
+      "surface_ha": 70,
+      "surface_note": "Fiche technique 2022 (Vintus) : 70 ha dont 15,9 ha de premiers crus et 15,2 ha de grands crus ; d'autres profils disent « près de 80 ha ». Grands crus (Inside Burgundy 2022) : Les Clos 4,11, Bougros 4,12 + Côte Bouguerots 2,11 (rattachée à la dénomination Bougros), Preuses 2,55, Valmur 1,15, Vaudésir 1,20 (Vintus). Premiers crus (Fourchaume, Montée de Tonnerre, Vaillons, etc.) non détaillés par surface : ombrelle « Chablis premier cru » = 15,9 ha.",
+      "grands_crus": [
+        "Chablis Grand Cru Les Clos",
+        "Chablis Grand Cru Bougros",
+        "Chablis Grand Cru Preuses",
+        "Chablis Grand Cru Valmur",
+        "Chablis Grand Cru Vaudésir"
+      ],
+      "premiers_crus": [
+        "Chablis premier cru"
+      ],
+      "villages": [
+        "Chablis"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chablis"
+      ],
+      "surfaces_ha": {
+        "Chablis Grand Cru Les Clos": 4.11,
+        "Chablis Grand Cru Bougros": 6.23,
+        "Chablis Grand Cru Preuses": 2.55,
+        "Chablis Grand Cru Valmur": 1.15,
+        "Chablis Grand Cru Vaudésir": 1.2,
+        "Chablis premier cru": 15.9
+      },
+      "surface_grands_crus_ha": 15.2,
+      "certification": null,
+      "sources": [
+        "https://vintus.com/wp-content/uploads/automated-materials/William-Fevre-Chablis-Domaine-2022-Tech-Sheet.pdf",
+        "https://vintus.com/producers/william-fevre/",
+        "https://insideburgundy.com/?p=184266",
+        "https://www.frw.co.uk/producer/612ec2800600000000000521/william-fevre"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "louis-michel",
+      "name": "Domaine Louis Michel et Fils",
+      "commune": "Chablis",
+      "insee": "89068",
+      "lat": 47.806,
+      "lon": 3.7932,
+      "coord_precision": "commune",
+      "surface_ha": 25,
+      "surface_note": "21 à 25 ha selon les sources (iDealwine, cavistes) ; 25 ha retenus avec réserve. Grands crus Vaudésir et Grenouilles cités par iDealwine ; premiers crus Montée de Tonnerre (~4 ha selon cavistes, 1,8 ha selon BBR : discordance), Vaillons, etc. sous l'ombrelle « Chablis premier cru ».",
+      "grands_crus": [
+        "Chablis Grand Cru Vaudésir",
+        "Chablis Grand Cru Grenouilles"
+      ],
+      "premiers_crus": [
+        "Chablis premier cru"
+      ],
+      "villages": [
+        "Chablis"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chablis"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.net/domaine-louis-michel-et-fils-le-terroir-de-chablis-dans-toute-sa-purete/",
+        "https://www.bbr.com/products-40190-2015-chablis-montee-de-tonnerre-1er-cru-domaine-louis-michel"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "jean-marc-brocard",
+      "name": "Domaine Jean-Marc Brocard",
+      "commune": "Préhy",
+      "insee": "89315",
+      "lat": 47.7531,
+      "lon": 3.7857,
+      "coord_precision": "commune",
+      "surface_ha": 200,
+      "surface_note": "Chiffre très variable : 144 ha (Gault&Millau), 180 ha, ~200 ha, 215 ha selon les sources ; ~200 ha retenus. La production est dominée par le Petit Chablis et le Chablis (1,5 million de bouteilles de Petit Chablis sur ~2,5 millions, avec achats de raisin). Grand cru Les Clos et premiers crus présents mais très minoritaires (surfaces non publiées). Une partie du vignoble seulement est en bio/biodynamie (~60 ha bio, ~40 ha biodynamie), d'où certification null.",
+      "grands_crus": [
+        "Chablis Grand Cru Les Clos"
+      ],
+      "premiers_crus": [
+        "Chablis premier cru"
+      ],
+      "villages": [
+        "Chablis"
+      ],
+      "regionales": [
+        "Petit Chablis",
+        "Bourgogne"
+      ],
+      "communes": [
+        "Préhy",
+        "Chablis"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://wineanorak.com/?p=2246",
+        "https://obrienswine.ie/pages/domaine-jean-marc-brocard",
+        "https://fr.gaultmillau.com/en/artisans/domaine-jean-marc-brocard",
+        "https://houseoftownend.com/wines/type/white-wine/chablis-grand-cru-clos-2007-domaine-brocard-magnum"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "goisot",
+      "name": "Domaine Guilhem et Jean-Hugues Goisot",
+      "commune": "Saint-Bris-le-Vineux",
+      "insee": "89337",
+      "lat": 47.7428,
+      "lon": 3.6606,
+      "coord_precision": "commune",
+      "surface_ha": 28,
+      "surface_note": "27 à 30 ha selon les sources (iDealwine 27 ha, autres 28-30 ha). Essentiellement régional : Bourgogne Côtes d'Auxerre, Saint-Bris (sauvignon), Irancy, aligoté. Pas de surface par appellation publiée.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [
+        "Saint-Bris",
+        "Irancy"
+      ],
+      "regionales": [
+        "Bourgogne Côtes d'Auxerre",
+        "Bourgogne aligoté"
+      ],
+      "communes": [
+        "Saint-Bris-le-Vineux",
+        "Irancy"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.idealwine.net/domaine-goisot-le-vin-se-vinifie-dans-la-vigne-et-non-en-cave/",
+        "https://www.hachette-vins.com/guide-vins/producteurs/1384/guilhem-et-jean-hugues-goisot/",
+        "https://www.winewithseth.com/winewiki/domaine-goisot/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "billaud-simon",
+      "name": "Domaine Billaud-Simon",
+      "commune": "Chablis",
+      "insee": "89068",
+      "lat": 47.806,
+      "lon": 3.7932,
+      "coord_precision": "commune",
+      "surface_ha": 17,
+      "surface_note": "Près de 17 ha (Wilson Daniels, propriétaire famille Faiveley) ; 20 ha sur certains sites marchands. Quatre grands crus (Les Clos, Vaudésir, Preuses, Blanchot) ; premiers crus Fourchaume et Mont de Milieu (dénominations INAO), Montée de Tonnerre et Vaillons sous l'ombrelle « Chablis premier cru ». Surfaces par cru non retenues (chiffres en acres incohérents).",
+      "grands_crus": [
+        "Chablis Grand Cru Les Clos",
+        "Chablis Grand Cru Vaudésir",
+        "Chablis Grand Cru Preuses",
+        "Chablis Grand Cru Blanchot"
+      ],
+      "premiers_crus": [
+        "Chablis premier cru Fourchaume",
+        "Chablis premier cru Mont de Milieu",
+        "Chablis premier cru"
+      ],
+      "villages": [
+        "Chablis"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chablis"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://wilsondaniels.com/?p=65196",
+        "https://www.hachette-vins.com/guide-vins/producteurs/84254/dom-billaud-simon",
+        "https://www.comptoirdesmillesimes.com/billaud-simon"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "romanee-conti",
+      "name": "Domaine de la Romanée-Conti",
+      "commune": "Vosne-Romanée",
+      "insee": "21714",
+      "lat": 47.1592,
+      "lon": 4.9563,
+      "coord_precision": "commune",
+      "surface_ha": 28,
+      "surface_note": "Environ 25 à 30 ha selon les sources (~28 ha retenus), quasi exclusivement en grands crus (neuf). Romanée-Conti 1,81 ha et La Tâche 6,06 ha (monopoles), Richebourg 3,51 ha, Corton 2,28 ha (fermages depuis 2009). Corton-Charlemagne : ~2,8 ha pris en fermage à Bonneau du Martray depuis 2018-2019 (Corney & Barrow). Surfaces Romanée-Saint-Vivant, Grands-Echezeaux, Echezeaux et Montrachet non relevées.",
+      "grands_crus": [
+        "Romanée-Conti",
+        "La Tâche",
+        "Richebourg",
+        "Romanée-Saint-Vivant",
+        "Grands-Echezeaux",
+        "Echezeaux",
+        "Corton",
+        "Corton-Charlemagne",
+        "Montrachet"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Vosne-Romanée",
+        "Flagey-Echezeaux",
+        "Aloxe-Corton",
+        "Ladoix-Serrigny",
+        "Pernand-Vergelesses",
+        "Chassagne-Montrachet",
+        "Puligny-Montrachet"
+      ],
+      "surfaces_ha": {
+        "Romanée-Conti": 1.81,
+        "La Tâche": 6.06,
+        "Richebourg": 3.51,
+        "Corton": 2.28,
+        "Corton-Charlemagne": 2.8
+      },
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.corneyandbarrow.com/our-producers/domaine-de-la-romanee-conti.html",
+        "https://www.christies.com.cn/en/stories/collecting-guide-domaine-de-la-romanee-conti-317091a1f2c44a3f93203cd35ff67788",
+        "https://www.bbr.com/products-36229-2012-corton-domaine-de-la-romanee-conti",
+        "https://issuu.com/corneyandbarrowltd/docs/2023_bonneau_martray_release_singles"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "armand-rousseau",
+      "name": "Domaine Armand Rousseau",
+      "commune": "Gevrey-Chambertin",
+      "insee": "21295",
+      "lat": 47.2188,
+      "lon": 4.9865,
+      "coord_precision": "commune",
+      "surface_ha": 14.13,
+      "surface_note": "Tableau Wikipedia : 14,13 ha (texte : « just under 14 ha ») ; 15-15,3 ha ailleurs. Chambertin 2,55, Clos de Bèze 1,42, Clos des Ruchottes 1,06 (monopole), Mazis 0,53, Charmes 0,45 + Mazoyères 0,92 (vendu en Charmes-Chambertin, cumulés ici sur Charmes), Clos de la Roche 1,48 ; premiers crus Clos Saint-Jacques 2,21, Cazetiers 0,75, Lavaut Saint-Jacques 0,50 ; Gevrey village 2,26.",
+      "grands_crus": [
+        "Chambertin",
+        "Chambertin-Clos de Bèze",
+        "Ruchottes-Chambertin",
+        "Mazis-Chambertin",
+        "Charmes-Chambertin",
+        "Clos de la Roche"
+      ],
+      "premiers_crus": [
+        "Gevrey-Chambertin premier cru Clos Saint-Jacques",
+        "Gevrey-Chambertin premier cru Les Cazetiers",
+        "Gevrey-Chambertin premier cru Lavaut Saint-Jacques"
+      ],
+      "villages": [
+        "Gevrey-Chambertin"
+      ],
+      "regionales": [],
+      "communes": [
+        "Gevrey-Chambertin",
+        "Morey-Saint-Denis"
+      ],
+      "surfaces_ha": {
+        "Chambertin": 2.55,
+        "Chambertin-Clos de Bèze": 1.42,
+        "Ruchottes-Chambertin": 1.06,
+        "Mazis-Chambertin": 0.53,
+        "Charmes-Chambertin": 1.37,
+        "Clos de la Roche": 1.48,
+        "Gevrey-Chambertin premier cru Clos Saint-Jacques": 2.21,
+        "Gevrey-Chambertin premier cru Les Cazetiers": 0.75,
+        "Gevrey-Chambertin premier cru Lavaut Saint-Jacques": 0.5,
+        "Gevrey-Chambertin": 2.26
+      },
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Domaine_Armand_Rousseau",
+        "https://www.decanter.com/premium/armand-rousseau-profile-384807",
+        "https://www.hameaualbert.fr/sites/default/files/2019-09/FT%20Domaine%20Armand%20Rousseau.pdf"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "comte-georges-de-vogue",
+      "name": "Domaine Comte Georges de Vogüé",
+      "commune": "Chambolle-Musigny",
+      "insee": "21133",
+      "lat": 47.1871,
+      "lon": 4.9505,
+      "coord_precision": "commune",
+      "surface_ha": 12.5,
+      "surface_note": "12 à 12,6 ha selon les sources. Musigny ~7,2 ha (7,12 à 7,25 selon les sources ; ~70 % du grand cru, une partie déclassée en Bourgogne blanc / Chambolle 1er cru jeunes vignes), Bonnes-Mares ~2,66-2,7 ha, Amoureuses 0,56 ha (Decanter). Chambolle 1er cru d'assemblage (ombrelle).",
+      "grands_crus": [
+        "Musigny",
+        "Bonnes-Mares"
+      ],
+      "premiers_crus": [
+        "Chambolle-Musigny premier cru Les Amoureuses",
+        "Chambolle-Musigny premier cru"
+      ],
+      "villages": [
+        "Chambolle-Musigny"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chambolle-Musigny"
+      ],
+      "surfaces_ha": {
+        "Musigny": 7.2,
+        "Bonnes-Mares": 2.68,
+        "Chambolle-Musigny premier cru Les Amoureuses": 0.56
+      },
+      "certification": null,
+      "sources": [
+        "https://www.decanter.com/wine/producer-profiles/producer-profile-comte-georges-de-vogue-245996/",
+        "https://www.decanter.com/features/ever-en-vogue-249036/",
+        "https://www.corneyandbarrow.com/our-producers/domaine-comte-georges-de-vogue.html",
+        "https://jeroboams.co.uk/?p=104091"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "dujac",
+      "name": "Domaine Dujac",
+      "commune": "Morey-Saint-Denis",
+      "insee": "21442",
+      "lat": 47.2001,
+      "lon": 4.9649,
+      "coord_precision": "commune",
+      "surface_ha": 15.5,
+      "surface_note": "~15,5 ha après le rachat d'une partie de Charles Thomas en 2005 (Wikipedia) ; 11,5 à 18 ha ailleurs. Clos de la Roche ~1,95 ha (6 parcelles), Clos Saint-Denis 1,45 ha (Wikipedia ; 1,29 selon Decanter). Autres crus (Malconsorts, Combottes, Beaux Monts, Charmes, Echezeaux, Bonnes-Mares, Chambertin, Romanée-Saint-Vivant…) listés sans surface par ordre décroissant ; hors négoce Dujac Fils & Père.",
+      "grands_crus": [
+        "Clos de la Roche",
+        "Clos Saint-Denis",
+        "Charmes-Chambertin",
+        "Echezeaux",
+        "Bonnes-Mares",
+        "Chambertin",
+        "Romanée-Saint-Vivant"
+      ],
+      "premiers_crus": [
+        "Vosne-Romanée premier cru Aux Malconsorts",
+        "Gevrey-Chambertin premier cru Aux Combottes",
+        "Morey-Saint-Denis premier cru",
+        "Vosne-Romanée premier cru Les Beaux Monts",
+        "Morey-Saint-Denis premier cru Monts Luisants",
+        "Chambolle-Musigny premier cru Les Gruenchers"
+      ],
+      "villages": [
+        "Morey-Saint-Denis",
+        "Chambolle-Musigny"
+      ],
+      "regionales": [
+        "Bourgogne"
+      ],
+      "communes": [
+        "Morey-Saint-Denis",
+        "Chambolle-Musigny",
+        "Gevrey-Chambertin",
+        "Vosne-Romanée",
+        "Flagey-Echezeaux"
+      ],
+      "surfaces_ha": {
+        "Clos de la Roche": 1.95,
+        "Clos Saint-Denis": 1.45
+      },
+      "certification": "bio",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Domaine_Dujac",
+        "https://www.decanter.com/premium/burgundy-2019-domaine-dujac-wines-rated-and-reviewed-452715/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "meo-camuzet",
+      "name": "Domaine Méo-Camuzet",
+      "commune": "Vosne-Romanée",
+      "insee": "21714",
+      "lat": 47.1592,
+      "lon": 4.9563,
+      "coord_precision": "commune",
+      "surface_ha": 14,
+      "surface_note": "14 ha le plus souvent cités (17-18 ha dans d'autres fiches, possiblement avec le négoce Méo-Camuzet Frère & Sœurs, exclu). Richebourg ~0,34-0,35 ha, Clos de Vougeot ~3 ha, Corton (Clos Rognet, Perrières, Vigne au Saint), Echezeaux ; Cros Parantoux ~0,3 ha, Aux Brûlées 0,72 ha, Les Chaumes 2,01 ha, Aux Boudots > 1 ha (non chiffré), Aux Murgers.",
+      "grands_crus": [
+        "Richebourg",
+        "Clos de Vougeot ou Clos Vougeot",
+        "Echezeaux",
+        "Corton"
+      ],
+      "premiers_crus": [
+        "Vosne-Romanée premier cru Cros Parantoux",
+        "Vosne-Romanée premier cru Aux Brulées",
+        "Vosne-Romanée premier cru Les Chaumes",
+        "Nuits-Saint-Georges premier cru Aux Boudots",
+        "Nuits-Saint-Georges premier cru Aux Murgers"
+      ],
+      "villages": [
+        "Vosne-Romanée",
+        "Nuits-Saint-Georges"
+      ],
+      "regionales": [],
+      "communes": [
+        "Vosne-Romanée",
+        "Vougeot",
+        "Flagey-Echezeaux",
+        "Nuits-Saint-Georges",
+        "Ladoix-Serrigny",
+        "Aloxe-Corton"
+      ],
+      "surfaces_ha": {
+        "Richebourg": 0.345,
+        "Clos de Vougeot ou Clos Vougeot": 3.0,
+        "Vosne-Romanée premier cru Cros Parantoux": 0.3,
+        "Vosne-Romanée premier cru Aux Brulées": 0.72,
+        "Vosne-Romanée premier cru Les Chaumes": 2.01
+      },
+      "certification": null,
+      "sources": [
+        "https://bestofwines.com/wine/wine-producer/meo-camuzet/",
+        "https://www.scribd.com/document/619430488/Domaine-Meo-Camuzet",
+        "https://idealwine.com/en/prix-vin/101026-2021-Bottle-Burgundy-Richebourg-Domaine-Meo-Camuzet-red",
+        "https://www.falstaff.com/en/wineries/domaine-meo-camuzet",
+        "https://www.decanter.com/wine-reviews-tastings/burgundy-2019-domaine-meo-camuzet-wines-rated-and-reviewed-452705/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "jacques-frederic-mugnier",
+      "name": "Domaine Jacques-Frédéric Mugnier",
+      "commune": "Chambolle-Musigny",
+      "insee": "21133",
+      "lat": 47.1871,
+      "lon": 4.9505,
+      "coord_precision": "commune",
+      "surface_ha": 14,
+      "surface_note": "~14 ha (Burgundy Report 2006 : ~4 ha à Chambolle + ~10 ha de Clos de la Maréchale, monopole récupéré en 2004 ; 9 à 10 ha selon les sources, 9,5 retenu). Musigny 1,14, Bonnes-Mares 0,36, Amoureuses 0,53, Fuées 0,71, Les Plantes 0,56 (assemblée dans le village).",
+      "grands_crus": [
+        "Musigny",
+        "Bonnes-Mares"
+      ],
+      "premiers_crus": [
+        "Chambolle-Musigny premier cru Les Amoureuses",
+        "Chambolle-Musigny premier cru Les Fuées",
+        "Chambolle-Musigny premier cru Les Plantes",
+        "Nuits-Saint-Georges premier cru Clos de la Maréchale"
+      ],
+      "villages": [
+        "Chambolle-Musigny",
+        "Nuits-Saint-Georges"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chambolle-Musigny",
+        "Premeaux-Prissey"
+      ],
+      "surfaces_ha": {
+        "Musigny": 1.14,
+        "Bonnes-Mares": 0.36,
+        "Chambolle-Musigny premier cru Les Amoureuses": 0.53,
+        "Chambolle-Musigny premier cru Les Fuées": 0.71,
+        "Chambolle-Musigny premier cru Les Plantes": 0.56,
+        "Nuits-Saint-Georges premier cru Clos de la Maréchale": 9.5
+      },
+      "certification": null,
+      "sources": [
+        "https://www.burgundy-report.com/summer-2006/profile-domaine-jacques-frederic-mugnier-chambolle/",
+        "https://www.vinsetmillesimes.com/en/4421-jacques-frederic-mugnier"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "henri-gouges",
+      "name": "Domaine Henri Gouges",
+      "commune": "Nuits-Saint-Georges",
+      "insee": "21464",
+      "lat": 47.1518,
+      "lon": 4.9414,
+      "coord_precision": "commune",
+      "surface_ha": 14,
+      "surface_note": "« Près de 14 ha » tous en Nuits-Saint-Georges (site du domaine) ; 14,5 ha ailleurs. 7 premiers crus dont 1 blanc ; Pruliers 1,8 ha (site du domaine). Clos des Porrets-Saint-Georges en monopole. Le blanc « La Perrière » est rattaché à la dénomination INAO « Les Perrières ». Conversion bio en cours de certification.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Nuits-Saint-Georges premier cru Les Saints-Georges",
+        "Nuits-Saint-Georges premier cru Les Vaucrains",
+        "Nuits-Saint-Georges premier cru Les Pruliers",
+        "Nuits-Saint-Georges premier cru Aux Chaignots",
+        "Nuits-Saint-Georges premier cru Chaines Carteaux",
+        "Nuits-Saint-Georges premier cru Clos des Porrets-Saint-Georges",
+        "Nuits-Saint-Georges premier cru Les Perrières"
+      ],
+      "villages": [
+        "Nuits-Saint-Georges"
+      ],
+      "regionales": [],
+      "communes": [
+        "Nuits-Saint-Georges"
+      ],
+      "surfaces_ha": {
+        "Nuits-Saint-Georges premier cru Les Pruliers": 1.8
+      },
+      "certification": null,
+      "sources": [
+        "https://www.gouges.com/",
+        "https://www.gouges.com/?p=4522"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "trapet",
+      "name": "Domaine Trapet Père et Fils",
+      "commune": "Gevrey-Chambertin",
+      "insee": "21295",
+      "lat": 47.2188,
+      "lon": 4.9865,
+      "coord_precision": "commune",
+      "surface_ha": 16,
+      "surface_note": "15 à 18,5 ha selon les sources (18,5 ha dont 2,1 ha d'extension en Côte de Beaune ; 16 ha chez Clos des Millésimes) ; ~16 ha retenus, hors vignoble alsacien. Chambertin 1,9 ha, ~4 ha de grands crus au total ; Petite Chapelle 0,37 ha ; Clos Prieur, Corbeaux, En Ergot, Combottes assemblés (cuvées Alea/Capita).",
+      "grands_crus": [
+        "Chambertin",
+        "Latricières-Chambertin",
+        "Chapelle-Chambertin"
+      ],
+      "premiers_crus": [
+        "Gevrey-Chambertin premier cru Petite Chapelle",
+        "Gevrey-Chambertin premier cru Clos Prieur",
+        "Gevrey-Chambertin premier cru Les Corbeaux",
+        "Gevrey-Chambertin premier cru En Ergot",
+        "Gevrey-Chambertin premier cru Aux Combottes"
+      ],
+      "villages": [
+        "Gevrey-Chambertin",
+        "Marsannay",
+        "Saint-Romain"
+      ],
+      "regionales": [
+        "Bourgogne"
+      ],
+      "communes": [
+        "Gevrey-Chambertin",
+        "Marsannay-la-Côte",
+        "Saint-Romain"
+      ],
+      "surfaces_ha": {
+        "Chambertin": 1.9,
+        "Gevrey-Chambertin premier cru Petite Chapelle": 0.37
+      },
+      "surface_grands_crus_ha": 4.0,
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.vinsetmillesimes.com/en/4350-trapet-",
+        "https://closdesspiritueux.com/domaine-trapet-chambertin-2019.html",
+        "https://www.comptoirdesmillesimes.com/blog/domaine-trapet/",
+        "https://www.lapassionduvin.com/bourgognebeaujolais/2349-cr-domaine-trapet-gevrey-chambertin-1er-cru-capita-2014"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "bruno-clair",
+      "name": "Domaine Bruno Clair",
+      "commune": "Marsannay-la-Côte",
+      "insee": "21390",
+      "lat": 47.2803,
+      "lon": 4.9875,
+      "coord_precision": "commune",
+      "surface_ha": 24,
+      "surface_note": "17 à 27 ha selon les dates et sources (23-24 ha le plus souvent) ; 24 retenus. Clos de Bèze 0,98 ha, Clos Saint-Jacques ~1,0 ha ; Bonnes-Mares 1,64 ha selon une source, 0,41 selon une autre (non retenu). Corton-Charlemagne acquis en 1993.",
+      "grands_crus": [
+        "Chambertin-Clos de Bèze",
+        "Bonnes-Mares",
+        "Corton-Charlemagne"
+      ],
+      "premiers_crus": [
+        "Gevrey-Chambertin premier cru Clos Saint-Jacques",
+        "Gevrey-Chambertin premier cru Les Cazetiers",
+        "Savigny-lès-Beaune premier cru La Dominode"
+      ],
+      "villages": [
+        "Marsannay",
+        "Gevrey-Chambertin",
+        "Savigny-lès-Beaune",
+        "Pernand-Vergelesses",
+        "Aloxe-Corton"
+      ],
+      "regionales": [],
+      "communes": [
+        "Marsannay-la-Côte",
+        "Gevrey-Chambertin",
+        "Morey-Saint-Denis",
+        "Savigny-lès-Beaune",
+        "Pernand-Vergelesses",
+        "Aloxe-Corton"
+      ],
+      "surfaces_ha": {
+        "Chambertin-Clos de Bèze": 0.98,
+        "Gevrey-Chambertin premier cru Clos Saint-Jacques": 1.0
+      },
+      "certification": null,
+      "sources": [
+        "https://mwwines.com.au/museum-wine-shop/wine-resources/winery-profiles/winery/domaine-bruno-clair",
+        "https://www.justerinis.com/stories/producer-spotlights/producer-profile-domaine-bruno-clair",
+        "https://www.finevines.com/portfolio/producer/domaine-bruno-clair",
+        "https://www.princeofpinot.com/winery/551/index.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "clos-de-tart",
+      "name": "Domaine du Clos de Tart",
+      "commune": "Morey-Saint-Denis",
+      "insee": "21442",
+      "lat": 47.2001,
+      "lon": 4.9649,
+      "coord_precision": "commune",
+      "surface_ha": 7.53,
+      "surface_note": "Monopole grand cru de 7,53 ha d'un seul tenant (dont une parcelle de 0,278 ha issue de Bonnes-Mares selon winehog). Propriété Artémis (famille Pinault) depuis 2017-2018. Second vin « La Forge de Tart » issu du même clos.",
+      "grands_crus": [
+        "Clos de Tart"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Morey-Saint-Denis"
+      ],
+      "surfaces_ha": {
+        "Clos de Tart": 7.53
+      },
+      "certification": null,
+      "sources": [
+        "https://www.terre-net.fr/actualite-agricole/economie-social/article/pinault-acquiert-un-joyau-viticole-en-bourgogne-le-clos-de-tart-202-131874.html",
+        "https://www.corneyandbarrow.com/our-producers/clos-de-tart.html",
+        "https://winehog.org/?p=24696"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "fourrier",
+      "name": "Domaine Fourrier",
+      "commune": "Gevrey-Chambertin",
+      "insee": "21295",
+      "lat": 47.2188,
+      "lon": 4.9865,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "~10 ha vinifiés au domaine (9 à 10 ha selon les sources). Griotte-Chambertin 0,26 ha (seul grand cru), Clos Saint-Jacques 0,89 ha, Combe aux Moines 0,87 ha (dénomination INAO « Combe au Moine ») ; Champeaux, Cherbaudes, Goulots sans surface publiée.",
+      "grands_crus": [
+        "Griotte-Chambertin"
+      ],
+      "premiers_crus": [
+        "Gevrey-Chambertin premier cru Clos Saint-Jacques",
+        "Gevrey-Chambertin premier cru Combe au Moine",
+        "Gevrey-Chambertin premier cru Champeaux",
+        "Gevrey-Chambertin premier cru Cherbaudes",
+        "Gevrey-Chambertin premier cru Les Goulots"
+      ],
+      "villages": [
+        "Gevrey-Chambertin"
+      ],
+      "regionales": [],
+      "communes": [
+        "Gevrey-Chambertin"
+      ],
+      "surfaces_ha": {
+        "Griotte-Chambertin": 0.26,
+        "Gevrey-Chambertin premier cru Clos Saint-Jacques": 0.89,
+        "Gevrey-Chambertin premier cru Combe au Moine": 0.87
+      },
+      "certification": null,
+      "sources": [
+        "https://grandcruselections.com/domaine-fourrier",
+        "https://www.pressreader.com/uk/decanter/20161201/281526520617791",
+        "https://www.vinsetmillesimes.com/en/6849-fourrier"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "coche-dury",
+      "name": "Domaine Coche-Dury",
+      "commune": "Meursault",
+      "insee": "21412",
+      "lat": 46.9717,
+      "lon": 4.7749,
+      "coord_precision": "commune",
+      "surface_ha": 10.46,
+      "surface_note": "10,46 ha selon Decanter ; « environ 9 ha » selon Wikipedia (liste partielle). Corton-Charlemagne 0,88 ha depuis 2012 (0,34 ha avant), Meursault Perrières 0,6 ha (0,5 selon Clos Cachet), Genevrières 0,2, Caillerets 0,18 (Decanter). Bourgogne/aligoté non relevés dans les sources consultées.",
+      "grands_crus": [
+        "Corton-Charlemagne"
+      ],
+      "premiers_crus": [
+        "Meursault premier cru Perrières",
+        "Meursault premier cru Genevrières",
+        "Meursault premier cru Les Caillerets",
+        "Volnay premier cru"
+      ],
+      "villages": [
+        "Meursault",
+        "Puligny-Montrachet",
+        "Auxey-Duresses",
+        "Monthélie"
+      ],
+      "regionales": [],
+      "communes": [
+        "Meursault",
+        "Puligny-Montrachet",
+        "Auxey-Duresses",
+        "Monthélie",
+        "Volnay"
+      ],
+      "surfaces_ha": {
+        "Corton-Charlemagne": 0.88,
+        "Meursault premier cru Perrières": 0.6,
+        "Meursault premier cru Genevrières": 0.2,
+        "Meursault premier cru Les Caillerets": 0.18
+      },
+      "certification": null,
+      "sources": [
+        "https://www.decanter.com/premium/domaine-coche-dury-producer-profile-477612/",
+        "https://en.wikipedia.org/wiki/Domaine_Coche-Dury",
+        "https://closcachet.com.au/pages/domaine-coche-dury"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "roulot",
+      "name": "Domaine Roulot",
+      "commune": "Meursault",
+      "insee": "21412",
+      "lat": 46.9717,
+      "lon": 4.7749,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "15 ha (Frederick Wildman) ; Wikipedia donne 8,8 ha en propre mais une liste de parcelles totalisant ~11,7 ha. Perrières 0,26, Charmes 0,28, Porusot 0,42 ; Clos des Bouchères 1,38 ha (Wikipedia) contre 0,16 ha (CaskCartel) : non retenu. Lieux-dits Meursault (Tillets, Meix Chavaux, Vireuils, Narvaux, Mon Plaisir, Luchets) ~4,49 ha, Bourgogne 2,64, aligoté 0,77. Culture bio revendiquée sans certification citée.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Meursault premier cru Perrières",
+        "Meursault premier cru Charmes",
+        "Meursault premier cru Porusot",
+        "Meursault premier cru Les Bouchères",
+        "Auxey-Duresses premier cru"
+      ],
+      "villages": [
+        "Meursault",
+        "Auxey-Duresses",
+        "Monthélie"
+      ],
+      "regionales": [
+        "Bourgogne",
+        "Bourgogne aligoté"
+      ],
+      "communes": [
+        "Meursault",
+        "Auxey-Duresses",
+        "Monthélie"
+      ],
+      "surfaces_ha": {
+        "Meursault premier cru Perrières": 0.26,
+        "Meursault premier cru Charmes": 0.28,
+        "Meursault premier cru Porusot": 0.42,
+        "Auxey-Duresses premier cru": 0.47,
+        "Meursault": 4.49,
+        "Auxey-Duresses": 0.48,
+        "Monthélie": 0.36,
+        "Bourgogne": 2.64,
+        "Bourgogne aligoté": 0.77
+      },
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Domaine_Roulot",
+        "https://www.frw.co.uk/producer/612ec2800600000000000579/domaine-roulot"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "comtes-lafon",
+      "name": "Domaine des Comtes Lafon",
+      "commune": "Meursault",
+      "insee": "21412",
+      "lat": 46.9717,
+      "lon": 4.7749,
+      "coord_precision": "commune",
+      "surface_ha": 16.17,
+      "surface_note": "Tableau Inside Burgundy : 16,17 ha (10,43 blanc, 5,74 rouge) ; 14 à 17 ha ailleurs. Montrachet 0,32 ; Meursault Perrières 0,91, Genevrières 0,55, Charmes 1,90, Gouttes d'Or 0,39, Porusot 0,96, Bouchères 0,30 ; Meursault village 5,10 (dont Clos de la Barre 2,12, Désirée 0,43) ; Volnay Santenots-du-Milieu 3,78 (chiffre d'une seule source, rattaché à « Volnay premier cru Santenots »), Clos des Chênes 0,38, Champans 0,52 ; Monthélie Duresses 1,06. Hors Héritiers du Comte Lafon (Mâconnais, fiche séparée).",
+      "grands_crus": [
+        "Montrachet"
+      ],
+      "premiers_crus": [
+        "Meursault premier cru Perrières",
+        "Meursault premier cru Genevrières",
+        "Meursault premier cru Charmes",
+        "Meursault premier cru Les Gouttes d'Or",
+        "Meursault premier cru Porusot",
+        "Meursault premier cru Les Bouchères",
+        "Volnay premier cru Santenots",
+        "Volnay premier cru Clos des Chênes",
+        "Volnay premier cru Champans",
+        "Monthélie premier cru Les Duresses"
+      ],
+      "villages": [
+        "Meursault"
+      ],
+      "regionales": [],
+      "communes": [
+        "Meursault",
+        "Volnay",
+        "Monthélie"
+      ],
+      "surfaces_ha": {
+        "Montrachet": 0.32,
+        "Meursault premier cru Perrières": 0.91,
+        "Meursault premier cru Genevrières": 0.55,
+        "Meursault premier cru Charmes": 1.9,
+        "Meursault premier cru Les Gouttes d'Or": 0.39,
+        "Meursault premier cru Porusot": 0.96,
+        "Meursault premier cru Les Bouchères": 0.3,
+        "Meursault": 5.1,
+        "Volnay premier cru Santenots": 3.78,
+        "Volnay premier cru Clos des Chênes": 0.38,
+        "Volnay premier cru Champans": 0.52,
+        "Monthélie premier cru Les Duresses": 1.06
+      },
+      "certification": "biodynamie",
+      "sources": [
+        "https://insideburgundy.com/overview/domaine-des-comtes-lafon",
+        "https://www.decanter.com/wine/producer-profiles/domaine-des-comtes-lafon-producer-profile-245913/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "leflaive",
+      "name": "Domaine Leflaive",
+      "commune": "Puligny-Montrachet",
+      "insee": "21512",
+      "lat": 46.9478,
+      "lon": 4.7603,
+      "coord_precision": "commune",
+      "surface_ha": 22,
+      "surface_note": "22 ha dont ~10 ha de premiers crus (une source) ; 24 ha dont 19 en vigne ailleurs ; ~5,1 ha de grands crus (Wikipedia). Montrachet 0,08, Chevalier 1,99, Bâtard 1,91, Bienvenues 1,15 ; Puligny village 4,64 (7 climats), Bourgogne blanc 3,24. Premiers crus sans surface. Hors vignes du Mâconnais (Mâcon-Verzé) non documentées ici.",
+      "grands_crus": [
+        "Montrachet",
+        "Chevalier-Montrachet",
+        "Bâtard-Montrachet",
+        "Bienvenues-Bâtard-Montrachet"
+      ],
+      "premiers_crus": [
+        "Puligny-Montrachet premier cru Les Pucelles",
+        "Puligny-Montrachet premier cru Les Folatières",
+        "Puligny-Montrachet premier cru Les Combettes",
+        "Puligny-Montrachet premier cru Clavaillon",
+        "Meursault premier cru Sous le Dos d'Ane"
+      ],
+      "villages": [
+        "Puligny-Montrachet"
+      ],
+      "regionales": [
+        "Bourgogne"
+      ],
+      "communes": [
+        "Puligny-Montrachet",
+        "Chassagne-Montrachet",
+        "Meursault"
+      ],
+      "surfaces_ha": {
+        "Montrachet": 0.08,
+        "Chevalier-Montrachet": 1.99,
+        "Bâtard-Montrachet": 1.91,
+        "Bienvenues-Bâtard-Montrachet": 1.15,
+        "Puligny-Montrachet": 4.64,
+        "Bourgogne": 3.24
+      },
+      "surface_grands_crus_ha": 5.1,
+      "certification": "biodynamie",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Domaine_Leflaive",
+        "https://www.falstaff.com/en/wineries/domaine-leflaive",
+        "https://www.enprimeurclub.com/wineries/domaine-leflaive-puligny-montrachet"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "ramonet",
+      "name": "Domaine Ramonet",
+      "commune": "Chassagne-Montrachet",
+      "insee": "21150",
+      "lat": 46.9326,
+      "lon": 4.7282,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "« Plus de 15 ha » (une seule source) : confiance basse. Grands crus selon Wine With Seth : Montrachet ~0,26, Bâtard ~0,64, Bienvenues ~0,45, Chevalier ~0,09 (chiffres voisins chez Flask, plus faibles chez BlockCellar). Premier cru « Les Ruchottes » 1,18 ha rattaché à la dénomination INAO « Les Grandes Ruchottes ». Morgeot, Vergers, Saint-Aubin En Remilly cités par les cavistes.",
+      "grands_crus": [
+        "Montrachet",
+        "Bâtard-Montrachet",
+        "Bienvenues-Bâtard-Montrachet",
+        "Chevalier-Montrachet"
+      ],
+      "premiers_crus": [
+        "Chassagne-Montrachet premier cru Les Grandes Ruchottes",
+        "Chassagne-Montrachet premier cru Morgeot",
+        "Chassagne-Montrachet premier cru Les Vergers",
+        "Saint-Aubin premier cru En Remilly"
+      ],
+      "villages": [
+        "Chassagne-Montrachet",
+        "Puligny-Montrachet",
+        "Saint-Aubin"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chassagne-Montrachet",
+        "Puligny-Montrachet",
+        "Saint-Aubin"
+      ],
+      "surfaces_ha": {
+        "Montrachet": 0.26,
+        "Bâtard-Montrachet": 0.64,
+        "Bienvenues-Bâtard-Montrachet": 0.45,
+        "Chevalier-Montrachet": 0.09,
+        "Chassagne-Montrachet premier cru Les Grandes Ruchottes": 1.18
+      },
+      "certification": null,
+      "sources": [
+        "https://www.winewithseth.com/winewiki/domaine-ramonet/",
+        "https://flaskfinewines.com/products/2015-domaine-ramonet-abbaye-de-morgeot-chassagne-montrachet",
+        "https://blockcellar.vercel.app/producer/FR9AK",
+        "https://caskcartel.com/en-fr/products/2020-domaine-ramonet-saint-aubin-en-remilly"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "bonneau-du-martray",
+      "name": "Domaine Bonneau du Martray",
+      "commune": "Pernand-Vergelesses",
+      "insee": "21480",
+      "lat": 47.0778,
+      "lon": 4.8513,
+      "coord_precision": "commune",
+      "surface_ha": 11,
+      "surface_note": "~11 ha d'un seul tenant sur la colline de Corton (Pernand / Aloxe) : 9,5 ha de Corton-Charlemagne et ~1,5 ha de Corton rouge. Depuis fin 2018, 2,8 ha de Corton-Charlemagne loués au Domaine de la Romanée-Conti (6,7 ha de chardonnay restant vinifiés par le domaine) : la surface déclarée ici reste la propriété.",
+      "grands_crus": [
+        "Corton-Charlemagne",
+        "Corton"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Pernand-Vergelesses",
+        "Aloxe-Corton"
+      ],
+      "surfaces_ha": {
+        "Corton-Charlemagne": 9.5,
+        "Corton": 1.5
+      },
+      "surface_grands_crus_ha": 11,
+      "certification": null,
+      "sources": [
+        "https://www.burgundy-report.com/burgundy-report-extra/10-2004/profile-domaine-bonneau-du-martray-pernand/",
+        "https://www.bbr.com/producer-915-bonneau-du-martray",
+        "https://issuu.com/corneyandbarrowltd/docs/2023_bonneau_martray_release_singles"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "marquis-dangerville",
+      "name": "Domaine Marquis d'Angerville",
+      "commune": "Volnay",
+      "insee": "21712",
+      "lat": 46.9987,
+      "lon": 4.7783,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "12 à 16,5 ha selon les sources (Vinfolio : ~16,5 ha dont 11,5 ha de Volnay premier cru) ; 15 retenus. Clos des Ducs 2,15 ha (monopole) ; Champans 3,98 et Taillepieds 1,07 selon une seule source (Wine With Seth). « Clos des Angles » rattaché à « Volnay premier cru Les Angles », « Pitures » à « Pitures Dessus ».",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Volnay premier cru Clos des Ducs",
+        "Volnay premier cru Champans",
+        "Volnay premier cru Taille Pieds",
+        "Volnay premier cru Les Caillerets",
+        "Volnay premier cru Frémiets",
+        "Volnay premier cru Les Mitans",
+        "Volnay premier cru Pitures Dessus",
+        "Volnay premier cru Les Angles"
+      ],
+      "villages": [
+        "Volnay"
+      ],
+      "regionales": [],
+      "communes": [
+        "Volnay"
+      ],
+      "surfaces_ha": {
+        "Volnay premier cru Clos des Ducs": 2.15,
+        "Volnay premier cru Champans": 3.98,
+        "Volnay premier cru Taille Pieds": 1.07
+      },
+      "certification": null,
+      "sources": [
+        "https://www.vinfolio.com/producer/612ec2800600000000000656/domaine-marquis-d-angerville",
+        "https://www.winewithseth.com/winewiki/domaine-marquis-dangerville/",
+        "https://www.xtrawine.com/collections/marquis-d-angerville"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "michel-lafarge",
+      "name": "Domaine Michel Lafarge",
+      "commune": "Volnay",
+      "insee": "21712",
+      "lat": 46.9987,
+      "lon": 4.7783,
+      "coord_precision": "commune",
+      "surface_ha": 11.68,
+      "surface_note": "11,68 ha (tableau de l'importateur Pearl of Burgundy) ; 11,6 ha (Sotheby's), ~12 ha ailleurs, « un tiers premiers crus, un tiers villages, un tiers régionales ». Clos des Chênes 0,90, Clos du Château des Ducs 0,57 (monopole), Caillerets 0,28, Mitans 0,39, Volnay 1er cru 0,30 ; Beaune Aigrots 0,66, Grèves 0,38 ; Pommard Pézerolles 0,14.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Volnay premier cru Clos des Chênes",
+        "Volnay premier cru Clos du Château des Ducs",
+        "Volnay premier cru Les Caillerets",
+        "Volnay premier cru Les Mitans",
+        "Volnay premier cru Pitures Dessus",
+        "Volnay premier cru",
+        "Beaune premier cru Les Aigrots",
+        "Beaune premier cru Les Grèves",
+        "Pommard premier cru Les Pézerolles"
+      ],
+      "villages": [
+        "Volnay",
+        "Beaune",
+        "Pommard",
+        "Meursault"
+      ],
+      "regionales": [
+        "Bourgogne",
+        "Bourgogne aligoté"
+      ],
+      "communes": [
+        "Volnay",
+        "Beaune",
+        "Pommard",
+        "Meursault"
+      ],
+      "surfaces_ha": {
+        "Volnay premier cru Clos des Chênes": 0.9,
+        "Volnay premier cru Clos du Château des Ducs": 0.57,
+        "Volnay premier cru Les Caillerets": 0.28,
+        "Volnay premier cru Les Mitans": 0.39,
+        "Volnay premier cru": 0.3,
+        "Beaune premier cru Les Aigrots": 0.66,
+        "Beaune premier cru Les Grèves": 0.38,
+        "Pommard premier cru Les Pézerolles": 0.14
+      },
+      "certification": "biodynamie",
+      "sources": [
+        "https://pearlofburgundy.com/wine/domaine-lafarge",
+        "https://wine.sothebys.com/blogs/producer/domaine-lafarge-iconic-volnay-producer",
+        "https://bourgogne-info.eu/html/domaine_michel-lafarge.html",
+        "https://www.winecollector.com/wine.aspx?wvi=645933"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "tollot-beaut",
+      "name": "Domaine Tollot-Beaut",
+      "commune": "Chorey-les-Beaune",
+      "insee": "21173",
+      "lat": 47.0519,
+      "lon": 4.8716,
+      "coord_precision": "commune",
+      "surface_ha": 24,
+      "surface_note": "~24 ha sur Chorey, Savigny, Beaune et Aloxe-Corton (Jancis Robinson, CellarTracker) ; un tiers en Chorey-lès-Beaune village (~8 ha, dont le monopole Pièce du Chapitre ~1,5 ha). Grands crus Corton (Bressandes ~0,9 ha selon une seule source, Les Combes) et Corton-Charlemagne ; premiers crus non détaillés.",
+      "grands_crus": [
+        "Corton",
+        "Corton-Charlemagne"
+      ],
+      "premiers_crus": [],
+      "villages": [
+        "Chorey-lès-Beaune",
+        "Savigny-lès-Beaune",
+        "Beaune",
+        "Aloxe-Corton"
+      ],
+      "regionales": [],
+      "communes": [
+        "Chorey-les-Beaune",
+        "Savigny-lès-Beaune",
+        "Beaune",
+        "Aloxe-Corton"
+      ],
+      "surfaces_ha": {
+        "Chorey-lès-Beaune": 8.0
+      },
+      "certification": null,
+      "sources": [
+        "https://jancisrobinson.com/zh-hans/articles/dom-tollotbeaut-2012-choreylsbeaune",
+        "https://www.cellartracker.com/m/articles/producer/12796?revision=5",
+        "https://www.winebow.com/node/433322",
+        "https://www.lapassionduvin.com/bourgognebeaujolais/2648-domaine-tollot-beaut"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "simon-bize",
+      "name": "Domaine Simon Bize et Fils",
+      "commune": "Savigny-lès-Beaune",
+      "insee": "21590",
+      "lat": 47.0795,
+      "lon": 4.8042,
+      "coord_precision": "commune",
+      "surface_ha": 22,
+      "surface_note": "~22 ha (54 acres selon Wine Spectator), surtout à Savigny. Latricières-Chambertin ~0,3 ha en fermage ; Corton-Charlemagne. « Aux Vergelesses » 1,6 à 2,3 ha (1,9 retenu) rattaché à « Les Vergelesses » ; Talmettes 0,80, Marconnets 0,60, Serpentières ~0,37 ; Aux Guettes 0,5 ou 3,5 ha selon les sources (non retenu).",
+      "grands_crus": [
+        "Latricières-Chambertin",
+        "Corton-Charlemagne"
+      ],
+      "premiers_crus": [
+        "Savigny-lès-Beaune premier cru Les Vergelesses",
+        "Savigny-lès-Beaune premier cru Aux Guettes",
+        "Savigny-lès-Beaune premier cru Les Talmettes",
+        "Savigny-lès-Beaune premier cru Les Marconnets",
+        "Savigny-lès-Beaune premier cru Aux Serpentières"
+      ],
+      "villages": [
+        "Savigny-lès-Beaune",
+        "Aloxe-Corton"
+      ],
+      "regionales": [],
+      "communes": [
+        "Savigny-lès-Beaune",
+        "Aloxe-Corton",
+        "Gevrey-Chambertin"
+      ],
+      "surfaces_ha": {
+        "Latricières-Chambertin": 0.32,
+        "Savigny-lès-Beaune premier cru Les Vergelesses": 1.9,
+        "Savigny-lès-Beaune premier cru Les Talmettes": 0.8,
+        "Savigny-lès-Beaune premier cru Les Marconnets": 0.6,
+        "Savigny-lès-Beaune premier cru Aux Serpentières": 0.37
+      },
+      "certification": null,
+      "sources": [
+        "https://www.winespectator.com/blogs/show/id/41238",
+        "https://grandcruselections.com/domaine-simone-bize-new",
+        "https://www.c2062216.myzen.co.uk/pdf/Domaine_Simon_Bize.pdf",
+        "https://www.sommpicks.com/products/2020-simon-bize-corton-charlemagne-750ml"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "naudin-ferrand",
+      "name": "Domaine Henri Naudin-Ferrand",
+      "commune": "Magny-lès-Villers",
+      "insee": "21368",
+      "lat": 47.0929,
+      "lon": 4.8792,
+      "coord_precision": "commune",
+      "surface_ha": 22,
+      "surface_note": "21 à 22 ha (Hachette 21 ha, autres ~22 ha). Village à cheval sur les Hautes-Côtes de Beaune et de Nuits : l'essentiel en Bourgogne Hautes-Côtes et aligoté, avec quelques villages (Ladoix) et un grand cru (Echezeaux). Surfaces par appellation non publiées.",
+      "grands_crus": [
+        "Echezeaux"
+      ],
+      "premiers_crus": [],
+      "villages": [
+        "Ladoix"
+      ],
+      "regionales": [
+        "Bourgogne Hautes Côtes de Beaune",
+        "Bourgogne Hautes Côtes de Nuits",
+        "Bourgogne aligoté"
+      ],
+      "communes": [
+        "Magny-lès-Villers",
+        "Ladoix-Serrigny",
+        "Flagey-Echezeaux"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://escapementmagazine.com/articles/domaine-naudin-ferrand/",
+        "https://www.hachette-vins.com/guide-vins/producteurs/608/dom-henri-naudin-ferrand",
+        "https://www.idealwine.net/domaine-naudin-ferrand-une-histoire-de-passion"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "a-et-p-de-villaine",
+      "name": "Domaine A. et P. de Villaine",
+      "commune": "Bouzeron",
+      "insee": "71051",
+      "lat": 46.8908,
+      "lon": 4.7277,
+      "coord_precision": "commune",
+      "surface_ha": 29.33,
+      "surface_note": "29,33 ha (Corney & Barrow), 29,6 ha (iDealwine) ; 21-24 ha dans des profils plus anciens. Bouzeron (aligoté) noyau historique, Rully (dont premiers crus Montpalais et Margotés acquis en 2015), Mercurey, Bourgogne Côte Chalonnaise. Les Santenay / Saint-Aubin « de Villaine » relèvent du négoce et sont exclus.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Rully premier cru Montpalais",
+        "Rully premier cru Margotés"
+      ],
+      "villages": [
+        "Bouzeron",
+        "Rully",
+        "Mercurey"
+      ],
+      "regionales": [
+        "Bourgogne Côte Chalonnaise"
+      ],
+      "communes": [
+        "Bouzeron",
+        "Rully",
+        "Mercurey"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.corneyandbarrow.com/de-villaine",
+        "https://www.idealwine.net/domaine-aubert-pamela-de-villaine",
+        "https://www.burgundy-report.com/?p=36179",
+        "https://perrineswine.com/products/2020-domaine-a-et-p-de-villaine-santenay-1er-cru-passetemps-burgundy-france"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "paul-et-marie-jacqueson",
+      "name": "Domaine Paul et Marie Jacqueson",
+      "commune": "Rully",
+      "insee": "71378",
+      "lat": 46.871,
+      "lon": 4.7601,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "12 ha (iDealwine), 13 ha (caviste FR), 18 ha (Lea & Sandeman) : milieu de fourchette retenu, confiance basse. Mercurey 1,3 ha (iDealwine) contre 5 ha (Lea & Sandeman) : non retenu ; Bouzeron 0,8 ha (iDealwine, source unique).",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Rully premier cru Grésigny",
+        "Rully premier cru Margotés"
+      ],
+      "villages": [
+        "Rully",
+        "Mercurey",
+        "Bouzeron"
+      ],
+      "regionales": [],
+      "communes": [
+        "Rully",
+        "Mercurey",
+        "Bouzeron"
+      ],
+      "surfaces_ha": {
+        "Bouzeron": 0.8
+      },
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.net/?p=46333",
+        "https://www.leaandsandeman.co.uk/wine/2018-RULLY-1er-Cru-Gresigny-Domaine-Paul-et-Marie-Jacqueson-36668-00.html",
+        "https://en.lespassionnesduvin.com/catalog/category/view/s/paul-et-marie-jacqueson/id/11950"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "michel-juillot",
+      "name": "Domaine Michel Juillot",
+      "commune": "Mercurey",
+      "insee": "71294",
+      "lat": 46.8383,
+      "lon": 4.7279,
+      "coord_precision": "commune",
+      "surface_ha": 31,
+      "surface_note": "31 ha le plus souvent (30 à 32,5 ha), dont 8,5 ha de premiers crus et 1,2 ha de grands crus ; deux tiers à Mercurey, le reste en Rully et sur la colline de Corton (Corton-Charlemagne, Corton Perrières).",
+      "grands_crus": [
+        "Corton-Charlemagne",
+        "Corton"
+      ],
+      "premiers_crus": [
+        "Mercurey premier cru Clos des Barraults"
+      ],
+      "villages": [
+        "Mercurey",
+        "Rully",
+        "Aloxe-Corton"
+      ],
+      "regionales": [],
+      "communes": [
+        "Mercurey",
+        "Rully",
+        "Aloxe-Corton"
+      ],
+      "surfaces_ha": {},
+      "surface_grands_crus_ha": 1.2,
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.info/?p=8943",
+        "https://bourgogne-info.eu/html/domaine_michel_juillot.html",
+        "https://nobleselection.kork.ca/en/our-wineries/domaine-michel-juillot/mercurey-1er-cru-clos-des-barraults/2020"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "francois-lumpp",
+      "name": "Domaine François Lumpp",
+      "commune": "Givry",
+      "insee": "71221",
+      "lat": 46.7689,
+      "lon": 4.7505,
+      "coord_precision": "commune",
+      "surface_ha": 9.5,
+      "surface_note": "9,5 ha exclusivement en Givry (6,5 ha pinot noir) selon Vins et Millésimes ; 10,5 ha (iDealwine) et 8 ha dans des fiches anciennes. 11 climats premiers crus ; Crausot 0,63 ha (Kermit Lynch).",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Givry premier cru Clos du Cras long",
+        "Givry premier cru Crausot",
+        "Givry premier cru A Vigne Rouge"
+      ],
+      "villages": [
+        "Givry"
+      ],
+      "regionales": [],
+      "communes": [
+        "Givry"
+      ],
+      "surfaces_ha": {
+        "Givry premier cru Crausot": 0.63
+      },
+      "certification": null,
+      "sources": [
+        "https://www.vinsetmillesimes.com/en/9808-francois-lumpp",
+        "https://shop.kermitlynch.com/product/detail/17FLU03.html",
+        "https://www.idealwine.net/?p=81573",
+        "https://vinorandum.com/wine/domaine-francois-lumpp-givry-aoc-premier-cru-a-vigne-rouge"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "stephane-aladame",
+      "name": "Domaine Stéphane Aladame",
+      "commune": "Montagny-lès-Buxy",
+      "insee": "71302",
+      "lat": 46.706,
+      "lon": 4.6706,
+      "coord_precision": "commune",
+      "surface_ha": 7,
+      "surface_note": "6,5 à 8 ha selon les sources ; iDealwine : 7 ha dont 6 en Montagny premier cru. Les Coères 0,5 ha ; cuvée Découverte = assemblage de plusieurs premiers crus (~3,5 ha, source ancienne).",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Montagny premier cru Les Coères",
+        "Montagny premier cru Le Vieux Château",
+        "Montagny premier cru Les Burnins",
+        "Montagny premier cru Les Maroques",
+        "Montagny premier cru Les Platières",
+        "Montagny premier cru Les Las",
+        "Montagny premier cru Les Gouresses",
+        "Montagny premier cru Les Vignes Derrière"
+      ],
+      "villages": [
+        "Montagny"
+      ],
+      "regionales": [],
+      "communes": [
+        "Montagny-lès-Buxy"
+      ],
+      "surfaces_ha": {
+        "Montagny premier cru Les Coères": 0.5
+      },
+      "certification": null,
+      "sources": [
+        "https://www.internationalfinewines.com.au/pages/domaine-stephane-aladame",
+        "https://bourgogne-info.eu/html/domaine_stephane_aladame.html",
+        "https://www.beckywasserman.com/domaines/aladame/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "chateau-fuisse",
+      "name": "Château-Fuissé",
+      "commune": "Fuissé",
+      "insee": "71210",
+      "lat": 46.2783,
+      "lon": 4.7445,
+      "coord_precision": "commune",
+      "surface_ha": 40,
+      "surface_note": "Près de 40 ha dans les villages de Pouilly-Fuissé (famille Vincent). Les Brûlés 1,7 ha, Les Combettes 0,5 ha (pas un premier cru INAO), Le Clos ~2,5 ha (source peu détaillée, non retenu). Saint-Véran / Mâcon de la maison Jean-Jacques Vincent (négoce) exclus.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Pouilly-Fuissé premier cru Le Clos",
+        "Pouilly-Fuissé premier cru Les Brulés"
+      ],
+      "villages": [
+        "Pouilly-Fuissé"
+      ],
+      "regionales": [],
+      "communes": [
+        "Fuissé",
+        "Solutré-Pouilly",
+        "Vergisson",
+        "Chaintré"
+      ],
+      "surfaces_ha": {
+        "Pouilly-Fuissé premier cru Les Brulés": 1.7
+      },
+      "certification": null,
+      "sources": [
+        "https://www.lapassionduvin.com/bourgognebeaujolais/38830-chateau-fuisse",
+        "https://frederickwildman.com/producers/chateau-fuisse/pouilly-fuisse-les-brules-2017",
+        "https://www.winewithseth.com/winewiki/le-clos-chateau-fuisse/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "ja-ferret",
+      "name": "Domaine J.A. Ferret",
+      "commune": "Fuissé",
+      "insee": "71210",
+      "lat": 46.2783,
+      "lon": 4.7445,
+      "coord_precision": "commune",
+      "surface_ha": 18,
+      "surface_note": "17-18 ha tous en Pouilly-Fuissé (~50 parcelles) ; 42,5 ha sur une fiche isolée (non retenu). Propriété de la maison Louis Jadot depuis 2008. Hors-classe Les Ménétrières et Tournant de Pouilly (~1 ha, climat non rattaché faute de correspondance sûre) ; Les Perrières classé premier cru en 2020.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Pouilly-Fuissé premier cru Les Ménétrières",
+        "Pouilly-Fuissé premier cru Les Perrières"
+      ],
+      "villages": [
+        "Pouilly-Fuissé"
+      ],
+      "regionales": [],
+      "communes": [
+        "Fuissé"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.winewithseth.com/winewiki/domaine-j-a-ferret/",
+        "https://www.vinissimus.com/es/bodega/domaine-j-a-ferret/",
+        "https://www.hachette-vins.com/guide-vins/les-vins/domaine-j-a-ferret-les-perrieres-tete-de-cru-2011-2014/20146533/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "heritiers-comte-lafon",
+      "name": "Les Héritiers du Comte Lafon",
+      "commune": "Milly-Lamartine",
+      "insee": "71299",
+      "lat": 46.3501,
+      "lon": 4.6972,
+      "coord_precision": "commune",
+      "surface_ha": 26,
+      "surface_note": "26 ha (Becky Wasserman, profil iDealwine) ; 21 ha ou « plus de 20 ha » ailleurs. Créé en 1999 par Dominique Lafon (7 ha initiaux à Milly-Lamartine). Trois secteurs : Milly-Lamartine, Bussières (Clos du Four), Viré-Clessé ; essentiellement Mâcon et Mâcon-Villages.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [
+        "Viré-Clessé"
+      ],
+      "regionales": [
+        "Mâcon Milly-Lamartine",
+        "Mâcon Villages",
+        "Mâcon Prissé",
+        "Mâcon Bussières"
+      ],
+      "communes": [
+        "Milly-Lamartine",
+        "Bussières",
+        "Prissé",
+        "Viré",
+        "Clessé"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://beckywasserman.com/domaines/heritiers-du-comte-lafon",
+        "https://www.idealwine.net/?p=43227",
+        "https://www.bbr.com/products-20181175134-2018-macon-milly-lamartine-les-heritiers-du-comte-lafon-burgundy",
+        "https://www.bbr.com/products-42326-2015-macon-prisse-les-heritiers-du-comte-lafon"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "domaine-de-la-bongran",
+      "name": "Domaine de la Bongran (Jean et Gautier Thévenet)",
+      "commune": "Clessé",
+      "insee": "71135",
+      "lat": 46.4188,
+      "lon": 4.8239,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "~15 ha au hameau de Quintaine (12 à 17 ha selon les sources ; Wine With Seth : Bongran stricto sensu ~4,5 ha dans un ensemble Thévenet de ~15 ha). Certifié bio depuis 2008 (FRW). Longtemps exclu de l'AOC Viré-Clessé pour ses vins à sucres résiduels ; mention « levrouté » reconnue en 2018.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [
+        "Viré-Clessé"
+      ],
+      "regionales": [],
+      "communes": [
+        "Clessé"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://www.frw.co.uk/producer/612ec2800600000000000d9e/domaine-de-la-bongran-thevenet-quintaine",
+        "https://www.frw.co.uk/editorial/Behind-The-Bottle-Vire-Clesse-Domaine-de-La-Bongran",
+        "https://www.winewithseth.com/winewiki/domaine-de-la-bongran/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "guffens-heynen",
+      "name": "Domaine Guffens-Heynen",
+      "commune": "Vergisson",
+      "insee": "71567",
+      "lat": 46.3094,
+      "lon": 4.7117,
+      "coord_precision": "commune",
+      "surface_ha": 5.65,
+      "surface_note": "~5,65 ha (5 à 6 ha selon les sources). Pouilly-Fuissé ~1 ha (La Roche, Les Croux, Les Crays : non rattachés aux premiers crus faute de certitude) ; Mâcon-Pierreclos 3,3 à 3,65 ha (3,5 retenu). Hors négoce Verget.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [
+        "Pouilly-Fuissé"
+      ],
+      "regionales": [
+        "Mâcon Pierreclos",
+        "Mâcon"
+      ],
+      "communes": [
+        "Vergisson",
+        "Pierreclos",
+        "Davayé"
+      ],
+      "surfaces_ha": {
+        "Pouilly-Fuissé": 1.0,
+        "Mâcon Pierreclos": 3.5
+      },
+      "certification": null,
+      "sources": [
+        "https://www.vinsetmillesimes.com/en/6149-domaine-guffens-heynen",
+        "https://www.idealwine.net/jean-marie-guffens-heynen-lorfevre-du-maconnais",
+        "https://idealwine.com/en/prix-vin/110866-2001-Bottle-Burgundy-Macon-Pierreclos-Guffens-Heynen-white"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "saumaize-michelin",
+      "name": "Domaine Saumaize-Michelin",
+      "commune": "Vergisson",
+      "insee": "71567",
+      "lat": 46.3094,
+      "lon": 4.7117,
+      "coord_precision": "commune",
+      "surface_ha": 10,
+      "surface_note": "~10 ha (9,5 ha de chardonnay + 0,5 ha de gamay) ; ~8 ha dans un fil de forum ancien. Trois appellations : Mâcon-Villages, Saint-Véran (En Pommard, Les Crèches), Pouilly-Fuissé (dont la cuvée Ampelopsis). Conduite biodynamique déclarée.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [
+        "Pouilly-Fuissé",
+        "Saint-Véran"
+      ],
+      "regionales": [
+        "Mâcon Villages"
+      ],
+      "communes": [
+        "Vergisson"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.bowlerwine.com/producer/saumaize-michelin",
+        "https://kysela.com/domaine-saumaize-michelin.html",
+        "https://www.winewithseth.com/winewiki/domaine-saumaize-michelin/"
+      ],
+      "confidence": "moyenne"
+    }
+  ]
+}

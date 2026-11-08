@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { Header } from "@/components/Header";
+import { Header, MobileRegionBar } from "@/components/Header";
 import { RegionPanelContent } from "@/components/panel/RegionPanelContent";
 import { BottomSheet } from "@/components/panel/BottomSheet";
 import { getArea } from "@/data/areas";
@@ -42,6 +42,11 @@ export function ExplorerApp() {
     getArea(areaId)?.rootRegionId ?? geoFeature?.rootRegionId ?? null;
 
   const open = areaId !== null || geoFeature !== null;
+  const sheetTitle = geoFeature?.name ?? getArea(areaId)?.name;
+  const closeSelection = () => {
+    setAreaId(null);
+    setGeoFeature(null);
+  };
 
   return (
     <div className="flex h-screen flex-col">
@@ -60,8 +65,16 @@ export function ExplorerApp() {
             onSelectArea={selectArea}
           />
 
+          {/* Mobile: region + vintage at the bottom (the header is hidden). */}
+          <MobileRegionBar
+            regionId={rootRegionId}
+            year={year}
+            onRegionChange={selectArea}
+            onYearChange={setYear}
+          />
+
           {/* Mobile bottom sheet (hidden on desktop). */}
-          <BottomSheet open={open}>
+          <BottomSheet open={open} title={sheetTitle} onClose={closeSelection}>
             <RegionPanelContent
               areaId={areaId}
               feature={geoFeature}

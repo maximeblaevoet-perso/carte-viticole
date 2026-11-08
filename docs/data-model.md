@@ -75,6 +75,13 @@ ready). Levels 1–5; zoom bands `zoom_min` / `zoom_max`. Editorial flag
 omitted from MVT tiles (ADR 0010 — e.g. Crémant d’Alsace, AOC “Alsace”
 footprint duplicate).
 
+Map styling columns (migration 0017, ADR 0022), cosmetic, never data:
+`map_color_idx` (0–7, touching siblings of a level differ), `label_point`
+(one label anchor on the largest part), `short_name` (cru name without the
+"<appellation> premier/grand cru" prefix). Recomputed by
+`wine_areas_refresh_map_style(<root_region_id>)`. Since 0017 `zoom_max` no
+longer cuts area tiles: the client fades levels (`AREA_BANDS`).
+
 ### `wine_parcels`
 Fine parcel polygons shown only at high zoom (`zoom_min` default 14). Separate
 table to avoid hierarchy volume explosion. Cadastral refs, INAO `id_aire`, optional
@@ -128,13 +135,17 @@ TOPO "Vigne" zones outside the RPG, clipped to the AOC aire. `source`
 `wine_area_id`, `lieu_dit`, `area_ha`, `geom`; terrain `altitude_m`,
 `slope_pct`, `aspect_deg`, `geol_notation` / `geol_descr` / `geol_family`,
 `soil_name`; `score_sun`, `score_cool`, `score_components` (each criterion in
-[0, 1]). No domain column since migration 0015 (ADR 0019).
+[0, 1]). No domain column since migration 0015 (ADR 0019). Since migration
+0016 (ADR 0021): `cru_level` (`grand_cru` | `premier_cru` | `village` |
+`regional`, highest INAO rank, never a score input), `premier_cru`,
+`village`, `secteur` (drives the per-sector altitude table). `wine_domains`
+gains `premiers_crus` and `villages`.
 Streamed as the `wine-vine-plots` MVT layer from z13. Method:
 [`terroir-score.md`](terroir-score.md).
 
 `prune_alsace_vineless_geodata()` deletes the Alsace INAO `wine_parcels`
 (aires, no longer drawn) and the Alsace lieux-dits that touch no vine; it
-refuses to run while `vine_plots` has no Alsace row. `build_alsace_vineyard.py`
+refuses to run while `vine_plots` has no Alsace row. `build_vineyard.py --region alsace`
 then clips each remaining Alsace lieu-dit `geom` to its planted part
 (lieu-dit ∩ `vine_plots`) and drops those left with < 0.1 ha (ADR 0017).
 
