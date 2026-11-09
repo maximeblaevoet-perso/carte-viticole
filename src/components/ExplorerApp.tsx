@@ -49,7 +49,7 @@ export function ExplorerApp() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen supports-[height:100dvh]:h-[100dvh] flex-col">
       <Header
         regionId={rootRegionId}
         year={year}
