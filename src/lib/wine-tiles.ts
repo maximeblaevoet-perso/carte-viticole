@@ -7,4 +7,4 @@
  * or dissolve that rewrites `wine_areas` geometries.
  */
 export const WINE_TILES_VERSION =
-  process.env.NEXT_PUBLIC_WINE_TILES_VERSION ?? "2026-11-08-progressive-0017";
+  process.env.NEXT_PUBLIC_WINE_TILES_VERSION ?? "2026-11-08-display-geom-0018";

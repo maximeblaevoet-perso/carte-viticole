@@ -362,6 +362,7 @@ export function WineMap({
       maxZoom: 16,
     });
     mapRef.current = map;
+    (window as unknown as { __map: MlMap }).__map = map; // DEBUG-REMOVE
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
 

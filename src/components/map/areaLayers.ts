@@ -163,7 +163,7 @@ function addLine(map: MlMap, spec: LineSpec) {
       paint: {
         "line-color": "#fbf7ef",
         "line-width": spec.casing,
-        "line-opacity": lineOpacity(0.65, spec.visibleUntil),
+        "line-opacity": lineOpacity(0.45, spec.visibleUntil),
       },
     });
     HIERARCHY_LAYERS.add(casingId);
@@ -268,7 +268,7 @@ export function addAreaFills(map: MlMap, regionColor: Expr): { layerId: string; 
     filter: isLevel(2),
     paint: {
       "fill-color": tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, pastel),
-      "fill-opacity": fade([[7, 0.45], [9.6, 0.45], [10.6, 0.16], [13, 0.1], [14.5, 0.04]]),
+      "fill-opacity": fade([[7, 0.45], [9.6, 0.45], [10.8, 0.22], [13, 0.16], [14.5, 0.08]]),
     },
   });
   map.addLayer({
@@ -345,7 +345,7 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     filter: isLevel(3),
     minzoom: 9.4,
     color: handOver(ink, AREA_BANDS.village.to),
-    width: width([[9.4, 0.5], [11, 1.1], [14, 1.8]]),
+    width: width([[9.4, 0.5], [11, 1], [14, 1.6]]),
   });
   addLine(map, {
     id: "real-line-secteur",
@@ -355,8 +355,8 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     color: handOver(tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, ink), AREA_BANDS.secteur.to),
     // Parent of the villages only: gone once the crus are read.
     visibleUntil: AREA_BANDS.village.to,
-    width: width([[6.5, 0.8], [10, 1.8], [14, 2.6]]),
-    casing: zoomWidth(6.5, 1.6, 10, 3.4, 14, 4.6),
+    width: width([[6.5, 0.8], [10, 1.5], [13, 1.8]]),
+    casing: zoomWidth(6.5, 1.6, 10, 2.8, 13, 3.2),
   });
   addLine(map, {
     id: "real-line-region",
@@ -365,8 +365,8 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     color: handOver(regionColor, AREA_BANDS.region.to),
     // Parent of the secteurs only: gone once the villages are read.
     visibleUntil: AREA_BANDS.secteur.to,
-    width: width([[4, 1.2], [9, 2.4], [14, 3.2]]),
-    casing: zoomWidth(4, 2.4, 9, 4.2, 14, 5.2),
+    width: width([[4, 1.2], [9, 2], [11, 2.2]]),
+    casing: zoomWidth(4, 2.4, 9, 3.4, 11, 3.6),
   });
 
   // --- names at the centre while the level is the one being read ----------
@@ -433,7 +433,7 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     ink: PARENT_EDGE_COLOR,
     upper: true,
     alongLine: true,
-    spacing: 520,
+    spacing: 700,
   });
   addLabel(map, {
     id: "real-label-secteur-edge",
@@ -446,7 +446,7 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     ink: PARENT_EDGE_COLOR,
     upper: true,
     alongLine: true,
-    spacing: 460,
+    spacing: 600,
   });
   addLabel(map, {
     id: "real-label-village-edge",
@@ -457,7 +457,7 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     size: 11.5,
     ink: PARENT_EDGE_COLOR,
     alongLine: true,
-    spacing: 380,
+    spacing: 500,
   });
 }
 
