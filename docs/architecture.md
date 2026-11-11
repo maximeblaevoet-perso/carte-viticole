@@ -98,6 +98,13 @@ Reference domains are not tiled: `/api/wine/domains?region=` returns the small
 The plot scores and the composed domain scores (ADR 0019) are computed offline
 (`scripts/build_alsace_vineyard.py`) and stored; the client only reads them.
 
+Place search (ADR 0023) does not hit the database per keystroke:
+`scripts/build_search_index.py` writes `public/search-index.json` (name, type,
+root region, context, bbox, provenance ref per place) from Supabase; the
+browser loads it once and searches it in memory (`src/lib/search.ts`). The
+same bboxes let `WineMap` frame a clicked or searched place (`frameBBox`)
+instead of easing to a fixed zoom. Regenerate the index after any ingestion.
+
 Clicking a real feature produces a `SelectedGeoFeature` (area / parcel /
 lieu-dit / vine-plot / domain + provenance) that the panel renders with a source/provenance card.
 If Supabase is off, the route returns `204` and only the synthetic base shows.

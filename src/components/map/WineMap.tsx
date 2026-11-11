@@ -41,6 +41,7 @@ import {
 } from "@/components/map/areaLayers";
 import type { VineColorBy } from "@/components/map/vineLayers";
 import { fetchDomains } from "@/hooks/useDomains";
+import { loadSearchIndex, zoomRangeFor, type BBox, type SearchIndex } from "@/lib/search";
 import {
   aspectLabel,
   cruLabel,
@@ -229,6 +230,79 @@ const REAL_SELECT_ZOOM: Record<AreaLevel, number> = {
   5: 14.5,
 };
 
+/** Camera request: frame a place found by the search (ADR 0023). */
+export interface MapFocus {
+  id: string;
+  bbox: BBox;
+  type: string;
+  level: AreaLevel | null;
+  /** Changes on every request, so picking the same place twice re-frames. */
+  seq: number;
+}
+
+/**
+ * Frame a bounding box (ADR 0023): the whole place fits on screen, within the
+ * zoom range where its layer is drawn. On a phone the bottom sheet covers the
+ * lower ~42 % of the map, so the place is framed in the visible top part.
+ *
+ * `force = false` (a click on the map) never zooms OUT: clicking the region
+ * fill between two villages at z10 must not throw the user back to z7.
+ * Returns false when the camera was left alone.
+ */
+function frameBBox(
+  map: MlMap,
+  bbox: BBox,
+  type: string,
+  level: AreaLevel | null,
+  force: boolean
+): boolean {
+  const el = map.getContainer();
+  const mobile = el.clientWidth < 768;
+  const padding = mobile
+    ? { top: 56, left: 24, right: 24, bottom: Math.round(el.clientHeight * 0.42) + 24 }
+    : { top: 64, left: 64, right: 64, bottom: 48 };
+  const [minZ, maxZ] = zoomRangeFor(type, level);
+  const [w, s, e, n] = bbox;
+  const cam = map.cameraForBounds(
+    [
+      [w, s],
+      [e, n],
+    ],
+    { padding, maxZoom: maxZ }
+  );
+  if (!cam || cam.center == null) return false;
+  const zoom = Math.min(maxZ, Math.max(minZ, cam.zoom ?? minZ));
+  if (!force && zoom < map.getZoom() - 0.25) return false;
+  map.flyTo({
+    center: cam.center,
+    zoom,
+    // cameraForBounds already offsets the centre for the padding; a clamped
+    // zoom keeps that centre, so the place stays in the visible part.
+    speed: 1.6,
+    maxDuration: 1800,
+    essential: true,
+  });
+  return true;
+}
+
+/** Bounding box of a seed (synthetic) area, from its contour. */
+function seedBBox(geoJsonId: string | null | undefined): BBox | null {
+  const geom = geoJsonId ? AREA_GEOMETRIES[geoJsonId] : undefined;
+  if (!geom) return null;
+  let b: BBox = [180, 90, -180, -90];
+  for (const poly of geom.coordinates)
+    for (const ring of poly)
+      for (const [x, y] of ring) b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)];
+  return b;
+}
+
+/** Source layer that draws a real area of a given level (migration 0018). */
+function areaSourceLayer(level: number | undefined): string {
+  if (level === 1) return "wine-areas-region";
+  if (level === 4 || level === 5) return "wine-areas-cru";
+  return "wine-areas-appellation";
+}
+
 /** `wine-*` source-layer → MVT layer name in the tile (see migration 0007). */
 const SRC = {
   region: "wine-areas-region",
@@ -281,9 +355,12 @@ function regionColorExpression(): maplibregl.ExpressionSpecification {
 export function WineMap({
   selectedAreaId,
   selectedFeature,
+  focus,
   onSelectArea,
 }: {
   selectedAreaId: string | null;
+  /** Search result to frame (ADR 0023). */
+  focus?: MapFocus | null;
   /** Rich real selection — a domain outlines its declared places. */
   selectedFeature?: SelectedGeoFeature | null;
   onSelectArea: (areaId: string, feature?: SelectedGeoFeature) => void;
@@ -296,6 +373,10 @@ export function WineMap({
   const realSelectedRef = useRef<{ sourceLayer: string; id: string } | null>(null);
   const onSelectRef = useRef(onSelectArea);
   onSelectRef.current = onSelectArea;
+  /** Search index, for the extent of a clicked real place (ADR 0023). */
+  const searchIndexRef = useRef<SearchIndex | null>(null);
+  /** Id the search just framed: the selection effect must not move again. */
+  const searchFramedRef = useRef<string | null>(null);
 
   /**
    * Root regions that already have real contours — their synthetic footprints
@@ -598,6 +679,14 @@ export function WineMap({
             // Clear the synthetic highlight; real selection wins.
             setHover("areas", null);
             onSelectRef.current(id, feature);
+            // Frame the whole place when its extent is known (search index):
+            // a click on « Bourgogne » shows Bourgogne, not a z8.5 crop
+            // around the cursor. Vines and unknown ids keep the old ease.
+            const known = searchIndexRef.current?.byId.get(id);
+            if (known && feature.kind !== "vine-plot") {
+              frameBBox(map, known.bbox, known.type, known.level, false);
+              return;
+            }
             const target = Math.max(
               map.getZoom(),
               REAL_SELECT_ZOOM[(level ?? 3) as AreaLevel] ?? 13
@@ -631,6 +720,11 @@ export function WineMap({
 
       applySelection(map, selectedAreaId);
       mapReadyRef.current = true;
+
+      // Load the search index once the map is up (static file, cached).
+      loadSearchIndex().then((idx) => {
+        searchIndexRef.current = idx;
+      });
     });
 
     return () => {
@@ -679,15 +773,59 @@ export function WineMap({
     else map.once("load", apply);
   }, [coveredRegions]);
 
-  // Reflect selection + ease toward the selected area to reveal its children.
+  // Search → frame the place, whatever the current zoom (ADR 0023).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !focus) return;
+    searchFramedRef.current = focus.id;
+    const run = () => frameBBox(map, focus.bbox, focus.type, focus.level, true);
+    if (mapReadyRef.current) run();
+    else map.once("idle", run);
+  }, [focus]);
+
+  // Real selection highlight follows the selection, whether it came from a
+  // click (already set — idempotent) or from the search.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !USE_REAL) return;
+    const run = () => {
+      if (!map.getSource("wine")) return;
+      const next =
+        selectedFeature?.kind === "area"
+          ? { sourceLayer: areaSourceLayer(selectedFeature.level), id: selectedFeature.id }
+          : selectedFeature?.kind === "lieu-dit"
+            ? { sourceLayer: SRC.lieux, id: selectedFeature.id }
+            : null;
+      const prev = realSelectedRef.current;
+      if (prev && (prev.id !== next?.id || prev.sourceLayer !== next?.sourceLayer)) {
+        map.setFeatureState({ source: "wine", ...prev }, { selected: false });
+        realSelectedRef.current = null;
+      }
+      if (next) {
+        map.setFeatureState({ source: "wine", ...next }, { selected: true });
+        realSelectedRef.current = next;
+      }
+    };
+    if (mapReadyRef.current) run();
+    else map.once("idle", run);
+  }, [selectedFeature]);
+
+  // Reflect selection + frame the selected area to reveal its children.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
     const run = () => {
       applySelection(map, selectedAreaId);
+      // Already framed by the search effect (declared just above).
+      if (selectedAreaId && searchFramedRef.current === selectedAreaId) return;
       const area = getArea(selectedAreaId);
       if (area) {
+        const bbox = seedBBox(area.geoJsonId);
+        if (bbox) {
+          frameBBox(map, bbox, area.regionType, area.level, false);
+          return;
+        }
         const target = Math.max(map.getZoom(), SELECT_ZOOM[area.level]);
         map.easeTo({ center: area.center, zoom: target, duration: 700 });
       }

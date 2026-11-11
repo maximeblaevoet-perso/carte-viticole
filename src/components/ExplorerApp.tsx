@@ -6,6 +6,10 @@ import { Header, MobileRegionBar } from "@/components/Header";
 import { RegionPanelContent } from "@/components/panel/RegionPanelContent";
 import { BottomSheet } from "@/components/panel/BottomSheet";
 import { getArea } from "@/data/areas";
+import { fetchDomains } from "@/hooks/useDomains";
+import { domainSelection } from "@/lib/terroir-score";
+import { selectionFor, type SearchEntry, type SearchIndex } from "@/lib/search";
+import type { MapFocus } from "@/components/map/WineMap";
 import type { SelectedGeoFeature } from "@/lib/types";
 
 // MapLibre touches `window`, so it must only render on the client.
@@ -30,16 +34,43 @@ export function ExplorerApp() {
   // (real appellations/crus, fine parcels, lieux-dits). `null` = synthetic nav.
   const [geoFeature, setGeoFeature] = useState<SelectedGeoFeature | null>(null);
   const [year, setYear] = useState<number>(DEFAULT_YEAR);
+  /** Camera request from the search: frame this place (ADR 0023). */
+  const [focus, setFocus] = useState<MapFocus | null>(null);
 
   const selectArea = (id: string, feature?: SelectedGeoFeature) => {
     setAreaId(id);
     setGeoFeature(feature ?? null);
   };
 
-  // The header region selector reflects the level-1 region of the selection
-  // (from the seed tree, or the real feature's root region when applicable).
-  const rootRegionId =
-    getArea(areaId)?.rootRegionId ?? geoFeature?.rootRegionId ?? null;
+  const pickSearchResult = (e: SearchEntry, index: SearchIndex) => {
+    const frame = () =>
+      setFocus({ id: e.id, bbox: e.bbox, type: e.type, level: e.level, seq: Date.now() });
+    switch (e.kind) {
+      case "seed":
+        selectArea(e.id);
+        frame();
+        break;
+      case "area":
+      case "lieu-dit":
+        selectArea(e.id, selectionFor(e, index) ?? undefined);
+        frame();
+        break;
+      case "commune":
+        // A commune is not a fiche: frame its vines, keep the selection.
+        frame();
+        break;
+      case "domain":
+        // The domain card + its declared places; the map flies to the cellar.
+        if (e.rootRegionId) {
+          fetchDomains(e.rootRegionId).then((list) => {
+            const d = list.find((x) => x.id === e.id);
+            if (d) selectArea(d.id, domainSelection(d));
+            else frame();
+          });
+        }
+        break;
+    }
+  };
 
   const open = areaId !== null || geoFeature !== null;
   const sheetTitle = geoFeature?.name ?? getArea(areaId)?.name;
@@ -50,28 +81,19 @@ export function ExplorerApp() {
 
   return (
     <div className="flex h-screen supports-[height:100dvh]:h-[100dvh] flex-col">
-      <Header
-        regionId={rootRegionId}
-        year={year}
-        onRegionChange={selectArea}
-        onYearChange={setYear}
-      />
+      <Header year={year} onYearChange={setYear} onPick={pickSearchResult} />
 
       <div className="relative flex min-h-0 flex-1">
         <div className="relative min-h-0 flex-1">
           <WineMap
             selectedAreaId={areaId}
             selectedFeature={geoFeature}
+            focus={focus}
             onSelectArea={selectArea}
           />
 
           {/* Mobile: region + vintage at the bottom (the header is hidden). */}
-          <MobileRegionBar
-            regionId={rootRegionId}
-            year={year}
-            onRegionChange={selectArea}
-            onYearChange={setYear}
-          />
+          <MobileRegionBar year={year} onYearChange={setYear} onPick={pickSearchResult} />
 
           {/* Mobile bottom sheet (hidden on desktop). */}
           <BottomSheet open={open} title={sheetTitle} onClose={closeSelection}>

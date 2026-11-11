@@ -4,7 +4,7 @@
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│ Header : projet · recherche region · selection millesime                      │
+│ Header : projet · recherche de lieux (ADR 0023) · selection millesime         │
 ├───────────────────────────────────────────────┬──────────────────────────────┤
 │ Carte viticole                                │ Panneau region                │
 │ (MapLibre, 12 regions + niveaux disponibles)  │ - Aire selectionnee           │
@@ -24,6 +24,14 @@ PostGIS areas, parcels, and lieux-dits are progressively revealed by zoom. A
 click selects the geographic feature, recentres the map when appropriate, and
 shows its provenance. Climate remains attached to the root region until finer
 observations exist.
+
+**Search (ADR 0023).** The header search finds a région, sous-région,
+appellation, village, premier / grand cru, lieu-dit, commune or domaine
+(accent- and case-insensitive, local index, no request per keystroke). Each
+result shows a coloured type chip plus its context (parent area or commune ·
+region). Picking one selects it like a click and frames its whole extent at a
+zoom where its layer is drawn. A click on the map frames the clicked place the
+same way when its extent is known, but never zooms out.
 
 **Alsace, planted vines (ADR 0016).** From zoom 13 the map shows the vines
 actually planted, coloured by terroir score; a bottom-left control switches
@@ -66,8 +74,12 @@ repeats its cru's name.
 
 ## Mobile — main screen
 
-- Map full screen: no top header (ADR 0022). Region + vintage selects sit in a
-  thin bar at the bottom of the map; the vintage timeline is also in the fiche.
+- Map full screen: no top header (ADR 0022). A « Rechercher un lieu » button +
+  the vintage select sit in a thin bar at the bottom of the map; the vintage
+  timeline is also in the fiche. The button opens a full-screen search (input
+  on top, results below, « Annuler ») so the keyboard never hides the list
+  (ADR 0023). The chosen place is framed in the part of the map above the
+  bottom sheet.
 - Tap a region → bottom sheet appears with the summary (peek state ~42%).
 - Tap the handle → expanded state (~85%) for detail. ▾ folds the sheet to a
   one-line bar (selection name, tap to reopen) so the map and its controls
@@ -116,6 +128,7 @@ it. Weeks are never derived from monthly means. See ADR 0008.
 | Map                | `components/map/WineMap.tsx`               |
 | Shell + state      | `components/ExplorerApp.tsx`               |
 | Header             | `components/Header.tsx`                     |
+| Place search       | `components/SearchBar.tsx`, `lib/search.ts` |
 | Panel / sheet body | `components/panel/RegionPanelContent.tsx`  |
 | Bottom sheet       | `components/panel/BottomSheet.tsx`          |
 | Geodata provenance | `components/panel/GeoProvenanceCard.tsx`    |

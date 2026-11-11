@@ -274,3 +274,16 @@ vignes ; chaque run imprime le **test de hiérarchie** (médiane du score par
 niveau de cru et par secteur). Domaines : `scripts/data/bourgogne-domains.json`.
 Procédure complète : `docs/mode-op-replication-region.md`. Méthode : `docs/terroir-score.md`. Après une ré-ingestion
 `ingest_wine_geodata.py --commit`, relancer `--commit --prune`.
+
+## Index de recherche de la carte (ADR 0023)
+
+`scripts/build_search_index.py` lit Supabase (lecture seule, PostgREST) et
+écrit `public/search-index.json` : régions, sous-régions, appellations,
+villages, crus, lieux-dits, communes viticoles et domaines, avec leur emprise
+et leur provenance. À relancer (puis committer le fichier) après toute
+ingestion qui ajoute ou renomme des aires, lieux-dits ou domaines (~1 min).
+
+```bash
+python scripts/build_search_index.py          # écrit public/search-index.json
+python scripts/build_search_index.py --check  # compte seulement
+```
