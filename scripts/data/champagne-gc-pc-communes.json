@@ -1,44 +1,243 @@
 {
-  "_comment": "Communes de récolte Grand Cru / Premier Cru (Champagne AOC). Source: cahier des charges INAO. INSEE codes verified against admin registry.",
+  "_comment": "Communes de récolte Grand Cru (17) / Premier Cru (42) de l'AOC Champagne, d'après le cahier des charges homologué le 31 juillet 2025. Code INSEE = commune actuelle (communes nouvelles). Référentiel complet : champagne-crus.json (ADR 0024).",
   "grand_cru": [
-    { "insee": "51014", "name": "Ambonnay" },
-    { "insee": "51028", "name": "Avize" },
-    { "insee": "51030", "name": "Ay" },
-    { "insee": "51039", "name": "Beaumont-sur-Vesle" },
-    { "insee": "51058", "name": "Bouzy" },
-    { "insee": "51146", "name": "Chouilly" },
-    { "insee": "51172", "name": "Cramant" },
-    { "insee": "51292", "name": "Louvois" },
-    { "insee": "51337", "name": "Mailly-Champagne" },
-    { "insee": "51380", "name": "Le Mesnil-sur-Oger" },
-    { "insee": "51426", "name": "Oger" },
-    { "insee": "51427", "name": "Oiry" },
-    { "insee": "51461", "name": "Puisieulx" },
-    { "insee": "51506", "name": "Sillery" },
-    { "insee": "51574", "name": "Tours-sur-Marne" },
-    { "insee": "51592", "name": "Verzenay" },
-    { "insee": "51593", "name": "Verzy" }
+    {
+      "insee": "51007",
+      "name": "Ambonnay"
+    },
+    {
+      "insee": "51029",
+      "name": "Avize"
+    },
+    {
+      "insee": "51030",
+      "name": "Aÿ"
+    },
+    {
+      "insee": "51044",
+      "name": "Beaumont-sur-Vesle"
+    },
+    {
+      "insee": "51079",
+      "name": "Bouzy"
+    },
+    {
+      "insee": "51153",
+      "name": "Chouilly"
+    },
+    {
+      "insee": "51196",
+      "name": "Cramant"
+    },
+    {
+      "insee": "51564",
+      "name": "Louvois"
+    },
+    {
+      "insee": "51338",
+      "name": "Mailly-Champagne"
+    },
+    {
+      "insee": "51367",
+      "name": "Le Mesnil-sur-Oger"
+    },
+    {
+      "insee": "51612",
+      "name": "Oger"
+    },
+    {
+      "insee": "51413",
+      "name": "Oiry"
+    },
+    {
+      "insee": "51450",
+      "name": "Puisieulx"
+    },
+    {
+      "insee": "51536",
+      "name": "Sillery"
+    },
+    {
+      "insee": "51576",
+      "name": "Tours-sur-Marne"
+    },
+    {
+      "insee": "51613",
+      "name": "Verzenay"
+    },
+    {
+      "insee": "51614",
+      "name": "Verzy"
+    }
   ],
   "premier_cru": [
-    { "insee": "51008", "name": "Aÿ-Champagne" },
-    { "insee": "51053", "name": "Bisseuil" },
-    { "insee": "51069", "name": "Champillon" },
-    { "insee": "51119", "name": "Cumières" },
-    { "insee": "51124", "name": "Dizy" },
-    { "insee": "51190", "name": "Épernay" },
-    { "insee": "51202", "name": "Festigny" },
-    { "insee": "51230", "name": "Hautvillers" },
-    { "insee": "51272", "name": "Ludes" },
-    { "insee": "51317", "name": "Mareuil-sur-Aÿ" },
-    { "insee": "51402", "name": "Mutigny" },
-    { "insee": "51419", "name": "Oeuilly" },
-    { "insee": "51449", "name": "Pierry" },
-    { "insee": "51488", "name": "Rilly-la-Montagne" },
-    { "insee": "51551", "name": "Tauxieres-Mutry" },
-    { "insee": "51578", "name": "Trépail" },
-    { "insee": "51589", "name": "Venteuil" },
-    { "insee": "51595", "name": "Villeneuve-Renneville-Chevigny" },
-    { "insee": "51597", "name": "Villers-Marmery" },
-    { "insee": "51610", "name": "Vincelles" }
+    {
+      "insee": "51028",
+      "name": "Avenay-Val-d'Or"
+    },
+    {
+      "insee": "51049",
+      "name": "Bergères-lès-Vertus"
+    },
+    {
+      "insee": "51058",
+      "name": "Bezannes"
+    },
+    {
+      "insee": "51061",
+      "name": "Billy-le-Grand"
+    },
+    {
+      "insee": "51030",
+      "name": "Bisseuil"
+    },
+    {
+      "insee": "51112",
+      "name": "Chamery"
+    },
+    {
+      "insee": "51119",
+      "name": "Champillon"
+    },
+    {
+      "insee": "51152",
+      "name": "Chigny-les-Roses"
+    },
+    {
+      "insee": "51158",
+      "name": "Coligny"
+    },
+    {
+      "insee": "51172",
+      "name": "Cormontreuil"
+    },
+    {
+      "insee": "51177",
+      "name": "Coulommes-la-Montagne"
+    },
+    {
+      "insee": "51200",
+      "name": "Cuis"
+    },
+    {
+      "insee": "51202",
+      "name": "Cumières"
+    },
+    {
+      "insee": "51210",
+      "name": "Dizy"
+    },
+    {
+      "insee": "51225",
+      "name": "Écueil"
+    },
+    {
+      "insee": "51239",
+      "name": "Étréchy"
+    },
+    {
+      "insee": "51281",
+      "name": "Grauves"
+    },
+    {
+      "insee": "51287",
+      "name": "Hautvillers"
+    },
+    {
+      "insee": "51310",
+      "name": "Jouy-lès-Reims"
+    },
+    {
+      "insee": "51333",
+      "name": "Ludes"
+    },
+    {
+      "insee": "51030",
+      "name": "Mareuil-sur-Aÿ"
+    },
+    {
+      "insee": "51365",
+      "name": "Les Mesneux"
+    },
+    {
+      "insee": "51375",
+      "name": "Montbré"
+    },
+    {
+      "insee": "51392",
+      "name": "Mutigny"
+    },
+    {
+      "insee": "51422",
+      "name": "Pargny-lès-Reims"
+    },
+    {
+      "insee": "51431",
+      "name": "Pierry"
+    },
+    {
+      "insee": "51461",
+      "name": "Rilly-la-Montagne"
+    },
+    {
+      "insee": "51471",
+      "name": "Sacy"
+    },
+    {
+      "insee": "51532",
+      "name": "Sermiers"
+    },
+    {
+      "insee": "51562",
+      "name": "Taissy"
+    },
+    {
+      "insee": "51564",
+      "name": "Tauxières-Mutry"
+    },
+    {
+      "insee": "51580",
+      "name": "Trépail"
+    },
+    {
+      "insee": "51584",
+      "name": "Trois-Puits"
+    },
+    {
+      "insee": "51599",
+      "name": "Vaudemange"
+    },
+    {
+      "insee": "51612",
+      "name": "Vertus"
+    },
+    {
+      "insee": "51622",
+      "name": "Ville-Dommange"
+    },
+    {
+      "insee": "51627",
+      "name": "Villeneuve-Renneville-Chevigny"
+    },
+    {
+      "insee": "51629",
+      "name": "Villers-Allerand"
+    },
+    {
+      "insee": "51631",
+      "name": "Villers-aux-Nœuds"
+    },
+    {
+      "insee": "51636",
+      "name": "Villers-Marmery"
+    },
+    {
+      "insee": "51612",
+      "name": "Voipreux"
+    },
+    {
+      "insee": "51657",
+      "name": "Vrigny"
+    }
   ]
 }

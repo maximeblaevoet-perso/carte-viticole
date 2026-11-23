@@ -8,7 +8,7 @@ enrichit la section « Anomalies et difficultés » : on y note ce qui a cassé,
 pourquoi, et la règle retenue, qu'elle vienne d'une auto-relecture ou d'une
 revue humaine.
 
-Régions : Alsace (référence, faite) · **Bourgogne (en cours, ADR 0021)**.
+Régions : Alsace (référence, faite) · Bourgogne (ADR 0021) · Rhône méridional et Champagne (ADR 0024, section 4).
 
 ### État Bourgogne (2026-11-06)
 
@@ -73,6 +73,7 @@ documente ici — on n'ajoute jamais le classement comme critère du score.
 | Source | Accès | Piège |
 |--------|-------|-------|
 | INAO parcellaire | shapefile national local | Champagne absente ; aires = commune × dénomination, pas des parcelles |
+| Cadastre sections | `cadastre-<dep>-sections.json.gz` (curl, A1) | `prefixe` ≠ 000 = ancienne commune fondue (B5) |
 | RPG | WFS `RPG.LATEST:parcelles_graphiques`, `code_group='21'` | pagination 5 000 ; doublons `num_parcel` |
 | BD TOPO | WFS `BDTOPO_V3:zone_de_vegetation`, `nature='Vigne'` | recouvre le RPG : soustraction indexée |
 | BD Charm-50 | InfoTerre, ~150 Ko/s | archives tronquées : une relance |
@@ -236,3 +237,103 @@ polygones (une par fragment et par tuile), aires coupées à `zoom_max`.
 Un script Python passé par heredoc a vu ses `"\n"` transformés en vrais
 retours à la ligne : chaînes non terminées. **Règle** : écrire les scripts et
 les blocs de code avec l'outil d'écriture de fichiers, pas par heredoc.
+
+## 4. Rhône méridional et Champagne (ADR 0024, 2026-11-23)
+
+| Étape | Rhône méridional | Champagne |
+|-------|------------------|-----------|
+| Vignes | 72 383 vignes, 78 681 ha (RPG 59 318, BD TOPO 19 363) | 33 783 vignes, 32 651 ha (RPG 4 984, BD TOPO 27 667) |
+| Grille | `terroir-score-rhone.json`, 2 passes (B3) | `terroir-score-champagne.json`, 2 passes (B7) |
+| Domaines | 31 (`rhone-domains.json`) | 30 (`champagne-domains.json`) |
+| Migration | aucune | aucune |
+
+### B1 — Périmètre du Rhône sud (auto)
+Région `rhone` existante, limitée au sud : 84, 30, 26, 07, 13 (Les Baux, pour
+les Alpilles), 04 (Pierrevert). Les lignes Côtes du Rhône / Villages au nord de
+44,6° N, les crus septentrionaux et le Diois sont exclus ; Coteaux d'Aix,
+Côtes de Provence, Palette, Languedoc, Pic Saint-Loup, Sable de Camargue aussi
+(autres régions). IGP Alpilles : hors parcellaire AOC, Trévallon est un
+domaine sans appellation déclarée.
+
+### B2 — BD Charm-50 absente pour la Seine-et-Marne (auto)
+InfoTerre répond 404 pour `GEO050K_HARM_077.zip`. **Règle** : `load_geology`
+saute un département sans archive (géologie « autre ») ; impact ≈ 40 ha.
+
+### B3 — Rhône : les terrasses lues par leur âge (auto)
+Premier passage : 36 000 ha classés « alluvions » (0,2), dont les galets
+villafranchiens de Châteauneuf, du Plan de Dieu et des Costières (le libellé
+commence par « Alluvions anciennes… »). **Règle** (`geologie_motifs`) :
+alluvions récentes / holocènes 0,2 ; Würm et basses terrasses 0,55 ; Riss,
+moyennes terrasses, « alluvions anciennes » 0,8 ; Villafranchien, Mindel,
+Günz, très hautes terrasses, cailloutis résiduels, galets littoraux 1,0 ;
+safres et molasses 0,8 ; marnes bleues, argiles pliocènes 0,45. La pente
+compte moins qu'au nord (terrasse plate 0,55-0,7, plat 0,75). Résultat en
+Vaucluse (crus / Villages nommés / Villages / CdR) : 85,5 / 80,8 / 80,0 / 72,0.
+
+### B4 — Champagne : pas d'aire parcellaire vectorielle (auto + recherche)
+Ni INAO, ni data.gouv, ni Comité Champagne ne publient l'aire parcellaire ;
+le cahier des charges (2025) renvoie à la loi du 6 mai 1919 et à des plans
+déposés en mairie. Les cartes du site du Comité sont des images : les
+géoréférencer coûterait cher pour un gain quasi nul (aire presque entièrement
+plantée). **Règle** : vignes dans les 319 crus (`champagne-crus.json`).
+
+### B5 — Champagne : communes nouvelles (auto)
+Aÿ (grand cru), Mareuil-sur-Aÿ et Bisseuil (premiers crus) ne font plus
+qu'Aÿ-Champagne ; Oger (GC), Vertus et Voipreux (PC) sont dans Blancs-Coteaux ;
+Louvois (GC) et Tauxières-Mutry (PC) dans Val de Livre ; seul l'ancien Coligny
+est premier cru dans Val-des-Marais. **Règle** : clé = code INSEE de
+l'ancienne commune, déduit du préfixe des sections cadastrales (`000` = la
+commune dont le code est repris) ; une ancienne commune non listée seule suit
+sa commune actuelle. L'ancienne liste était fausse (Festigny, Épernay,
+Oeuilly, Venteuil, Vincelles ne sont pas premiers crus ; Ambonnay codé 51014
+au lieu de 51007) : `champagne-gc-pc-communes.json` est réécrit.
+
+### B6 — Domaines dont toutes les communes sont en cru (auto)
+Châteauneuf-du-Pape, Séguret, Avize… n'ont aucune vigne « village /
+régionale » : le reste du domaine n'avait pas de valeur. **Règle** (Rhône,
+Champagne) : le reste prend alors la moyenne de toutes les vignes des
+communes. En Champagne, `communes` peut donner la commune nouvelle
+(Aÿ-Champagne) : elle est comparée à `commune_actuelle` en plus du cru.
+
+### B7 — Champagne : la craie avant l'exposition (auto)
+Premier passage : régional ≥ grand cru. Les grands crus de la Montagne
+(Verzenay, Mailly, Verzy) regardent le nord ; ceux de la Côte des Blancs sont
+sur des pentes de 5-8 %, alors que la Vallée de la Marne et le Sézannais ont
+des coteaux raides. **Règle** : géologie 40 %, craie campanienne (Belemnitella,
+Actinocamax) 1,0, autres craies 0,85, grèzes 0,9 ; tertiaire (lutétien 0,7,
+Saint-Ouen et tuffeau 0,6, sables de Châlons 0,5, argiles à lignite 0,45) ;
+exposition nord 0,5 et non 0,3. Résultat (GC / PC / autres) : Montagne de
+Reims 91,8 / 78,2 / 77,0 ; Vallée de la Marne 94,0 / 91,8 / 78,5.
+
+### B8 — Exceptions attendues au test de hiérarchie (auto)
+- **Côte des Blancs (zone UMC)** : elle range Sézannais, Vitryat et Montgueux
+  (aucun cru, coteaux raides sur craie et éboulis) avec la Côte des Blancs ;
+  le terroir « Côte des Blancs » seul donne GC 91,0 > PC 86,5.
+- **Côte des Bar** : 93,5 sans aucun cru — marnes kimméridgiennes en pente
+  forte ; la délimitation des crus a laissé l'Aube de côté pour des raisons
+  historiques, pas de terroir.
+- **Grande Montagne** : PC 93,2 ≈ GC 91,8 (Chigny, Rilly, Villers-Marmery sur
+  la même craie que les grands crus).
+- **Drôme provençale** : Suze-la-Rousse, Rochegude, Saint-Maurice (Villages
+  nommés) sont sur les terrasses würmiennes de la plaine de l'Eygues ; le
+  Villages générique (coteaux de Nyons) passe devant.
+- **Gard rhodanien** : écarts < 3 pts ; la carte au 1/50 000 regroupe sous
+  « diverses formations de remplissage » les lauzes de Tavel et les sables de
+  Lirac : elle ne sépare pas crus et Côtes du Rhône.
+
+### B9 — Suppressions trop longues pour PostgREST (auto)
+`DELETE vine_plots?root_region_id=eq.rhone` (72 000 lignes) et la suppression
+des anciennes aires Champagne répondent 500 `57014 statement timeout`. Le
+domaine refusé (B10) avait aussi interrompu le commit avant les lieux-dits.
+Causes : une seule requête pour 72 000 lignes ; `vine_plots.wine_area_id`
+sans index (chaque aire supprimée parcourait toutes les vignes) ; lister les
+ids avec `order=id` faisait parcourir toute la clé primaire. **Règle** :
+`_delete` prend des pages d'ids **sans tri** jusqu'à épuisement et supprime
+par lots (300 vignes, 50 aires) ; `_send` réessaie 3 fois sur 5xx et affiche le
+message PostgREST ; index `vine_plots_wine_area_idx` dans la migration 0019
+(à appliquer dans Supabase).
+
+### B10 — Jeu de source des domaines à déclarer (auto)
+`wine_domains.source_dataset_id` référence `source_datasets` :
+`manual-<region>-domains` doit exister avant le commit (migration 0019 pour le
+Rhône et la Champagne, comme 0016 pour la Bourgogne).

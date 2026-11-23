@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useDomains } from "@/hooks/useDomains";
 import {
   CRITERIA,
-  CRU_LEVEL_LABELS,
+  cruLevelLabel,
   SCORE_MODE_LABELS,
   aspectLabel,
   componentValue,
@@ -109,7 +109,7 @@ export function VinePlotDetails({
     <>
       <section className="space-y-1 rounded-lg border border-slate-200 p-2.5">
         <Row label="Appellation">{cruLabel(plot)}</Row>
-        {plot.cruLevel && <Row label="Niveau">{CRU_LEVEL_LABELS[plot.cruLevel]}</Row>}
+        {plot.cruLevel && <Row label="Niveau">{cruLevelLabel(plot.cruLevel, plot.rootRegionId)}</Row>}
         <Row label="Lieu-dit">{plot.lieuDit ?? "—"}</Row>
         <Row label="Commune">{plot.communeName ?? "—"}</Row>
         <Row label="Surface">{fmt(plot.areaHa, 2, " ha")}</Row>

@@ -72,6 +72,24 @@ séparent pas deux climats voisins) ; l'Auxerrois est une exception attendue
 (Saint-Bris et Irancy sont des AOC village par le cépage). Voir
 `docs/mode-op-replication-region.md` (A10, A11).
 
+## 2 ter. Rhône méridional et Champagne (ADR 0024)
+
+Grilles `src/data/terroir-score-rhone.json` et
+`src/data/terroir-score-champagne.json`, mêmes cinq critères.
+
+- **Rhône** : géologie 35, exposition 15, pente 15, altitude 15, sol 20. Les
+  terrasses alluviales sont notées par leur âge (galets villafranchiens 1,0,
+  Riss 0,8, Würm 0,55, alluvions récentes 0,2), les safres 0,8 ; terrasse
+  plate peu pénalisée (plat 0,75) ; altitude lue par secteur au Ventoux, au
+  Luberon et à Pierrevert. Contrôle : crus > Villages nommés > Villages >
+  Côtes du Rhône / AOC satellites (pyramide Inter-Rhône).
+- **Champagne** : géologie 40, exposition 15, pente 15, altitude 15, sol 15.
+  Craie campanienne 1,0, autres craies 0,85, Kimméridgien (Côte des Bar)
+  0,95 ; tertiaire de la Vallée de la Marne 0,45-0,7. Exposition nord 0,5 :
+  plusieurs grands crus de la Montagne regardent le nord.
+
+Détail et exceptions du test de hiérarchie : mode op B3, B7, B8.
+
 ## 3. Les domaines
 
 `scripts/data/alsace-domains.json`, compilé à la main (sites des domaines,

@@ -1,0 +1,989 @@
+{
+  "generated": "2026-11-23",
+  "_aide": "Liste de domaines de référence de la vallée du Rhône méridionale (Châteauneuf-du-Pape, Gigondas, Vacqueyras, Rasteau, Cairanne, Beaumes de Venise, Vinsobres, Côtes du Rhône Villages nommés, Lirac/Tavel/Laudun, Ventoux, Luberon, Les Baux de Provence/Alpilles, Costières de Nîmes) compilée manuellement à partir de sources publiques (sites des domaines, Wikipedia, importateurs, guides) : données informatives, source_type manual, surfaces déclarées publiquement et non vérifiées. Les noms reprennent exactement les appellations (app) ou dénominations (denom) INAO, avec une transposition de la hiérarchie bourguignonne : grands_crus = crus du Rhône méridional (Châteauneuf-du-Pape, Gigondas, Vacqueyras, Beaumes de Venise, Muscat de Beaumes-de-Venise, Rasteau, Cairanne, Vinsobres, Lirac, Tavel, Laudun), premiers_crus = Côtes du Rhône Villages suivis d'un nom géographique (ex. « Côtes du Rhône Villages Séguret »), villages = Côtes du Rhône Villages sans nom géographique, regionales = Côtes du Rhône, Ventoux, Luberon, Costières de Nîmes, Les Baux de Provence, etc. Un vin hors AOC (IGP, Vin de France) n'est pas listé et est signalé dans surface_note. Champs : surface_ha (surface totale déclarée, milieu de fourchette si les sources divergent), communes (où sont les vignes ; défaut = commune du chai), surfaces_ha (surface d'un cru ou d'une appellation quand une source la publie ; jamais estimée sans source), coord_precision (commune = centre de la commune du chai), certification (bio, biodynamie ou null ; mode de culture déclaré, certification non vérifiée), confidence (haute, moyenne, basse).",
+  "domaines": [
+    {
+      "id": "rayas",
+      "name": "Château Rayas",
+      "commune": "Châteauneuf-du-Pape",
+      "insee": "84037",
+      "lat": 44.0602,
+      "lon": 4.8263,
+      "coord_precision": "commune",
+      "surface_ha": 12,
+      "surface_note": "Environ 12 ha de vignes (FRW : 12 ha de vignes et 11 ha de bois ; Wikipedia : 13 ha ; certaines fiches donnent 30 ha de propriété totale). Pignan est une parcelle du lieu-dit du même nom, juste au nord de Rayas (~1/3 de la surface de Rayas), incluse dans le total. Château de Fonsalette (Lagarde-Paréol, Côtes du Rhône) appartient à la même famille mais sa surface n'est pas publiée de façon fiable : non comptée.",
+      "grands_crus": [
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Châteauneuf-du-Pape",
+        "Lagarde-Paréol"
+      ],
+      "surfaces_ha": {
+        "Châteauneuf-du-Pape": 12
+      },
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ch%C3%A2teau_Rayas",
+        "https://www.frw.co.uk/editorial/everything-you-need-to-know-about-rayas",
+        "https://wineanorak.com/chateau_rayas.htm"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "beaucastel",
+      "name": "Château de Beaucastel",
+      "commune": "Courthézon",
+      "insee": "84039",
+      "lat": 44.0876,
+      "lon": 4.8868,
+      "coord_precision": "commune",
+      "surface_ha": 100,
+      "surface_note": "Propriété de 130 ha dont ~100 ha plantés (le reste en rotation/repos). Environ trois quarts en Châteauneuf-du-Pape, le reste en Côtes du Rhône (Coudoulet de Beaucastel, à l'est de l'appellation). Les sources divergent sur la part Châteauneuf (53, 69 ou ~75 ha) : surface par appellation non renseignée. Biodynamie déclarée depuis 1974 (famille Perrin).",
+      "grands_crus": [
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Courthézon",
+        "Châteauneuf-du-Pape"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ch%C3%A2teau_de_Beaucastel",
+        "https://www.idealwine.net/le-chateau-de-beaucastel-a-chateauneuf-un-domaine-historique/",
+        "https://frw.co.uk/producer/612ec2800600000000001ff9/chateau-de-beaucastel"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "vieux-telegraphe",
+      "name": "Domaine du Vieux Télégraphe",
+      "commune": "Bédarrides",
+      "insee": "84016",
+      "lat": 44.0478,
+      "lon": 4.9029,
+      "coord_precision": "commune",
+      "surface_ha": 80,
+      "surface_note": "Chiffres variables selon l'époque : 70 ha (Decanter, ~2007), 100 ha (Decanter, profil ultérieur). Le magazine du domaine (été 2026) décrit ~60 ha d'un seul tenant sur le plateau de La Crau (aux confins de Bédarrides, Châteauneuf-du-Pape et Courthézon) et 20 ha à Piedlong : ~80 ha retenus en Châteauneuf-du-Pape. Domaine Les Pallières (Gigondas), de la même famille Brunier, fait l'objet d'une fiche séparée. Mode de culture non vérifié.",
+      "grands_crus": [
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Bédarrides",
+        "Châteauneuf-du-Pape",
+        "Courthézon"
+      ],
+      "surfaces_ha": {
+        "Châteauneuf-du-Pape": 80
+      },
+      "certification": null,
+      "sources": [
+        "https://www.vieux-telegraphe.fr/en/",
+        "https://www.decanter.com/features/domaine-du-vieux-telegraphe-246616/",
+        "https://www.decanter.com/premium/producer-profile-domaine-du-vieux-telegraphe-plus-15-wines-tasted-445410/",
+        "https://www.vieux-telegraphe.fr/author/vieuxtelegraphe/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "clos-des-papes",
+      "name": "Clos des Papes (Paul Avril)",
+      "commune": "Châteauneuf-du-Pape",
+      "insee": "84037",
+      "lat": 44.0602,
+      "lon": 4.8263,
+      "coord_precision": "commune",
+      "surface_ha": 35,
+      "surface_note": "24 parcelles dispersées dans l'appellation. 35 ha le plus souvent cités (31 ha en rouge + 4 ha en blanc) ; de 32 ha (fiches plus anciennes) à 40 ha (Provence Guide). Certification bio déclarée (date divergente : 2008, 2011 ou fin des années 1990 selon les sources).",
+      "grands_crus": [
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Châteauneuf-du-Pape"
+      ],
+      "surfaces_ha": {
+        "Châteauneuf-du-Pape": 35
+      },
+      "certification": "bio",
+      "sources": [
+        "https://www.provenceguide.com/producteurs/chateauneuf-du-pape/clos-des-papes-paul-avril/provence-681170-1.html",
+        "https://www.skurnik.com/producer/clos-des-papes-2/",
+        "https://en.chateauneuf.com/domaines/clos-des-papes-wines-chateauneuf-du-pape/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "pegau",
+      "name": "Domaine du Pégau",
+      "commune": "Châteauneuf-du-Pape",
+      "insee": "84037",
+      "lat": 44.0602,
+      "lon": 4.8263,
+      "coord_precision": "commune",
+      "surface_ha": 70,
+      "surface_note": "Châteauneuf-du-Pape : ~23 ha (21 ha rouge + 2 ha blanc) en 11 parcelles sur Courthézon, Bédarrides et Châteauneuf-du-Pape ; d'autres fiches donnent 21 ou 23,8 ha. En 2012, achat de Château Pégau près de Sorgues (60 ha dont 41 ha de vignes, Côtes du Rhône et Vin de France). Total ~70-72 ha ; une fiche détaille 5 ha de Côtes du Rhône Villages, 26 ha de Côtes du Rhône et 17 ha de Vin de France.",
+      "grands_crus": [
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [
+        "Côtes du Rhône Villages"
+      ],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Châteauneuf-du-Pape",
+        "Courthézon",
+        "Bédarrides",
+        "Sorgues"
+      ],
+      "surfaces_ha": {
+        "Châteauneuf-du-Pape": 23,
+        "Côtes du Rhône Villages": 5
+      },
+      "certification": null,
+      "sources": [
+        "https://www.thewinecellarinsider.com/rhone-wines-cote-rotie-hermitage-chateauneuf-du-pape/chateauneuf-du-pape-wine-producer-profiles/pegau-chateauneuf-du-pape-rhone-wine",
+        "https://www.provenceguide.com/producteurs/chateauneuf-du-pape/domaine-du-pegau/provence-681224-1.html",
+        "https://glossary.wein-plus.eu/domaine-du-pegau"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "charvin",
+      "name": "Domaine Charvin",
+      "commune": "Orange",
+      "insee": "84087",
+      "lat": 44.1264,
+      "lon": 4.8031,
+      "coord_precision": "commune",
+      "surface_ha": 32,
+      "surface_note": "32 ha au total (iDealwine) : ~20 ha de Côtes du Rhône, 2 ha d'IGP (Vaucluse / Principauté d'Orange) et une part Châteauneuf-du-Pape qui varie selon les sources : 8,2 ha (Wine Cellar Insider, Sommelier Academy), 11 ha (Vins et Millésimes), 12 ha (iDealwine) ; milieu de fourchette ~10 ha retenu. Chai à Orange, au nord de l'appellation.",
+      "grands_crus": [
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Orange",
+        "Châteauneuf-du-Pape"
+      ],
+      "surfaces_ha": {
+        "Châteauneuf-du-Pape": 10
+      },
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.net/domaine-charvin-la-valeur-sure-du-rhone-sud",
+        "https://www.thewinecellarinsider.com/rhone-wines-cote-rotie-hermitage-chateauneuf-du-pape/chateauneuf-du-pape-wine-producer-profiles/charvin-chateauneuf-du-pape-rhone-wine/",
+        "https://www.vinsetmillesimes.com/en/6652-charvin"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "la-nerthe",
+      "name": "Château La Nerthe",
+      "commune": "Châteauneuf-du-Pape",
+      "insee": "84037",
+      "lat": 44.0602,
+      "lon": 4.8263,
+      "coord_precision": "commune",
+      "surface_ha": 92,
+      "surface_note": "92 ha en Châteauneuf-du-Pape (Millésime Bio, iDealwine) ; 90 ha selon d'autres fiches. 57 parcelles : ~60 ha autour du château et ~32 ha sur le plateau de La Crau. Certification bio (Ecocert) depuis 1998.",
+      "grands_crus": [
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Châteauneuf-du-Pape"
+      ],
+      "surfaces_ha": {
+        "Châteauneuf-du-Pape": 92
+      },
+      "certification": "bio",
+      "sources": [
+        "https://en.chateauneuf.com/domaines/chateau-nerthe-wines-chateauneuf-du-pape/",
+        "https://www.kobrandwineandspirits.com/brand-page/chateau-la-nerthe/terroir_and_vineyards",
+        "https://www.millesime-bio.com/en/liste-des-exposants/68b01cf94189dc5055bc00f2"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "saint-cosme",
+      "name": "Château de Saint Cosme",
+      "commune": "Gigondas",
+      "insee": "84049",
+      "lat": 44.164,
+      "lon": 5.0153,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "15 ha de vieilles vignes en Gigondas (Winebow, Wine Anorak) ; 22 ha selon un site touristique régional. Louis Barruol possède aussi ~10 ha à Violès (hors Gigondas) et Château de Rouanne à Vinsobres (42 ha), non comptés ici ; les autres vins Saint Cosme (Côtes du Rhône, Châteauneuf, Crozes) relèvent du négoce.",
+      "grands_crus": [
+        "Gigondas"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Gigondas"
+      ],
+      "surfaces_ha": {
+        "Gigondas": 15
+      },
+      "certification": null,
+      "sources": [
+        "https://winebow.com/our-brands/chateau-de-saint-cosme",
+        "https://www.wineanorak.com/rhone/saintcosme.htm",
+        "https://www.decanter.com/premium/decanter-interview-chateau-de-saint-cosmes-louis-barruol-428328/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "santa-duc",
+      "name": "Domaine Santa Duc",
+      "commune": "Gigondas",
+      "insee": "84049",
+      "lat": 44.164,
+      "lon": 5.0153,
+      "coord_precision": "commune",
+      "surface_ha": 25,
+      "surface_note": "Total déclaré de 21 ha (fiches anciennes) à ~30 ha ; une fiche détaille 13 ha en Gigondas, 10 ha en Châteauneuf-du-Pape et 2 ha en Vacqueyras (total 25 ha retenu). Le domaine produit aussi des Côtes du Rhône ; une présence à Rasteau est mentionnée sans surface. Biodynamie (conversion 2016-2017, Demeter déclaré).",
+      "grands_crus": [
+        "Gigondas",
+        "Châteauneuf-du-Pape",
+        "Vacqueyras"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Gigondas",
+        "Châteauneuf-du-Pape",
+        "Vacqueyras"
+      ],
+      "surfaces_ha": {
+        "Gigondas": 13,
+        "Châteauneuf-du-Pape": 10,
+        "Vacqueyras": 2
+      },
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.millesima-usa.com/producer-domaine-santa-duc.html",
+        "https://www.comptoirdesmillesimes.com/blog/domaine-santa-duc-guide-vin/",
+        "https://www.winewithseth.com/winewiki/domaine-santa-duc/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "les-pallieres",
+      "name": "Domaine Les Pallières",
+      "commune": "Gigondas",
+      "insee": "84049",
+      "lat": 44.164,
+      "lon": 5.0153,
+      "coord_precision": "commune",
+      "surface_ha": 25,
+      "surface_note": "Domaine d'un seul tenant de 135 ha dont 25 ha de vignes en Gigondas, racheté en 1998 par la famille Brunier (Vieux Télégraphe) et Kermit Lynch. Mode de culture non vérifié.",
+      "grands_crus": [
+        "Gigondas"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Gigondas"
+      ],
+      "surfaces_ha": {
+        "Gigondas": 25
+      },
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Domaine_du_Vieux_T%C3%A9l%C3%A9graphe",
+        "https://www.thewinecellarinsider.com/rhone-wines-cote-rotie-hermitage-chateauneuf-du-pape/chateauneuf-du-pape-wine-producer-profiles/vieux-telegraph-chateauneuf-du-pape-rhone-wine"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "sang-des-cailloux",
+      "name": "Domaine Le Sang des Cailloux",
+      "commune": "Sarrians",
+      "insee": "84122",
+      "lat": 44.1018,
+      "lon": 4.9541,
+      "coord_precision": "commune",
+      "surface_ha": 17,
+      "surface_note": "17 ha en Vacqueyras (iDealwine, Rue des Vignerons) ; fiche Kermit Lynch : 12 ha pour le rouge principal, 4 ha pour la cuvée Lopy, 1 ha pour le blanc. Chai à Sarrians, commune de l'appellation Vacqueyras ; vignes sur le plateau face aux Dentelles.",
+      "grands_crus": [
+        "Vacqueyras"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Sarrians",
+        "Vacqueyras"
+      ],
+      "surfaces_ha": {
+        "Vacqueyras": 17
+      },
+      "certification": null,
+      "sources": [
+        "https://www.ruedesvignerons.com/fr/domaine/371/le-sang-des-cailloux",
+        "https://kermitlynch.com/files/domaine-le-sang-des-cailloux.pdf",
+        "https://provence-alpes-cotedazur.com/en/things-to-do/wine-and-gastronomy/all-wine-and-gastronomy-activities/domaine-le-sang-des-cailloux-sarrians-en-2854466"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "monardiere",
+      "name": "Domaine de la Monardière",
+      "commune": "Vacqueyras",
+      "insee": "84136",
+      "lat": 44.1444,
+      "lon": 4.9764,
+      "coord_precision": "commune",
+      "surface_ha": 22,
+      "surface_note": "22 ha dont 18 ha en Vacqueyras et ~4 ha en IGP Vaucluse (Bowler, Jeroboams) ; 20 ha selon Provence Guide, 40 ha sur une fiche iDealwine (vraisemblablement erronée). Le domaine produit aussi un Côtes du Rhône. Certifié bio depuis 2010.",
+      "grands_crus": [
+        "Vacqueyras"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Vacqueyras"
+      ],
+      "surfaces_ha": {
+        "Vacqueyras": 18
+      },
+      "certification": "bio",
+      "sources": [
+        "https://bowlerwine.com/taxonomy/term/972",
+        "https://www.provenceguide.com/producteurs/cote-rhone/domaine-la-monardiere/provence-4610418-1.html",
+        "https://www.ventouxprovence.fr/en/our-wineries/domaine-la-monardiere.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "la-soumade",
+      "name": "Domaine La Soumade",
+      "commune": "Rasteau",
+      "insee": "84096",
+      "lat": 44.2336,
+      "lon": 4.9794,
+      "coord_precision": "commune",
+      "surface_ha": 27,
+      "surface_note": "~26 ha à Rasteau + 1 ha en Gigondas (Tanners, iDealwine) ; 30 ha selon le Guide Hachette. Le domaine produit aussi des Côtes du Rhône : la part en cru Rasteau n'est pas isolée, d'où l'absence de surface pour Rasteau.",
+      "grands_crus": [
+        "Rasteau",
+        "Gigondas"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Rasteau",
+        "Gigondas"
+      ],
+      "surfaces_ha": {
+        "Gigondas": 1
+      },
+      "certification": null,
+      "sources": [
+        "https://www.tanners-wines.co.uk/collections/domaine-la-soumade-f-romero",
+        "https://www.hachette-vins.com/guide-vins/producteurs/896/earl-frederic-romero/",
+        "https://provence-alpes-cotedazur.com/que-faire/vin-et-gastronomie/toutes-les-activites-vin-et-gastronomie/domaine-la-soumade-rasteau-fr-3437333/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "richaud",
+      "name": "Domaine Marcel Richaud",
+      "commune": "Cairanne",
+      "insee": "84028",
+      "lat": 44.2277,
+      "lon": 4.9339,
+      "coord_precision": "commune",
+      "surface_ha": 70,
+      "surface_note": "Environ 80 ha de terres entre Cairanne et Rasteau dont ~70 ha en vigne (Decanter) ; une fiche cite 30 ha (incohérente). Répartition par appellation (Cairanne, Rasteau, Côtes du Rhône) non publiée. Conduite bio déclarée.",
+      "grands_crus": [
+        "Cairanne",
+        "Rasteau"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Cairanne",
+        "Rasteau"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://www.decanter.com/premium/walls-hidden-gems-domaine-richaud-cairanne-474058/",
+        "https://www.idealwine.net/rhone-marcel-richaud-au-sommet-de-lappellation-cairanne/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "oratoire-saint-martin",
+      "name": "Domaine de l'Oratoire Saint-Martin",
+      "commune": "Cairanne",
+      "insee": "84028",
+      "lat": 44.2277,
+      "lon": 4.9339,
+      "coord_precision": "commune",
+      "surface_ha": 25,
+      "surface_note": "25 ha à Cairanne (la plupart des sources ; BBR : plus de 28 ha). Le domaine produit Cairanne et Côtes du Rhône ; répartition non publiée. Biodynamie déclarée (conversion vers 2008). Les frères Alary auraient récemment cédé le domaine (repreneur cité : Pierre Fabre, Château Mont-Redon) : à confirmer.",
+      "grands_crus": [
+        "Cairanne"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Cairanne"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://frederickwildman.com/producers/domaine-oratoire-saint-martin/",
+        "https://www.idealwine.net/domaine-de-loratoire-saint-martin-des-rouges-et-des-blancs-au-sommet-cairanne/",
+        "https://bibendum.com.au/blogs/news/domaine-de-l-oratoire-st-martin-biodynamic-rhone-from-an-inspiring-address"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "durban",
+      "name": "Domaine de Durban",
+      "commune": "Beaumes-de-Venise",
+      "insee": "84012",
+      "lat": 44.1224,
+      "lon": 5.0279,
+      "coord_precision": "commune",
+      "surface_ha": 56,
+      "surface_note": "Wine Anorak (2026) : 70 ha au total dont 56 ha autour du chai, avec ~20 ha de muscat (Muscat de Beaumes-de-Venise), ~30 ha de Beaumes de Venise rouge et 6 ha de Gigondas. Autres fiches : 55 ha (Primal Wine), 57 ha (ABFW), 119 ha dont 22 ha de muscat (Provence Guide, incohérent). 56 ha retenus.",
+      "grands_crus": [
+        "Beaumes de Venise",
+        "Muscat de Beaumes-de-Venise",
+        "Gigondas"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Beaumes-de-Venise",
+        "Gigondas"
+      ],
+      "surfaces_ha": {
+        "Muscat de Beaumes-de-Venise": 20,
+        "Beaumes de Venise": 30,
+        "Gigondas": 6
+      },
+      "certification": null,
+      "sources": [
+        "https://wineanorak.com/2026/08/04/beaumes-de-venise-exploration-domaine-du-durban/",
+        "https://primalwine.com/blogs/natural-wine-producers-primal-wine/domaine-de-durban",
+        "https://abfw.co.uk/ourwines/france/rhone/domaine-durban"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "chaume-arnaud",
+      "name": "Domaine Chaume-Arnaud",
+      "commune": "Vinsobres",
+      "insee": "26377",
+      "lat": 44.3372,
+      "lon": 5.0541,
+      "coord_precision": "commune",
+      "surface_ha": 39,
+      "surface_note": "33 ha en Vinsobres et ~6 ha en Côtes du Rhône / Côtes du Rhône Villages, dont Massif d'Uchaux et Saint-Maurice (Organic Wine Find ; répartition de ces 6 ha non publiée). Total 38-40 ha selon Hachette et Business France (13,5 ha chez BBR, chiffre ancien). Biodynamie certifiée depuis 2009.",
+      "grands_crus": [
+        "Vinsobres"
+      ],
+      "premiers_crus": [
+        "Côtes du Rhône Villages Massif d'Uchaux",
+        "Côtes du Rhône Villages Saint-Maurice"
+      ],
+      "villages": [
+        "Côtes du Rhône Villages"
+      ],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Vinsobres"
+      ],
+      "surfaces_ha": {
+        "Vinsobres": 33
+      },
+      "certification": "biodynamie",
+      "sources": [
+        "https://organicwinefind.com/organic-vineyards/domaine-chaume-arnaud/",
+        "https://www.hachette-vins.com/guide-vins/producteurs/13848/earl-chaume-arnaud/",
+        "https://www.marketplace.businessfrance.fr/seller/view/index/id/6802"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "mourchon",
+      "name": "Domaine de Mourchon",
+      "commune": "Séguret",
+      "insee": "84126",
+      "lat": 44.2161,
+      "lon": 5.0257,
+      "coord_precision": "commune",
+      "surface_ha": 32,
+      "surface_note": "32 ha en Côtes du Rhône Villages Séguret (Business France) ; 33 ha (Hachette), 35 ha (Provence Guide) ; 17 ha lors de l'achat en 1998. Le domaine produit aussi des Côtes du Rhône ; répartition non publiée. Bio (certification vers 2017).",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Côtes du Rhône Villages Séguret"
+      ],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Séguret"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://www.marketplace.businessfrance.fr/seller/view/index/id/2183",
+        "https://www.hachette-vins.com/guide-vins/producteurs/35823/dom-de-mourchon/",
+        "https://provenceguide.co.uk/tasting/mont-ventoux/domaine-de-mourchon/provence-840870-1.html"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "piaugier",
+      "name": "Domaine de Piaugier",
+      "commune": "Sablet",
+      "insee": "84104",
+      "lat": 44.1927,
+      "lon": 4.9962,
+      "coord_precision": "commune",
+      "surface_ha": 30,
+      "surface_note": "~30 ha : 3,5 ha en Gigondas, 12,5 ha en Côtes du Rhône Villages Sablet, 14 ha en Côtes du Rhône (Polaner Selections, Fine Vines, Charles Neal ; sources concordantes). Exposant Millésime Bio (bio déclaré, non vérifié).",
+      "grands_crus": [
+        "Gigondas"
+      ],
+      "premiers_crus": [
+        "Côtes du Rhône Villages Sablet"
+      ],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Sablet",
+        "Gigondas"
+      ],
+      "surfaces_ha": {
+        "Gigondas": 3.5,
+        "Côtes du Rhône Villages Sablet": 12.5
+      },
+      "certification": "bio",
+      "sources": [
+        "https://www.polanerselections.com/?p=24937",
+        "https://finevines.com/producers/domaine-de-piaugier/",
+        "https://www.charlesnealselections.com/domaine-de-piaugier.html"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "aphillanthes",
+      "name": "Domaine Les Aphillanthes",
+      "commune": "Travaillan",
+      "insee": "84134",
+      "lat": 44.1912,
+      "lon": 4.9055,
+      "coord_precision": "commune",
+      "surface_ha": 37,
+      "surface_note": "Surface variable selon les sources : 30 ha (Dynamic Vines), 37 ha (Organic Wine Find), 40 ha (Millésime Bio), 55 ha (RAW Wine) ; 37 ha retenus. Chai à Travaillan sur le plateau du Plan de Dieu, parcelles aussi à Cairanne et Sérignan-du-Comtat, plus une vieille parcelle à Rasteau (1921). Répartition par appellation non publiée. Biodynamie (depuis 2003, Biodyvin 2007).",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Côtes du Rhône Villages Plan de Dieu"
+      ],
+      "villages": [
+        "Côtes du Rhône Villages"
+      ],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Travaillan",
+        "Cairanne",
+        "Sérignan-du-Comtat"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.dynamicvines.com/producers/domaine-les-aphillanthes",
+        "https://organicwinefind.com/organic-vineyards/domaine-les-aphillanthes/",
+        "https://www.rawwine.com/profile/domaine-les-aphillanthes/about"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "mordoree",
+      "name": "Domaine de la Mordorée",
+      "commune": "Tavel",
+      "insee": "30326",
+      "lat": 44.0086,
+      "lon": 4.6872,
+      "coord_precision": "commune",
+      "surface_ha": 57,
+      "surface_note": "Chiffres divergents : 42 ha (offices de tourisme), 50 ha (Jeroboams), 55 ha (iDealwine, Gault&Millau), 58,5 ha (Winetourism), 60 ha (site de l'appellation Châteauneuf) ; ~57 ha retenus, répartis sur 8 communes (Tavel, Lirac, Châteauneuf-du-Pape…). Répartition par appellation non publiée. Bio et biodynamie déclarées.",
+      "grands_crus": [
+        "Tavel",
+        "Lirac",
+        "Châteauneuf-du-Pape"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Tavel",
+        "Lirac",
+        "Châteauneuf-du-Pape"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://en.chateauneuf.com/domaines/domaine-mordoree-wines-chateauneuf-du-pape/",
+        "https://www.tourisme-occitanie.com/fr/fiche/degustation/domaine-de-la-mordoree-domaine-viticole-tavel_TFOSITRA2_DEG_5158629/",
+        "https://jeroboams.co.uk/?p=104127"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "aqueria",
+      "name": "Château d'Aqueria",
+      "commune": "Tavel",
+      "insee": "30326",
+      "lat": 44.0086,
+      "lon": 4.6872,
+      "coord_precision": "commune",
+      "surface_ha": 66,
+      "surface_note": "Propriété de 98-99 ha dont 66-68 ha de vignes (Gault&Millau, Decanter). BBR : 161 acres plantés dont 120 acres en Tavel, le reste en Lirac rouge et blanc, soit ~48,6 ha de Tavel et ~16,6 ha de Lirac (conversion acres en ha). Racheté par la famille Guigal en 2022.",
+      "grands_crus": [
+        "Tavel",
+        "Lirac"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Tavel"
+      ],
+      "surfaces_ha": {
+        "Tavel": 48.6,
+        "Lirac": 16.6
+      },
+      "certification": null,
+      "sources": [
+        "https://www.decanter.com/wine-news/guigal-acquires-tavel-rose-estate-chateau-daqueria-480386/",
+        "https://www.bbr.com/products-54431-2017-chateau-d-aqueria-lirac-blanc",
+        "https://fr.gaultmillau.com/en/artisans/chateau-d-aqueria"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "pelaquie",
+      "name": "Domaine Pélaquié",
+      "commune": "Saint-Victor-la-Coste",
+      "insee": "30302",
+      "lat": 44.052,
+      "lon": 4.6436,
+      "coord_precision": "commune",
+      "surface_ha": 100,
+      "surface_note": "100 ha de vignes en Côtes du Rhône, Laudun, Tavel et Lirac selon une seule source (Bowler Wine) ; non recoupé. Répartition par appellation non publiée. Le domaine produit aussi des Côtes du Rhône Villages.",
+      "grands_crus": [
+        "Laudun",
+        "Lirac",
+        "Tavel"
+      ],
+      "premiers_crus": [],
+      "villages": [
+        "Côtes du Rhône Villages"
+      ],
+      "regionales": [
+        "Côtes du Rhône"
+      ],
+      "communes": [
+        "Saint-Victor-la-Coste",
+        "Laudun-l'Ardoise"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.bowlerwine.com/producer/pelaquie",
+        "https://www.tourismegard.com/fr/fiche/degustation/domaine-pelaquie-saint-victor-la-coste_TFO6334917/"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "pesquie",
+      "name": "Château Pesquié",
+      "commune": "Mormoiron",
+      "insee": "84082",
+      "lat": 44.0686,
+      "lon": 5.1918,
+      "coord_precision": "commune",
+      "surface_ha": 100,
+      "surface_note": "~100 ha en Ventoux sur Mormoiron, Blauvac et Villes-sur-Auzon, entre 250 et 400 m d'altitude (Wine Anorak, Cellar Tours) ; 72 ha selon un importateur néerlandais. Vignoble certifié bio, en conversion biodynamique (Hachette).",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Ventoux"
+      ],
+      "communes": [
+        "Mormoiron",
+        "Blauvac",
+        "Villes-sur-Auzon"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://wineanorak.com/?p=21213",
+        "https://www.hachette-vins.com/guide-vins/producteurs/10068/sarl-famille-chaudiere",
+        "https://cellartours.com/france/french-wineries/chateau-pesquie"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "fondreche",
+      "name": "Domaine de Fondrèche",
+      "commune": "Mazan",
+      "insee": "84072",
+      "lat": 44.0528,
+      "lon": 5.1333,
+      "coord_precision": "commune",
+      "surface_ha": 38,
+      "surface_note": "38 ha répartis sur trois communes (Mazan, Mormoiron, Saint-Pierre-de-Vassols) ; 40 ha selon une fiche (34 ha rouge + 6 ha blanc), 35 ha à l'achat (Hachette). Le site touristique régional parle de 70 ha de propriété dont 50 ha de vignes. Conduite bio déclarée.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Ventoux"
+      ],
+      "communes": [
+        "Mazan",
+        "Mormoiron",
+        "Saint-Pierre-de-Vassols"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://www.alliancewine.com/our-producers/domaine-de-fondreche",
+        "https://www.hachette-vins.com/guide-vins/producteurs/10072/dom-de-fondreche",
+        "https://provence-alpes-cotedazur.com/que-faire/vin-et-gastronomie/toutes-les-activites-vin-et-gastronomie/domaine-de-fondreche-mazan-fr-2863845/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "canorgue",
+      "name": "Château La Canorgue",
+      "commune": "Bonnieux",
+      "insee": "84020",
+      "lat": 43.8327,
+      "lon": 5.3172,
+      "coord_precision": "commune",
+      "surface_ha": 40,
+      "surface_note": "40 ha de vignes en AOC Luberon selon le site du domaine ; 37 ha plantés sur 67 ha d'un seul tenant selon un importateur. Présenté comme le premier vignoble certifié bio du Luberon.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Luberon"
+      ],
+      "communes": [
+        "Bonnieux"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://chateaulacanorgue.com/gb/gb/luberon.php",
+        "https://chateaulacanorgue.com/gb/gb/bio.php",
+        "https://polanerselections.com/?p=24872"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "val-joanis",
+      "name": "Château Val Joanis",
+      "commune": "Pertuis",
+      "insee": "84089",
+      "lat": 43.6931,
+      "lon": 5.5345,
+      "coord_precision": "commune",
+      "surface_ha": 100,
+      "surface_note": "Domaine de 400 ha d'un seul tenant dont ~100 ha de vignes (Gault&Millau) ; Wikipedia indique 186 ha plantés entre 1979 et 1999. Situé à l'ouest de Pertuis, en limite de Villelaure. Mode de culture non vérifié.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Luberon"
+      ],
+      "communes": [
+        "Pertuis"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://fr.gaultmillau.com/fr/wineries/chateau-val-joanis",
+        "https://en.wikipedia.org/wiki/Ch%C3%A2teau_Val_Joanis",
+        "https://bindella.ch/en/wine/producers/chateau-val-joanis"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "hauvette",
+      "name": "Domaine Hauvette",
+      "commune": "Saint-Rémy-de-Provence",
+      "insee": "13100",
+      "lat": 43.7815,
+      "lon": 4.8455,
+      "coord_precision": "commune",
+      "surface_ha": 16,
+      "surface_note": "15 à 17 ha selon les sources (iDealwine 2026 : 15 ha ; fiche domaine : 17 ha). Rouges et rosés historiquement en AOC Les Baux de Provence, blancs et plusieurs cuvées en IGP Alpilles (certaines cuvées « anciennement Baux de Provence ») : répartition non publiée. Biodynamie certifiée depuis 2003.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Les Baux de Provence"
+      ],
+      "communes": [
+        "Saint-Rémy-de-Provence"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.hameaualbert.fr/sites/default/files/2019-09/FT%20Domaine%20Hauvette.pdf",
+        "https://www.winescholarguild.com/producer-guide/france/provence/869-domaine-hauvette",
+        "https://www.winewithseth.com/winewiki/domaine-hauvette/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "romanin",
+      "name": "Château Romanin",
+      "commune": "Saint-Rémy-de-Provence",
+      "insee": "13100",
+      "lat": 43.7815,
+      "lon": 4.8455,
+      "coord_precision": "commune",
+      "surface_ha": 58,
+      "surface_note": "Propriété de 250 ha dont 57-58 ha de vignes en AOC Les Baux de Provence (Hachette, Cellar Tours), plus oliviers et amandiers. Biodynamie depuis la création du domaine (1988-1989), membre Biodyvin.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Les Baux de Provence"
+      ],
+      "communes": [
+        "Saint-Rémy-de-Provence"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.hachette-vins.com/guide-vins/producteurs/15421/ch-romanin",
+        "https://www.biodyvin.com/en/our-members/122-chateau-romanin.html",
+        "https://www.cellartours.com/france/french-wineries/chateau-romanin"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "trevallon",
+      "name": "Domaine de Trévallon",
+      "commune": "Saint-Étienne-du-Grès",
+      "insee": "13094",
+      "lat": 43.787,
+      "lon": 4.7352,
+      "coord_precision": "commune",
+      "surface_ha": 17,
+      "surface_note": "~17 ha (15 ha rouge, 2 ha blanc) sur le versant nord des Alpilles. Hors AOC : les vins sont en IGP Alpilles (auparavant IGP Bouches-du-Rhône), d'où des listes d'appellations vides ; le domaine est inclus comme référence de la zone des Baux / Alpilles. Mode de culture non vérifié.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Saint-Étienne-du-Grès"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.winescholarguild.com/producer-guide/france/provence/868-domaine-de-trevallon",
+        "https://www.idealwine.net/incursion-dans-les-alpilles-au-domaine-de-trevallon/?lang=fr",
+        "https://www.hameaualbert.fr/sites/default/files/2019-09/Tr%C3%A9vallon.pdf"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "mourgues-du-gres",
+      "name": "Château Mourgues du Grès",
+      "commune": "Beaucaire",
+      "insee": "30032",
+      "lat": 43.7815,
+      "lon": 4.5912,
+      "coord_precision": "commune",
+      "surface_ha": 65,
+      "surface_note": "65 ha de vignes, tous en AOC Costières de Nîmes (site de l'appellation, Rue des Vignerons). Bio (AB) et biodynamie mentionnés ; certification bio retenue, date non trouvée.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [
+        "Costières de Nîmes"
+      ],
+      "communes": [
+        "Beaucaire"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://costieres-nimes.org/en/?p=7244",
+        "https://www.ruedesvignerons.com/fr/domaine/383/chateau-mourgues-du-gres",
+        "https://www.tourisme-occitanie.com/fr/fiche/degustation/chateau-mourgues-du-gres-beaucaire_TFOSITRA2_DEG_5070480/"
+      ],
+      "confidence": "haute"
+    }
+  ]
+}

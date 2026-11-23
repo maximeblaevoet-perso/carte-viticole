@@ -9,6 +9,8 @@
  */
 import grid from "@/data/terroir-score-alsace.json";
 import gridBourgogne from "@/data/terroir-score-bourgogne.json";
+import gridChampagne from "@/data/terroir-score-champagne.json";
+import gridRhone from "@/data/terroir-score-rhone.json";
 import type {
   CruLevel,
   DomainPlace,
@@ -34,6 +36,8 @@ export interface ScoreGridView {
 const GRIDS: Record<string, ScoreGridView> = {
   alsace: grid,
   bourgogne: gridBourgogne,
+  champagne: gridChampagne,
+  rhone: gridRhone,
 };
 
 /** Score grid of a region (ADR 0021); the Alsace grid when it has none. */
@@ -48,8 +52,39 @@ export const CRU_LEVEL_LABELS: Record<CruLevel, string> = {
   regional: "Régionale",
 };
 
+/**
+ * The four cru levels read in each region's own pyramid (ADR 0024): the Rhône
+ * has crus and named Côtes du Rhône Villages, not grands / premiers crus.
+ */
+const REGION_CRU_LEVEL_LABELS: Record<string, Partial<Record<CruLevel, string>>> = {
+  rhone: {
+    grand_cru: "Cru",
+    premier_cru: "Côtes du Rhône Villages + nom",
+    village: "Côtes du Rhône Villages",
+    regional: "Côtes du Rhône / AOC satellite",
+  },
+  champagne: { regional: "Champagne (autres crus)" },
+};
+
+export function cruLevelLabel(level: CruLevel, regionId?: string | null): string {
+  return (regionId && REGION_CRU_LEVEL_LABELS[regionId]?.[level]) || CRU_LEVEL_LABELS[level];
+}
+
+/** Tier label of a wine area type ("grand-cru" / "premier-cru") in its region. */
+export function areaTierLabel(regionType?: string | null, regionId?: string | null): string | null {
+  if (regionType === "grand-cru") return regionId === "rhone" ? "Cru" : "Grand Cru";
+  if (regionType === "premier-cru") return regionId === "rhone" ? "Villages nommé" : "Premier Cru";
+  return null;
+}
+
 /** Readable appellation of a plot: "Grand cru Chambertin", "Meursault 1er cru Les Perrières"… */
 export function cruLabel(v: VinePlot): string {
+  if (v.rootRegionId === "rhone") return v.appellation ?? "—";
+  if (v.rootRegionId === "champagne") {
+    if (v.cruLevel === "grand_cru") return `Champagne grand cru · ${v.grandCru ?? v.communeName ?? ""}`;
+    if (v.cruLevel === "premier_cru") return `Champagne premier cru · ${v.premierCru ?? v.communeName ?? ""}`;
+    return v.appellation ?? "Champagne";
+  }
   if (v.grandCru) return `Grand cru ${v.grandCru}`;
   if (v.cruLevel === "premier_cru") {
     return v.premierCru ? `${v.village ?? ""} 1er cru ${v.premierCru}`.trim() : v.appellation ?? "Premier cru";

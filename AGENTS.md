@@ -105,6 +105,8 @@ python scripts/build_vineyard.py --region bourgogne               # dry-run + hi
 python scripts/build_vineyard.py --region bourgogne --commit      # areas, vines, lieux-dits, domains
 python scripts/build_vineyard.py --region alsace --commit --prune # write + lighten the DB
 python scripts/build_vineyard.py --region alsace --domains-only --commit  # domain scores only (ADR 0019)
+python scripts/build_vineyard.py --region rhone --commit           # Rhône méridional (ADR 0024)
+python scripts/build_vineyard.py --region champagne --commit       # Champagne, crus = communes (ADR 0024)
 
 # Map search index (ADR 0023) — rerun after any ingestion, commit the JSON
 python scripts/build_search_index.py

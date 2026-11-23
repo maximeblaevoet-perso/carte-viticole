@@ -1,5 +1,6 @@
 "use client";
 
+import { areaTierLabel } from "@/lib/terroir-score";
 import { useEffect, useRef, useState } from "react";
 import {
   SEARCH_TYPE_LABELS,
@@ -99,7 +100,7 @@ function ResultList({
                   TYPE_STYLE[e.type] ?? "bg-slate-100 text-slate-700 ring-slate-200"
                 }`}
               >
-                {SEARCH_TYPE_LABELS[e.type] ?? e.type}
+                {(e.rootRegionId === "rhone" && areaTierLabel(e.type, "rhone")) || (SEARCH_TYPE_LABELS[e.type] ?? e.type)}
               </span>
             </button>
           </li>

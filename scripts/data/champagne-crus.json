@@ -1,0 +1,2943 @@
+{
+ "_aide": "Les 319 communes (crus) de l'AOC Champagne, avec zone et terroir (découpage de l'Union des Maisons de Champagne, non réglementaire) et mention grand cru / premier cru (cahier des charges homologué le 31 juillet 2025). insee = commune actuelle ; insee_historique = ancienne commune (commune déléguée), retrouvée sur le cadastre par le préfixe des sections. Voir ADR 0024.",
+ "sources": {
+  "sous_regions": [
+   "https://maisons-champagne.com/en/appellation/geographical-area/",
+   "https://maisons-champagne.com/en/appellation/geographical-area/cote-des-blancs/",
+   "https://maisons-champagne.com/en/appellation/geographical-area/the-montagne-de-reims/",
+   "https://maisons-champagne.com/en/appellation/geographical-area/the-marne-valley/",
+   "https://maisons-champagne.com/en/appellation/geographical-area/the-cote-des-bar/",
+   "https://geo.api.gouv.fr/ (codes INSEE, COG en vigueur 2026, communes déléguées incluses)"
+  ],
+  "crus": "https://info.agriculture.gouv.fr/boagri/document_administratif-677d59b2-d392-4220-9fa3-e65dbc723244/telechargement",
+  "crus_label": "Cahier des charges AOC Champagne homologué par arrêté du 31 juillet 2025 (JORF 5 août 2025), publié au BO agri du MASA le 7 août 2025, chap. I, II b) et c)"
+ },
+ "notes": [
+  "Découpage en 4 zones + 17 'terroirs' publié par l'Union des Maisons de Champagne (UMC, maisons-champagne.com), organisation membre du Comité Champagne. Ce n'est pas un découpage réglementaire : le cahier des charges AOC ne définit aucune sous-région.",
+  "Totaux vérifiés page par page : Montagne de Reims 94, Vallée de la Marne 103, Côte des Blancs 58, Côte des Bar 64 = 319 communes (crus) ; c'est la liste des communes portant du vignoble AOC, pas les 635 communes de l'aire géographique.",
+  "Convention UMC : Côte de Sézanne, Val du Petit Morin, Vitryat et Montgueux sont rangés dans la zone 'Côte des Blancs'. D'autres sources (P. Liem, certains documents du Comité) les traitent comme des zones distinctes.",
+  "Noms : orthographe officielle COG restituée (l'UMC omet souvent les accents). Les communes historiques sont conservées sous leur nom de cru ; 'insee' = commune actuelle, 'insee_historique' = ancienne commune déléguée.",
+  "Plusieurs crus partagent un même code INSEE actuel (ex. Aÿ/Bisseuil/Mareuil-sur-Aÿ -> 51030 Aÿ-Champagne ; Oger/Vertus/Voipreux -> 51612 Blancs-Coteaux, qui chevauche deux sous-régions). Pour une jointure spatiale fine, utiliser les contours des communes déléguées / anciennes communes (insee_historique).",
+  "Grands crus (II b) : les 17 communes peuvent utiliser 'grand cru' ET 'premier cru'. Premiers crus (II c) : 42 communes. Toutes dans la Marne. Aucune restriction par cépage/couleur dans le texte en vigueur.",
+  "Festigny, Épernay, Œuilly, Venteuil, Vincelles ne figurent PAS dans la liste des premiers crus du cahier des charges (vérifié sur le texte).",
+  "insee = commune actuelle (COG 2026) ; insee_historique = ancienne commune déléguée quand le cru est une ancienne commune fusionnée."
+ ],
+ "communes": [
+  {
+   "name": "Ambonnay",
+   "insee": "51007",
+   "insee_historique": "51007",
+   "commune_actuelle": "Ambonnay",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Beaumont-sur-Vesle",
+   "insee": "51044",
+   "insee_historique": "51044",
+   "commune_actuelle": "Beaumont-sur-Vesle",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Billy-le-Grand",
+   "insee": "51061",
+   "insee_historique": "51061",
+   "commune_actuelle": "Billy-le-Grand",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Bouzy",
+   "insee": "51079",
+   "insee_historique": "51079",
+   "commune_actuelle": "Bouzy",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Chigny-les-Roses",
+   "insee": "51152",
+   "insee_historique": "51152",
+   "commune_actuelle": "Chigny-les-Roses",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Louvois",
+   "insee": "51564",
+   "insee_historique": "51331",
+   "commune_actuelle": "Val de Livre",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Val de Livre"
+  },
+  {
+   "name": "Ludes",
+   "insee": "51333",
+   "insee_historique": "51333",
+   "commune_actuelle": "Ludes",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Mailly-Champagne",
+   "insee": "51338",
+   "insee_historique": "51338",
+   "commune_actuelle": "Mailly-Champagne",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Montbré",
+   "insee": "51375",
+   "insee_historique": "51375",
+   "commune_actuelle": "Montbré",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Puisieulx",
+   "insee": "51450",
+   "insee_historique": "51450",
+   "commune_actuelle": "Puisieulx",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Rilly-la-Montagne",
+   "insee": "51461",
+   "insee_historique": "51461",
+   "commune_actuelle": "Rilly-la-Montagne",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Sillery",
+   "insee": "51536",
+   "insee_historique": "51536",
+   "commune_actuelle": "Sillery",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Taissy",
+   "insee": "51562",
+   "insee_historique": "51562",
+   "commune_actuelle": "Taissy",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Tauxières-Mutry",
+   "insee": "51564",
+   "insee_historique": "51564",
+   "commune_actuelle": "Val de Livre",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Val de Livre"
+  },
+  {
+   "name": "Trépail",
+   "insee": "51580",
+   "insee_historique": "51580",
+   "commune_actuelle": "Trépail",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Trois-Puits",
+   "insee": "51584",
+   "insee_historique": "51584",
+   "commune_actuelle": "Trois-Puits",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Vaudemange",
+   "insee": "51599",
+   "insee_historique": "51599",
+   "commune_actuelle": "Vaudemange",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Verzenay",
+   "insee": "51613",
+   "insee_historique": "51613",
+   "commune_actuelle": "Verzenay",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Verzy",
+   "insee": "51614",
+   "insee_historique": "51614",
+   "commune_actuelle": "Verzy",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Villers-Allerand",
+   "insee": "51629",
+   "insee_historique": "51629",
+   "commune_actuelle": "Villers-Allerand",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Villers-Marmery",
+   "insee": "51636",
+   "insee_historique": "51636",
+   "commune_actuelle": "Villers-Marmery",
+   "zone": "Montagne de Reims",
+   "terroir": "Grande Montagne de Reims",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Bezannes",
+   "insee": "51058",
+   "insee_historique": "51058",
+   "commune_actuelle": "Bezannes",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Bouilly",
+   "insee": "51072",
+   "insee_historique": "51072",
+   "commune_actuelle": "Bouilly",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Brimont",
+   "insee": "51088",
+   "insee_historique": "51088",
+   "commune_actuelle": "Brimont",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Cauroy-lès-Hermonville",
+   "insee": "51102",
+   "insee_historique": "51102",
+   "commune_actuelle": "Cauroy-lès-Hermonville",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Châlons-sur-Vesle",
+   "insee": "51109",
+   "insee_historique": "51109",
+   "commune_actuelle": "Châlons-sur-Vesle",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Chenay",
+   "insee": "51145",
+   "insee_historique": "51145",
+   "commune_actuelle": "Chenay",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Cormicy",
+   "insee": "51171",
+   "insee_historique": "51171",
+   "commune_actuelle": "Cormicy",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Hermonville",
+   "insee": "51291",
+   "insee_historique": "51291",
+   "commune_actuelle": "Hermonville",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Merfy",
+   "insee": "51362",
+   "insee_historique": "51362",
+   "commune_actuelle": "Merfy",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Montigny-sur-Vesle",
+   "insee": "51379",
+   "insee_historique": "51379",
+   "commune_actuelle": "Montigny-sur-Vesle",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Pévy",
+   "insee": "51429",
+   "insee_historique": "51429",
+   "commune_actuelle": "Pévy",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Pouillon",
+   "insee": "51444",
+   "insee_historique": "51444",
+   "commune_actuelle": "Pouillon",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Prouilly",
+   "insee": "51448",
+   "insee_historique": "51448",
+   "commune_actuelle": "Prouilly",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Saint-Thierry",
+   "insee": "51518",
+   "insee_historique": "51518",
+   "commune_actuelle": "Saint-Thierry",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Thil",
+   "insee": "51568",
+   "insee_historique": "51568",
+   "commune_actuelle": "Thil",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Trigny",
+   "insee": "51582",
+   "insee_historique": "51582",
+   "commune_actuelle": "Trigny",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Villers-Franqueux",
+   "insee": "51633",
+   "insee_historique": "51633",
+   "commune_actuelle": "Villers-Franqueux",
+   "zone": "Montagne de Reims",
+   "terroir": "Massif de Saint-Thierry",
+   "cru": null
+  },
+  {
+   "name": "Berru",
+   "insee": "51052",
+   "insee_historique": "51052",
+   "commune_actuelle": "Berru",
+   "zone": "Montagne de Reims",
+   "terroir": "Monts de Berru",
+   "cru": null
+  },
+  {
+   "name": "Cernay-lès-Reims",
+   "insee": "51105",
+   "insee_historique": "51105",
+   "commune_actuelle": "Cernay-lès-Reims",
+   "zone": "Montagne de Reims",
+   "terroir": "Monts de Berru",
+   "cru": null
+  },
+  {
+   "name": "Nogent-l'Abbesse",
+   "insee": "51403",
+   "insee_historique": "51403",
+   "commune_actuelle": "Nogent-l'Abbesse",
+   "zone": "Montagne de Reims",
+   "terroir": "Monts de Berru",
+   "cru": null
+  },
+  {
+   "name": "Pontfaverger-Moronvilliers",
+   "insee": "51440",
+   "insee_historique": "51440",
+   "commune_actuelle": "Pontfaverger-Moronvilliers",
+   "zone": "Montagne de Reims",
+   "terroir": "Monts de Berru",
+   "cru": null
+  },
+  {
+   "name": "Selles",
+   "insee": "51529",
+   "insee_historique": "51529",
+   "commune_actuelle": "Selles",
+   "zone": "Montagne de Reims",
+   "terroir": "Monts de Berru",
+   "cru": null
+  },
+  {
+   "name": "Arcis-le-Ponsart",
+   "insee": "51014",
+   "insee_historique": "51014",
+   "commune_actuelle": "Arcis-le-Ponsart",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Aubilly",
+   "insee": "51020",
+   "insee_historique": "51020",
+   "commune_actuelle": "Aubilly",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Bligny",
+   "insee": "51069",
+   "insee_historique": "51069",
+   "commune_actuelle": "Bligny",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Bouleuse",
+   "insee": "51073",
+   "insee_historique": "51073",
+   "commune_actuelle": "Bouleuse",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Branscourt",
+   "insee": "51081",
+   "insee_historique": "51081",
+   "commune_actuelle": "Branscourt",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Brouillet",
+   "insee": "51089",
+   "insee_historique": "51089",
+   "commune_actuelle": "Brouillet",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Chambrecy",
+   "insee": "51111",
+   "insee_historique": "51111",
+   "commune_actuelle": "Chambrecy",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Chamery",
+   "insee": "51112",
+   "insee_historique": "51112",
+   "commune_actuelle": "Chamery",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Chaumuzy",
+   "insee": "51140",
+   "insee_historique": "51140",
+   "commune_actuelle": "Chaumuzy",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Cormontreuil",
+   "insee": "51172",
+   "insee_historique": "51172",
+   "commune_actuelle": "Cormontreuil",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Coulommes-la-Montagne",
+   "insee": "51177",
+   "insee_historique": "51177",
+   "commune_actuelle": "Coulommes-la-Montagne",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Courcelles-Sapicourt",
+   "insee": "51181",
+   "insee_historique": "51181",
+   "commune_actuelle": "Courcelles-Sapicourt",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Courmas",
+   "insee": "51188",
+   "insee_historique": "51188",
+   "commune_actuelle": "Courmas",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Courtagnon",
+   "insee": "51190",
+   "insee_historique": "51190",
+   "commune_actuelle": "Courtagnon",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Courville",
+   "insee": "51194",
+   "insee_historique": "51194",
+   "commune_actuelle": "Courville",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Crugny",
+   "insee": "51198",
+   "insee_historique": "51198",
+   "commune_actuelle": "Crugny",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Écueil",
+   "insee": "51225",
+   "insee_historique": "51225",
+   "commune_actuelle": "Écueil",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Faverolles-et-Coëmy",
+   "insee": "51245",
+   "insee_historique": "51245",
+   "commune_actuelle": "Faverolles-et-Coëmy",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Germigny",
+   "insee": "51267",
+   "insee_historique": "51267",
+   "commune_actuelle": "Germigny",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Gueux",
+   "insee": "51282",
+   "insee_historique": "51282",
+   "commune_actuelle": "Gueux",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Hourges",
+   "insee": "51294",
+   "insee_historique": "51294",
+   "commune_actuelle": "Hourges",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Janvry",
+   "insee": "51305",
+   "insee_historique": "51305",
+   "commune_actuelle": "Janvry",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Jonchery-sur-Vesle",
+   "insee": "51308",
+   "insee_historique": "51308",
+   "commune_actuelle": "Jonchery-sur-Vesle",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Jouy-lès-Reims",
+   "insee": "51310",
+   "insee_historique": "51310",
+   "commune_actuelle": "Jouy-lès-Reims",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Lagery",
+   "insee": "51314",
+   "insee_historique": "51314",
+   "commune_actuelle": "Lagery",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Les Mesneux",
+   "insee": "51365",
+   "insee_historique": "51365",
+   "commune_actuelle": "Les Mesneux",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Lhéry",
+   "insee": "51321",
+   "insee_historique": "51321",
+   "commune_actuelle": "Lhéry",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Marfaux",
+   "insee": "51348",
+   "insee_historique": "51348",
+   "commune_actuelle": "Marfaux",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Méry-Prémecy",
+   "insee": "51364",
+   "insee_historique": "51364",
+   "commune_actuelle": "Méry-Prémecy",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Nanteuil-la-Forêt",
+   "insee": "51393",
+   "insee_historique": "51393",
+   "commune_actuelle": "Nanteuil-la-Forêt",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Ormes",
+   "insee": "51418",
+   "insee_historique": "51418",
+   "commune_actuelle": "Ormes",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Pargny-lès-Reims",
+   "insee": "51422",
+   "insee_historique": "51422",
+   "commune_actuelle": "Pargny-lès-Reims",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Poilly",
+   "insee": "51437",
+   "insee_historique": "51437",
+   "commune_actuelle": "Poilly",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Pourcy",
+   "insee": "51445",
+   "insee_historique": "51445",
+   "commune_actuelle": "Pourcy",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Reims",
+   "insee": "51454",
+   "insee_historique": "51454",
+   "commune_actuelle": "Reims",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Rosnay",
+   "insee": "51468",
+   "insee_historique": "51468",
+   "commune_actuelle": "Rosnay",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Sacy",
+   "insee": "51471",
+   "insee_historique": "51471",
+   "commune_actuelle": "Sacy",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Saint-Euphraise-et-Clairizet",
+   "insee": "51479",
+   "insee_historique": "51479",
+   "commune_actuelle": "Saint-Euphraise-et-Clairizet",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Saint-Gilles",
+   "insee": "51484",
+   "insee_historique": "51484",
+   "commune_actuelle": "Saint-Gilles",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Sarcy",
+   "insee": "51523",
+   "insee_historique": "51523",
+   "commune_actuelle": "Sarcy",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Savigny-sur-Ardres",
+   "insee": "51527",
+   "insee_historique": "51527",
+   "commune_actuelle": "Savigny-sur-Ardres",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Sermiers",
+   "insee": "51532",
+   "insee_historique": "51532",
+   "commune_actuelle": "Sermiers",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Serzy-et-Prin",
+   "insee": "51534",
+   "insee_historique": "51534",
+   "commune_actuelle": "Serzy-et-Prin",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Tramery",
+   "insee": "51577",
+   "insee_historique": "51577",
+   "commune_actuelle": "Tramery",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Treslon",
+   "insee": "51581",
+   "insee_historique": "51581",
+   "commune_actuelle": "Treslon",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Unchair",
+   "insee": "51586",
+   "insee_historique": "51586",
+   "commune_actuelle": "Unchair",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Vandeuil",
+   "insee": "51591",
+   "insee_historique": "51591",
+   "commune_actuelle": "Vandeuil",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Ville-Dommange",
+   "insee": "51622",
+   "insee_historique": "51622",
+   "commune_actuelle": "Ville-Dommange",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Ville-en-Tardenois",
+   "insee": "51624",
+   "insee_historique": "51624",
+   "commune_actuelle": "Ville-en-Tardenois",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": null
+  },
+  {
+   "name": "Villers-aux-Nœuds",
+   "insee": "51631",
+   "insee_historique": "51631",
+   "commune_actuelle": "Villers-aux-Nœuds",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Vrigny",
+   "insee": "51657",
+   "insee_historique": "51657",
+   "commune_actuelle": "Vrigny",
+   "zone": "Montagne de Reims",
+   "terroir": "Reims : Vesle et Ardre",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Aÿ",
+   "insee": "51030",
+   "insee_historique": "51030",
+   "commune_actuelle": "Aÿ-Champagne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "grand_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Aÿ-Champagne"
+  },
+  {
+   "name": "Avenay-Val-d'Or",
+   "insee": "51028",
+   "insee_historique": "51028",
+   "commune_actuelle": "Avenay-Val-d'Or",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Bisseuil",
+   "insee": "51030",
+   "insee_historique": "51064",
+   "commune_actuelle": "Aÿ-Champagne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Aÿ-Champagne"
+  },
+  {
+   "name": "Champillon",
+   "insee": "51119",
+   "insee_historique": "51119",
+   "commune_actuelle": "Champillon",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Cumières",
+   "insee": "51202",
+   "insee_historique": "51202",
+   "commune_actuelle": "Cumières",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Dizy",
+   "insee": "51210",
+   "insee_historique": "51210",
+   "commune_actuelle": "Dizy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Fontaine-sur-Aÿ",
+   "insee": "51256",
+   "insee_historique": "51256",
+   "commune_actuelle": "Fontaine-sur-Ay",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": null
+  },
+  {
+   "name": "Germaine",
+   "insee": "51266",
+   "insee_historique": "51266",
+   "commune_actuelle": "Germaine",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": null
+  },
+  {
+   "name": "Hautvillers",
+   "insee": "51287",
+   "insee_historique": "51287",
+   "commune_actuelle": "Hautvillers",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Mareuil-sur-Aÿ",
+   "insee": "51030",
+   "insee_historique": "51347",
+   "commune_actuelle": "Aÿ-Champagne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Aÿ-Champagne"
+  },
+  {
+   "name": "Mutigny",
+   "insee": "51392",
+   "insee_historique": "51392",
+   "commune_actuelle": "Mutigny",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Tours-sur-Marne",
+   "insee": "51576",
+   "insee_historique": "51576",
+   "commune_actuelle": "Tours-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Grande Vallée de la Marne",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Brugny-Vaudancourt",
+   "insee": "51093",
+   "insee_historique": "51093",
+   "commune_actuelle": "Brugny-Vaudancourt",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Chavot-Courcourt",
+   "insee": "51142",
+   "insee_historique": "51142",
+   "commune_actuelle": "Chavot-Courcourt",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Épernay",
+   "insee": "51230",
+   "insee_historique": "51230",
+   "commune_actuelle": "Épernay",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Mancy",
+   "insee": "51342",
+   "insee_historique": "51342",
+   "commune_actuelle": "Mancy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Monthelon",
+   "insee": "51378",
+   "insee_historique": "51378",
+   "commune_actuelle": "Monthelon",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Morangis",
+   "insee": "51384",
+   "insee_historique": "51384",
+   "commune_actuelle": "Morangis",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Moslins",
+   "insee": "51387",
+   "insee_historique": "51387",
+   "commune_actuelle": "Moslins",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Moussy",
+   "insee": "51390",
+   "insee_historique": "51390",
+   "commune_actuelle": "Moussy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Pierry",
+   "insee": "51431",
+   "insee_historique": "51431",
+   "commune_actuelle": "Pierry",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Saint-Martin-d'Ablois",
+   "insee": "51002",
+   "insee_historique": "51002",
+   "commune_actuelle": "Saint-Martin-d'Ablois",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Vinay",
+   "insee": "51643",
+   "insee_historique": "51643",
+   "commune_actuelle": "Vinay",
+   "zone": "Vallée de la Marne",
+   "terroir": "Coteaux Sud d'Épernay",
+   "cru": null
+  },
+  {
+   "name": "Boursault",
+   "insee": "51076",
+   "insee_historique": "51076",
+   "commune_actuelle": "Boursault",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Courthiézy",
+   "insee": "51192",
+   "insee_historique": "51192",
+   "commune_actuelle": "Courthiézy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Dormans",
+   "insee": "51217",
+   "insee_historique": "51217",
+   "commune_actuelle": "Dormans",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Festigny",
+   "insee": "51249",
+   "insee_historique": "51249",
+   "commune_actuelle": "Festigny",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Igny-Comblizy",
+   "insee": "51298",
+   "insee_historique": "51298",
+   "commune_actuelle": "Igny-Comblizy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Le Breuil",
+   "insee": "51085",
+   "insee_historique": "51085",
+   "commune_actuelle": "Le Breuil",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Leuvrigny",
+   "insee": "51320",
+   "insee_historique": "51320",
+   "commune_actuelle": "Leuvrigny",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Mardeuil",
+   "insee": "51344",
+   "insee_historique": "51344",
+   "commune_actuelle": "Mardeuil",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Mareuil-le-Port",
+   "insee": "51346",
+   "insee_historique": "51346",
+   "commune_actuelle": "Mareuil-le-Port",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Nesle-le-Repons",
+   "insee": "51396",
+   "insee_historique": "51396",
+   "commune_actuelle": "Nesle-le-Repons",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Œuilly",
+   "insee": "51410",
+   "insee_historique": "51410",
+   "commune_actuelle": "Œuilly",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Orbais-l'Abbaye",
+   "insee": "51416",
+   "insee_historique": "51416",
+   "commune_actuelle": "Orbais-l'Abbaye",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Troissy",
+   "insee": "51585",
+   "insee_historique": "51585",
+   "commune_actuelle": "Troissy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Vauciennes",
+   "insee": "51597",
+   "insee_historique": "51597",
+   "commune_actuelle": "Vauciennes",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive gauche",
+   "cru": null
+  },
+  {
+   "name": "Baslieux-sous-Châtillon",
+   "insee": "51038",
+   "insee_historique": "51038",
+   "commune_actuelle": "Baslieux-sous-Châtillon",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Belval-sous-Châtillon",
+   "insee": "51048",
+   "insee_historique": "51048",
+   "commune_actuelle": "Belval-sous-Châtillon",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Binson-et-Orquigny",
+   "insee": "51457",
+   "insee_historique": "51063",
+   "commune_actuelle": "Cœur-de-la-Vallée",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null,
+   "note": "ancienne commune (commune-deleguee) rattachée à Cœur-de-la-Vallée"
+  },
+  {
+   "name": "Champlat-et-Boujacourt",
+   "insee": "51120",
+   "insee_historique": "51120",
+   "commune_actuelle": "Champlat-et-Boujacourt",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Champvoisy",
+   "insee": "51121",
+   "insee_historique": "51121",
+   "commune_actuelle": "Champvoisy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Châtillon-sur-Marne",
+   "insee": "51136",
+   "insee_historique": "51136",
+   "commune_actuelle": "Châtillon-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Cormoyeux",
+   "insee": "51173",
+   "insee_historique": "51173",
+   "commune_actuelle": "Cormoyeux",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Cuchery",
+   "insee": "51199",
+   "insee_historique": "51199",
+   "commune_actuelle": "Cuchery",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Cuisles",
+   "insee": "51201",
+   "insee_historique": "51201",
+   "commune_actuelle": "Cuisles",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Damery",
+   "insee": "51204",
+   "insee_historique": "51204",
+   "commune_actuelle": "Damery",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Fleury-la-Rivière",
+   "insee": "51252",
+   "insee_historique": "51252",
+   "commune_actuelle": "Fleury-la-Rivière",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Jonquery",
+   "insee": "51309",
+   "insee_historique": "51309",
+   "commune_actuelle": "Jonquery",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "La Neuville-aux-Larris",
+   "insee": "51398",
+   "insee_historique": "51398",
+   "commune_actuelle": "La Neuville-aux-Larris",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Olizy",
+   "insee": "51414",
+   "insee_historique": "51414",
+   "commune_actuelle": "Olizy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Passy-Grigny",
+   "insee": "51425",
+   "insee_historique": "51425",
+   "commune_actuelle": "Passy-Grigny",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Reuil",
+   "insee": "51457",
+   "insee_historique": "51457",
+   "commune_actuelle": "Cœur-de-la-Vallée",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null,
+   "note": "ancienne commune (commune-deleguee) rattachée à Cœur-de-la-Vallée"
+  },
+  {
+   "name": "Romery",
+   "insee": "51465",
+   "insee_historique": "51465",
+   "commune_actuelle": "Romery",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Romigny",
+   "insee": "51466",
+   "insee_historique": "51466",
+   "commune_actuelle": "Romigny",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Sainte-Gemme",
+   "insee": "51480",
+   "insee_historique": "51480",
+   "commune_actuelle": "Sainte-Gemme",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Vandières",
+   "insee": "51592",
+   "insee_historique": "51592",
+   "commune_actuelle": "Vandières",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Venteuil",
+   "insee": "51605",
+   "insee_historique": "51605",
+   "commune_actuelle": "Venteuil",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Verneuil",
+   "insee": "51609",
+   "insee_historique": "51609",
+   "commune_actuelle": "Verneuil",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Villers-sous-Châtillon",
+   "insee": "51457",
+   "insee_historique": "51637",
+   "commune_actuelle": "Cœur-de-la-Vallée",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null,
+   "note": "ancienne commune (commune-deleguee) rattachée à Cœur-de-la-Vallée"
+  },
+  {
+   "name": "Vincelles",
+   "insee": "51644",
+   "insee_historique": "51644",
+   "commune_actuelle": "Vincelles",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne rive droite",
+   "cru": null
+  },
+  {
+   "name": "Barzy-sur-Marne",
+   "insee": "02051",
+   "insee_historique": "02051",
+   "commune_actuelle": "Barzy-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Terroir de Condé",
+   "cru": null
+  },
+  {
+   "name": "Baulne-en-Brie",
+   "insee": "02053",
+   "insee_historique": "02053",
+   "commune_actuelle": "Vallées en Champagne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Terroir de Condé",
+   "cru": null,
+   "note": "ancienne commune (commune-deleguee) rattachée à Vallées en Champagne"
+  },
+  {
+   "name": "Passy-sur-Marne",
+   "insee": "02595",
+   "insee_historique": "02595",
+   "commune_actuelle": "Passy-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Terroir de Condé",
+   "cru": null
+  },
+  {
+   "name": "Trélou-sur-Marne",
+   "insee": "02748",
+   "insee_historique": "02748",
+   "commune_actuelle": "Trélou-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Terroir de Condé",
+   "cru": null
+  },
+  {
+   "name": "Azy-sur-Marne",
+   "insee": "02042",
+   "insee_historique": "02042",
+   "commune_actuelle": "Azy-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Bézu-le-Guéry",
+   "insee": "02084",
+   "insee_historique": "02084",
+   "commune_actuelle": "Bézu-le-Guéry",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Blesmes",
+   "insee": "02094",
+   "insee_historique": "02094",
+   "commune_actuelle": "Blesmes",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Bonneil",
+   "insee": "02098",
+   "insee_historique": "02098",
+   "commune_actuelle": "Bonneil",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Brasles",
+   "insee": "02114",
+   "insee_historique": "02114",
+   "commune_actuelle": "Brasles",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Celles-lès-Condé",
+   "insee": "02146",
+   "insee_historique": "02146",
+   "commune_actuelle": "Celles-lès-Condé",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Charly-sur-Marne",
+   "insee": "02163",
+   "insee_historique": "02163",
+   "commune_actuelle": "Charly-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Chartèves",
+   "insee": "02166",
+   "insee_historique": "02166",
+   "commune_actuelle": "Chartèves",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Château-Thierry",
+   "insee": "02168",
+   "insee_historique": "02168",
+   "commune_actuelle": "Château-Thierry",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Chézy-sur-Marne",
+   "insee": "02186",
+   "insee_historique": "02186",
+   "commune_actuelle": "Chézy-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Chierry",
+   "insee": "02187",
+   "insee_historique": "02187",
+   "commune_actuelle": "Chierry",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Citry",
+   "insee": "77117",
+   "insee_historique": "77117",
+   "commune_actuelle": "Citry",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Connigis",
+   "insee": "02213",
+   "insee_historique": "02213",
+   "commune_actuelle": "Connigis",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Courtemont-Varennes",
+   "insee": "02228",
+   "insee_historique": "02228",
+   "commune_actuelle": "Courtemont-Varennes",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Crézancy",
+   "insee": "02239",
+   "insee_historique": "02239",
+   "commune_actuelle": "Crézancy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Crouttes-sur-Marne",
+   "insee": "02242",
+   "insee_historique": "02242",
+   "commune_actuelle": "Crouttes-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Domptin",
+   "insee": "02268",
+   "insee_historique": "02268",
+   "commune_actuelle": "Domptin",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Essômes-sur-Marne",
+   "insee": "02290",
+   "insee_historique": "02290",
+   "commune_actuelle": "Essômes-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Étampes-sur-Marne",
+   "insee": "02292",
+   "insee_historique": "02292",
+   "commune_actuelle": "Étampes-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Fossoy",
+   "insee": "02328",
+   "insee_historique": "02328",
+   "commune_actuelle": "Fossoy",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Gland",
+   "insee": "02347",
+   "insee_historique": "02347",
+   "commune_actuelle": "Gland",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Jaulgonne",
+   "insee": "02389",
+   "insee_historique": "02389",
+   "commune_actuelle": "Jaulgonne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "La Chapelle-Monthodon",
+   "insee": "02053",
+   "insee_historique": "02161",
+   "commune_actuelle": "Vallées en Champagne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null,
+   "note": "ancienne commune (commune-deleguee) rattachée à Vallées en Champagne"
+  },
+  {
+   "name": "Mézy-Moulins",
+   "insee": "02484",
+   "insee_historique": "02484",
+   "commune_actuelle": "Mézy-Moulins",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Mont-Saint-Père",
+   "insee": "02524",
+   "insee_historique": "02524",
+   "commune_actuelle": "Mont-Saint-Père",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Monthurel",
+   "insee": "02510",
+   "insee_historique": "02510",
+   "commune_actuelle": "Monthurel",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Montreuil-aux-Lions",
+   "insee": "02521",
+   "insee_historique": "02521",
+   "commune_actuelle": "Montreuil-aux-Lions",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Nanteuil-sur-Marne",
+   "insee": "77331",
+   "insee_historique": "77331",
+   "commune_actuelle": "Nanteuil-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Nesles-la-Montagne",
+   "insee": "02540",
+   "insee_historique": "02540",
+   "commune_actuelle": "Nesles-la-Montagne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Nogent-l'Artaud",
+   "insee": "02555",
+   "insee_historique": "02555",
+   "commune_actuelle": "Nogent-l'Artaud",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Nogentel",
+   "insee": "02554",
+   "insee_historique": "02554",
+   "commune_actuelle": "Nogentel",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Pavant",
+   "insee": "02596",
+   "insee_historique": "02596",
+   "commune_actuelle": "Pavant",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Reuilly-Sauvigny",
+   "insee": "02645",
+   "insee_historique": "02645",
+   "commune_actuelle": "Reuilly-Sauvigny",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Romeny-sur-Marne",
+   "insee": "02653",
+   "insee_historique": "02653",
+   "commune_actuelle": "Romeny-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Saâcy-sur-Marne",
+   "insee": "77397",
+   "insee_historique": "77397",
+   "commune_actuelle": "Saâcy-sur-Marne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Saint-Agnan",
+   "insee": "02053",
+   "insee_historique": "02669",
+   "commune_actuelle": "Vallées en Champagne",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null,
+   "note": "ancienne commune (commune-deleguee) rattachée à Vallées en Champagne"
+  },
+  {
+   "name": "Saulchery",
+   "insee": "02701",
+   "insee_historique": "02701",
+   "commune_actuelle": "Saulchery",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Villiers-Saint-Denis",
+   "insee": "02818",
+   "insee_historique": "02818",
+   "commune_actuelle": "Villiers-Saint-Denis",
+   "zone": "Vallée de la Marne",
+   "terroir": "Vallée de la Marne ouest",
+   "cru": null
+  },
+  {
+   "name": "Avize",
+   "insee": "51029",
+   "insee_historique": "51029",
+   "commune_actuelle": "Avize",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Bergères-lès-Vertus",
+   "insee": "51049",
+   "insee_historique": "51049",
+   "commune_actuelle": "Bergères-lès-Vertus",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Chouilly",
+   "insee": "51153",
+   "insee_historique": "51153",
+   "commune_actuelle": "Chouilly",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Cramant",
+   "insee": "51196",
+   "insee_historique": "51196",
+   "commune_actuelle": "Cramant",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Cuis",
+   "insee": "51200",
+   "insee_historique": "51200",
+   "commune_actuelle": "Cuis",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Grauves",
+   "insee": "51281",
+   "insee_historique": "51281",
+   "commune_actuelle": "Grauves",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Le Mesnil-sur-Oger",
+   "insee": "51367",
+   "insee_historique": "51367",
+   "commune_actuelle": "Le Mesnil-sur-Oger",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Oger",
+   "insee": "51612",
+   "insee_historique": "51411",
+   "commune_actuelle": "Blancs-Coteaux",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "grand_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Blancs-Coteaux"
+  },
+  {
+   "name": "Oiry",
+   "insee": "51413",
+   "insee_historique": "51413",
+   "commune_actuelle": "Oiry",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "grand_cru"
+  },
+  {
+   "name": "Vertus",
+   "insee": "51612",
+   "insee_historique": "51612",
+   "commune_actuelle": "Blancs-Coteaux",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte des Blancs",
+   "cru": "premier_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Blancs-Coteaux"
+  },
+  {
+   "name": "Baye",
+   "insee": "51042",
+   "insee_historique": "51042",
+   "commune_actuelle": "Baye",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Beaunay",
+   "insee": "51045",
+   "insee_historique": "51045",
+   "commune_actuelle": "Beaunay",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Broussy-le-Grand",
+   "insee": "51090",
+   "insee_historique": "51090",
+   "commune_actuelle": "Broussy-le-Grand",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Coizard-Joches",
+   "insee": "51157",
+   "insee_historique": "51157",
+   "commune_actuelle": "Coizard-Joches",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Congy",
+   "insee": "51163",
+   "insee_historique": "51163",
+   "commune_actuelle": "Congy",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Courjeonnet",
+   "insee": "51186",
+   "insee_historique": "51186",
+   "commune_actuelle": "Courjeonnet",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Étoges",
+   "insee": "51238",
+   "insee_historique": "51238",
+   "commune_actuelle": "Étoges",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Étréchy",
+   "insee": "51239",
+   "insee_historique": "51239",
+   "commune_actuelle": "Étréchy",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Fèrebrianges",
+   "insee": "51247",
+   "insee_historique": "51247",
+   "commune_actuelle": "Fèrebrianges",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Givry-lès-Loisy",
+   "insee": "51273",
+   "insee_historique": "51273",
+   "commune_actuelle": "Givry-lès-Loisy",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Loisy-en-Brie",
+   "insee": "51327",
+   "insee_historique": "51327",
+   "commune_actuelle": "Loisy-en-Brie",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Mondement-Montgivroux",
+   "insee": "51374",
+   "insee_historique": "51374",
+   "commune_actuelle": "Mondement-Montgivroux",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Oyes",
+   "insee": "51421",
+   "insee_historique": "51421",
+   "commune_actuelle": "Oyes",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Soulières",
+   "insee": "51558",
+   "insee_historique": "51558",
+   "commune_actuelle": "Soulières",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Talus-Saint-Prix",
+   "insee": "51563",
+   "insee_historique": "51563",
+   "commune_actuelle": "Talus-Saint-Prix",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Coligny",
+   "insee": "51158",
+   "insee_historique": "51158",
+   "commune_actuelle": "Val-des-Marais",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": "premier_cru",
+   "note": "premier cru « Coligny (Val-des-Marais) » : seul le territoire de l'ancienne commune de Coligny (sections au préfixe 000 de Val-des-Marais)"
+  },
+  {
+   "name": "Aulnay-aux-Planches",
+   "insee": "51158",
+   "insee_historique": "51021",
+   "commune_actuelle": "Val-des-Marais",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null,
+   "note": "ancienne commune de Val-des-Marais, hors premier cru (sections au préfixe 021)"
+  },
+  {
+   "name": "Aulnizeux",
+   "insee": "51158",
+   "insee_historique": "51024",
+   "commune_actuelle": "Val-des-Marais",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null,
+   "note": "ancienne commune de Val-des-Marais, hors premier cru (sections au préfixe 024)"
+  },
+  {
+   "name": "Morains",
+   "insee": "51158",
+   "insee_historique": "51383",
+   "commune_actuelle": "Val-des-Marais",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null,
+   "note": "ancienne commune de Val-des-Marais, hors premier cru (sections au préfixe 383)"
+  },
+  {
+   "name": "Vert-Toulon",
+   "insee": "51611",
+   "insee_historique": "51611",
+   "commune_actuelle": "Vert-Toulon",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Villeneuve-Renneville-Chevigny",
+   "insee": "51627",
+   "insee_historique": "51627",
+   "commune_actuelle": "Villeneuve-Renneville-Chevigny",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": "premier_cru"
+  },
+  {
+   "name": "Villevenard",
+   "insee": "51641",
+   "insee_historique": "51641",
+   "commune_actuelle": "Villevenard",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": null
+  },
+  {
+   "name": "Voipreux",
+   "insee": "51612",
+   "insee_historique": "51651",
+   "commune_actuelle": "Blancs-Coteaux",
+   "zone": "Côte des Blancs",
+   "terroir": "Val du Petit Morin",
+   "cru": "premier_cru",
+   "note": "ancienne commune (commune-deleguee) rattachée à Blancs-Coteaux"
+  },
+  {
+   "name": "Allemant",
+   "insee": "51005",
+   "insee_historique": "51005",
+   "commune_actuelle": "Allemant",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Barbonne-Fayel",
+   "insee": "51036",
+   "insee_historique": "51036",
+   "commune_actuelle": "Barbonne-Fayel",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Bergères-sous-Montmirail",
+   "insee": "51050",
+   "insee_historique": "51050",
+   "commune_actuelle": "Bergères-sous-Montmirail",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Bethon",
+   "insee": "51056",
+   "insee_historique": "51056",
+   "commune_actuelle": "Bethon",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Broyes",
+   "insee": "51092",
+   "insee_historique": "51092",
+   "commune_actuelle": "Broyes",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Chantemerle",
+   "insee": "51124",
+   "insee_historique": "51124",
+   "commune_actuelle": "Chantemerle",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Fontaine-Denis-Nuisy",
+   "insee": "51254",
+   "insee_historique": "51254",
+   "commune_actuelle": "Fontaine-Denis-Nuisy",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "La Celle-sous-Chantemerle",
+   "insee": "51103",
+   "insee_historique": "51103",
+   "commune_actuelle": "La Celle-sous-Chantemerle",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Montgenost",
+   "insee": "51376",
+   "insee_historique": "51376",
+   "commune_actuelle": "Montgenost",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Saudoy",
+   "insee": "51526",
+   "insee_historique": "51526",
+   "commune_actuelle": "Saudoy",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Sézanne",
+   "insee": "51535",
+   "insee_historique": "51535",
+   "commune_actuelle": "Sézanne",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Vindey",
+   "insee": "51645",
+   "insee_historique": "51645",
+   "commune_actuelle": "Vindey",
+   "zone": "Côte des Blancs",
+   "terroir": "Côte de Sézanne (Sézannais)",
+   "cru": null
+  },
+  {
+   "name": "Bassu",
+   "insee": "51039",
+   "insee_historique": "51039",
+   "commune_actuelle": "Bassu",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Bassuet",
+   "insee": "51040",
+   "insee_historique": "51040",
+   "commune_actuelle": "Bassuet",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Changy",
+   "insee": "51122",
+   "insee_historique": "51122",
+   "commune_actuelle": "Changy",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Couvrot",
+   "insee": "51195",
+   "insee_historique": "51195",
+   "commune_actuelle": "Couvrot",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Glannes",
+   "insee": "51275",
+   "insee_historique": "51275",
+   "commune_actuelle": "Glannes",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Lisse-en-Champagne",
+   "insee": "51325",
+   "insee_historique": "51325",
+   "commune_actuelle": "Lisse-en-Champagne",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Loisy-sur-Marne",
+   "insee": "51328",
+   "insee_historique": "51328",
+   "commune_actuelle": "Loisy-sur-Marne",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Merlaut",
+   "insee": "51363",
+   "insee_historique": "51363",
+   "commune_actuelle": "Merlaut",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Saint-Amand-sur-Fion",
+   "insee": "51472",
+   "insee_historique": "51472",
+   "commune_actuelle": "Saint-Amand-sur-Fion",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Saint-Lumier-en-Champagne",
+   "insee": "51496",
+   "insee_historique": "51496",
+   "commune_actuelle": "Saint-Lumier-en-Champagne",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Val-de-Vière",
+   "insee": "51218",
+   "insee_historique": "51218",
+   "commune_actuelle": "Val-de-Vière",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Vanault-le-Châtel",
+   "insee": "51589",
+   "insee_historique": "51589",
+   "commune_actuelle": "Vanault-le-Châtel",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Vavray-le-Grand",
+   "insee": "51601",
+   "insee_historique": "51601",
+   "commune_actuelle": "Vavray-le-Grand",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Vavray-le-Petit",
+   "insee": "51602",
+   "insee_historique": "51602",
+   "commune_actuelle": "Vavray-le-Petit",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Vitry-en-Perthois",
+   "insee": "51647",
+   "insee_historique": "51647",
+   "commune_actuelle": "Vitry-en-Perthois",
+   "zone": "Côte des Blancs",
+   "terroir": "Vitryat",
+   "cru": null
+  },
+  {
+   "name": "Montgueux",
+   "insee": "10248",
+   "insee_historique": "10248",
+   "commune_actuelle": "Montgueux",
+   "zone": "Côte des Blancs",
+   "terroir": "Montgueux",
+   "cru": null
+  },
+  {
+   "name": "Ailleville",
+   "insee": "10002",
+   "insee_historique": "10002",
+   "commune_actuelle": "Ailleville",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Arconville",
+   "insee": "10007",
+   "insee_historique": "10007",
+   "commune_actuelle": "Arconville",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Argançon",
+   "insee": "10008",
+   "insee_historique": "10008",
+   "commune_actuelle": "Argançon",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Arrentières",
+   "insee": "10011",
+   "insee_historique": "10011",
+   "commune_actuelle": "Arrentières",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Arsonval",
+   "insee": "10012",
+   "insee_historique": "10012",
+   "commune_actuelle": "Arsonval",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Bar-sur-Aube",
+   "insee": "10033",
+   "insee_historique": "10033",
+   "commune_actuelle": "Bar-sur-Aube",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Baroville",
+   "insee": "10032",
+   "insee_historique": "10032",
+   "commune_actuelle": "Baroville",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Bergères",
+   "insee": "10039",
+   "insee_historique": "10039",
+   "commune_actuelle": "Bergères",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Bligny",
+   "insee": "10048",
+   "insee_historique": "10048",
+   "commune_actuelle": "Bligny",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Champignol-lez-Mondeville",
+   "insee": "10076",
+   "insee_historique": "10076",
+   "commune_actuelle": "Champignol-lez-Mondeville",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Colombé-la-Fosse",
+   "insee": "10102",
+   "insee_historique": "10102",
+   "commune_actuelle": "Colombé-la-Fosse",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Colombé-le-Sec",
+   "insee": "10103",
+   "insee_historique": "10103",
+   "commune_actuelle": "Colombé-le-Sec",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Colombey-les-Deux-Églises",
+   "insee": "52140",
+   "insee_historique": "52140",
+   "commune_actuelle": "Colombey les Deux Églises",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Couvignon",
+   "insee": "10113",
+   "insee_historique": "10113",
+   "commune_actuelle": "Couvignon",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Cunfin",
+   "insee": "10119",
+   "insee_historique": "10119",
+   "commune_actuelle": "Cunfin",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Dolancourt",
+   "insee": "10126",
+   "insee_historique": "10126",
+   "commune_actuelle": "Dolancourt",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Engente",
+   "insee": "10137",
+   "insee_historique": "10137",
+   "commune_actuelle": "Engente",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Fontaine",
+   "insee": "10150",
+   "insee_historique": "10150",
+   "commune_actuelle": "Fontaine",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Fravaux",
+   "insee": "10160",
+   "insee_historique": "10160",
+   "commune_actuelle": "Fravaux",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Jaucourt",
+   "insee": "10176",
+   "insee_historique": "10176",
+   "commune_actuelle": "Jaucourt",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Lignol-le-Château",
+   "insee": "10197",
+   "insee_historique": "10197",
+   "commune_actuelle": "Lignol-le-Château",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Meurville",
+   "insee": "10242",
+   "insee_historique": "10242",
+   "commune_actuelle": "Meurville",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Montier-en-l'Isle",
+   "insee": "10250",
+   "insee_historique": "10250",
+   "commune_actuelle": "Montier-en-l'Isle",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Proverville",
+   "insee": "10306",
+   "insee_historique": "10306",
+   "commune_actuelle": "Proverville",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Rizaucourt-Buchey",
+   "insee": "52426",
+   "insee_historique": "52426",
+   "commune_actuelle": "Rizaucourt-Buchey",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Rouvres-les-Vignes",
+   "insee": "10330",
+   "insee_historique": "10330",
+   "commune_actuelle": "Rouvres-les-Vignes",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Saulcy",
+   "insee": "10366",
+   "insee_historique": "10366",
+   "commune_actuelle": "Saulcy",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Spoy",
+   "insee": "10374",
+   "insee_historique": "10374",
+   "commune_actuelle": "Spoy",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Trannes",
+   "insee": "10384",
+   "insee_historique": "10384",
+   "commune_actuelle": "Trannes",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Urville",
+   "insee": "10390",
+   "insee_historique": "10390",
+   "commune_actuelle": "Urville",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Voigny",
+   "insee": "10440",
+   "insee_historique": "10440",
+   "commune_actuelle": "Voigny",
+   "zone": "Côte des Bar",
+   "terroir": "Bar-sur-Aubois",
+   "cru": null
+  },
+  {
+   "name": "Avirey-Lingey",
+   "insee": "10022",
+   "insee_historique": "10022",
+   "commune_actuelle": "Avirey-Lingey",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Bagneux-la-Fosse",
+   "insee": "10025",
+   "insee_historique": "10025",
+   "commune_actuelle": "Bagneux-la-Fosse",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Balnot-sur-Laignes",
+   "insee": "10029",
+   "insee_historique": "10029",
+   "commune_actuelle": "Balnot-sur-Laignes",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Bar-sur-Seine",
+   "insee": "10034",
+   "insee_historique": "10034",
+   "commune_actuelle": "Bar-sur-Seine",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Bertignolles",
+   "insee": "10041",
+   "insee_historique": "10041",
+   "commune_actuelle": "Bertignolles",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Bragelogne-Beauvoir",
+   "insee": "10058",
+   "insee_historique": "10058",
+   "commune_actuelle": "Bragelogne-Beauvoir",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Buxeuil",
+   "insee": "10068",
+   "insee_historique": "10068",
+   "commune_actuelle": "Buxeuil",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Buxières-sur-Arce",
+   "insee": "10069",
+   "insee_historique": "10069",
+   "commune_actuelle": "Buxières-sur-Arce",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Celles-sur-Ource",
+   "insee": "10070",
+   "insee_historique": "10070",
+   "commune_actuelle": "Celles-sur-Ource",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Chacenay",
+   "insee": "10071",
+   "insee_historique": "10071",
+   "commune_actuelle": "Chacenay",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Channes",
+   "insee": "10079",
+   "insee_historique": "10079",
+   "commune_actuelle": "Channes",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Chervey",
+   "insee": "10097",
+   "insee_historique": "10097",
+   "commune_actuelle": "Chervey",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Courteron",
+   "insee": "10111",
+   "insee_historique": "10111",
+   "commune_actuelle": "Courteron",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Éguilly-sous-Bois",
+   "insee": "10136",
+   "insee_historique": "10136",
+   "commune_actuelle": "Éguilly-sous-Bois",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Essoyes",
+   "insee": "10141",
+   "insee_historique": "10141",
+   "commune_actuelle": "Essoyes",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Fontette",
+   "insee": "10155",
+   "insee_historique": "10155",
+   "commune_actuelle": "Fontette",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Gyé-sur-Seine",
+   "insee": "10170",
+   "insee_historique": "10170",
+   "commune_actuelle": "Gyé-sur-Seine",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Landreville",
+   "insee": "10187",
+   "insee_historique": "10187",
+   "commune_actuelle": "Landreville",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Les Riceys",
+   "insee": "10317",
+   "insee_historique": "10317",
+   "commune_actuelle": "Les Riceys",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Loches-sur-Ource",
+   "insee": "10199",
+   "insee_historique": "10199",
+   "commune_actuelle": "Loches-sur-Ource",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Merrey-sur-Arce",
+   "insee": "10232",
+   "insee_historique": "10232",
+   "commune_actuelle": "Merrey-sur-Arce",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Mussy-sur-Seine",
+   "insee": "10261",
+   "insee_historique": "10261",
+   "commune_actuelle": "Mussy-sur-Seine",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Neuville-sur-Seine",
+   "insee": "10262",
+   "insee_historique": "10262",
+   "commune_actuelle": "Neuville-sur-Seine",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Noé-les-Mallets",
+   "insee": "10264",
+   "insee_historique": "10264",
+   "commune_actuelle": "Noé-les-Mallets",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Plaines-Saint-Lange",
+   "insee": "10288",
+   "insee_historique": "10288",
+   "commune_actuelle": "Plaines-Saint-Lange",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Polisot",
+   "insee": "10295",
+   "insee_historique": "10295",
+   "commune_actuelle": "Polisot",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Polisy",
+   "insee": "10296",
+   "insee_historique": "10296",
+   "commune_actuelle": "Polisy",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Saint-Usage",
+   "insee": "10364",
+   "insee_historique": "10364",
+   "commune_actuelle": "Saint-Usage",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Verpillières-sur-Ource",
+   "insee": "10404",
+   "insee_historique": "10404",
+   "commune_actuelle": "Verpillières-sur-Ource",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Ville-sur-Arce",
+   "insee": "10427",
+   "insee_historique": "10427",
+   "commune_actuelle": "Ville-sur-Arce",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Villenauxe-la-Grande",
+   "insee": "10420",
+   "insee_historique": "10420",
+   "commune_actuelle": "Villenauxe-la-Grande",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Vitry-le-Croisé",
+   "insee": "10438",
+   "insee_historique": "10438",
+   "commune_actuelle": "Vitry-le-Croisé",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  },
+  {
+   "name": "Viviers-sur-Artaut",
+   "insee": "10439",
+   "insee_historique": "10439",
+   "commune_actuelle": "Viviers-sur-Artaut",
+   "zone": "Côte des Bar",
+   "terroir": "Barséquanais",
+   "cru": null
+  }
+ ]
+}

@@ -11,6 +11,8 @@ const DATASET_LABELS: Record<string, string> = {
   "ign-bdtopo": "BD TOPO — IGN (vignes photo-interprétées)",
   "manual-alsace-domains": "Domaines de référence — compilation manuelle",
   "manual-bourgogne-domains": "Domaines de référence — compilation manuelle",
+  "manual-rhone-domains": "Domaines de référence — compilation manuelle",
+  "manual-champagne-domains": "Domaines de référence — compilation manuelle",
   "etalab-cadastre": "Cadastre — Etalab / DGFiP",
 };
 

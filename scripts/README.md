@@ -272,6 +272,14 @@ lieux-dits 21/71/89 (téléchargé avec `curl`, voir mode op A1). Le script
 construit aussi les `wine_areas` Bourgogne et les lieux-dits découpés aux
 vignes ; chaque run imprime le **test de hiérarchie** (médiane du score par
 niveau de cru et par secteur). Domaines : `scripts/data/bourgogne-domains.json`.
+**Rhône méridional** (`--region rhone`) et **Champagne** (`--region champagne`,
+ADR 0024) : même chaîne, aires et lieux-dits construits par le script, pas de
+migration. Prérequis : BD Charm-50 et cadastre lieux-dits des départements
+(84, 30, 26, 07, 13, 04 / 51, 10, 02, 52, 77), plus pour la Champagne les
+**sections** cadastrales (`cadastre-<dep>-sections.json.gz`, préfixe des
+anciennes communes) et `scripts/data/champagne-crus.json` (319 crus, zone,
+terroir, grand / premier cru). L'import `ingest_wine_geodata.py --scope
+champagne` est remplacé pour les aires et lieux-dits de Champagne.
 Procédure complète : `docs/mode-op-replication-region.md`. Méthode : `docs/terroir-score.md`. Après une ré-ingestion
 `ingest_wine_geodata.py --commit`, relancer `--commit --prune`.
 

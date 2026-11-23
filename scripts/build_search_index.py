@@ -51,11 +51,11 @@ def load_env() -> tuple[str, str]:
     return url.rstrip("/"), key
 
 
-def fetch_all(base: str, key: str, table: str, select: str, extra: str = "") -> list[dict]:
+def fetch_all(base: str, key: str, table: str, select: str, extra: str = "", page: int = PAGE) -> list[dict]:
     rows: list[dict] = []
     offset = 0
     while True:
-        q = f"select={urllib.parse.quote(select, safe=',()*:')}&order=id&limit={PAGE}&offset={offset}"
+        q = f"select={urllib.parse.quote(select, safe=',()*:')}&order=id&limit={page}&offset={offset}"
         if extra:
             q += "&" + extra
         req = urllib.request.Request(
@@ -63,11 +63,11 @@ def fetch_all(base: str, key: str, table: str, select: str, extra: str = "") -> 
             headers={"apikey": key, "authorization": f"Bearer {key}", "accept": "application/json"},
         )
         with urllib.request.urlopen(req, timeout=120) as resp:
-            page = json.load(resp)
-        rows.extend(page)
-        if len(page) < PAGE:
+            batch = json.load(resp)
+        rows.extend(batch)
+        if len(batch) < page:
             return rows
-        offset += PAGE
+        offset += page
 
 
 def bbox_of(geom: dict | None) -> list[float] | None:
@@ -128,6 +128,7 @@ def main() -> None:
     areas = fetch_all(
         base, key, "wine_areas",
         f"id,name,level,region_type,root_region_id,parent_id,map_visible,geom_display,geom,{prov}",
+        page=100,  # full geometries: 1000 per page hit the statement timeout (mode op B9)
     )
     area_by_id = {a["id"]: a for a in areas}
     entries: list[list] = []

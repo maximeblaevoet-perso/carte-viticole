@@ -1,0 +1,245 @@
+{
+  "_aide": "Grille du score de potentiel terroir (0-100) des vignes plantées du Rhône méridional (Vaucluse rhodanien, Gard rhodanien, Drôme provençale, Ardèche méridionale, Ventoux, Luberon, Costières de Nîmes, Alpilles, Pierrevert). Lue par scripts/terroir_score.py et src/lib/terroir-score.ts. Indicatif : lecture homogène de critères publics, pas un classement officiel — la pyramide Inter-Rhône ne sert qu'au test de hiérarchie (docs/mode-op-replication-region.md). Climat méditerranéen : ce sont les terrasses de galets et les sols drainants qui font le terroir, pas seulement le coteau ; une terrasse plate n'est pas pénalisée comme en Bourgogne, la fraîcheur vient de l'altitude (Ventoux, Luberon, Vinsobres). Voir docs/terroir-score.md et ADR 0024.",
+  "version": "rhone-2026-11",
+  "mode_defaut": "soleil",
+  "poids": {
+    "geologie": 35,
+    "exposition": 15,
+    "pente": 15,
+    "altitude": 15,
+    "sol": 20
+  },
+  "_motifs_aide": "geologie_motifs : regex sur le libellé BD Charm-50 replié (sans accents, minuscules), testées dans l'ordre, prioritaires sur la famille de roche (mode op A3, B3).",
+  "geologie_motifs": [
+    [
+      "anciennes a recentes|basse altitude",
+      0.35
+    ],
+    [
+      "alluvions recentes|alluvions actuelles|holocene",
+      0.2
+    ],
+    [
+      "villafranchien|plus hautes terrasses|tres hautes terrasses|gunz|mindel|haute terrasse|cailloutis residuels|littorale a galets|pleistocene inf",
+      1.0
+    ],
+    [
+      "riss|moyennes? terrasses?|alluvions anciennes",
+      0.8
+    ],
+    [
+      "wurm.*(terrasse|alluvions)|wurmiennes|basses? terrasses?",
+      0.55
+    ],
+    [
+      "safre|gres molassiques|gres de valreas|molass",
+      0.8
+    ],
+    [
+      "formations de remplissage",
+      0.55
+    ],
+    [
+      "marnes bleues|argiles et marnes marines|argiles d.eau douce",
+      0.45
+    ]
+  ],
+  "geologie": {
+    "eboulis": 0.85,
+    "solifluxion": 0.7,
+    "colluvions": 0.55,
+    "alluvions": 0.2,
+    "loess": 0.45,
+    "cailloutis": 0.9,
+    "limons": 0.35,
+    "eau": 0,
+    "glaciaire": 0.5,
+    "tourbe": 0,
+    "remblais": 0.2,
+    "travertin": 0.75,
+    "craie": 0.8,
+    "calcaire": 0.9,
+    "marne": 0.8,
+    "marnes_gypse": 0.65,
+    "conglomerat": 0.85,
+    "gres": 0.75,
+    "argile": 0.55,
+    "sable": 0.75,
+    "volcanique": 0.75,
+    "granite": 0.8,
+    "magmatique": 0.75,
+    "gneiss": 0.75,
+    "micaschiste": 0.75,
+    "schiste": 0.8,
+    "grauwacke": 0.75,
+    "gaize": 0.7,
+    "breche": 0.8,
+    "quartzite": 0.6,
+    "metamorphique_basique": 0.7,
+    "autre": 0.5
+  },
+  "pente": [
+    [
+      1,
+      0.55
+    ],
+    [
+      2,
+      0.7
+    ],
+    [
+      4,
+      0.85
+    ],
+    [
+      8,
+      0.95
+    ],
+    [
+      35,
+      1.0
+    ],
+    [
+      999,
+      0.8
+    ]
+  ],
+  "altitude": [
+    [
+      40,
+      0.4
+    ],
+    [
+      70,
+      0.6
+    ],
+    [
+      100,
+      0.8
+    ],
+    [
+      130,
+      0.9
+    ],
+    [
+      450,
+      1.0
+    ],
+    [
+      9999,
+      0.8
+    ]
+  ],
+  "altitude_secteurs": {
+    "ventoux": [
+      [
+        180,
+        0.5
+      ],
+      [
+        230,
+        0.7
+      ],
+      [
+        280,
+        0.9
+      ],
+      [
+        500,
+        1.0
+      ],
+      [
+        9999,
+        0.8
+      ]
+    ],
+    "luberon": [
+      [
+        180,
+        0.5
+      ],
+      [
+        230,
+        0.7
+      ],
+      [
+        280,
+        0.9
+      ],
+      [
+        500,
+        1.0
+      ],
+      [
+        9999,
+        0.8
+      ]
+    ],
+    "pierrevert": [
+      [
+        350,
+        0.6
+      ],
+      [
+        400,
+        0.85
+      ],
+      [
+        600,
+        1.0
+      ],
+      [
+        9999,
+        0.8
+      ]
+    ]
+  },
+  "exposition": {
+    "plat_pente_max": 2,
+    "plat": 0.75,
+    "soleil": {
+      "N": 0.55,
+      "NE": 0.65,
+      "E": 0.85,
+      "SE": 0.95,
+      "S": 1.0,
+      "SO": 0.9,
+      "O": 0.75,
+      "NO": 0.6
+    },
+    "fraicheur": {
+      "N": 0.95,
+      "NE": 1.0,
+      "NO": 0.9,
+      "E": 0.85,
+      "O": 0.7,
+      "SE": 0.7,
+      "S": 0.55,
+      "SO": 0.55
+    }
+  },
+  "sol": {
+    "CALCOSOL": 0.85,
+    "CALCISOL": 0.85,
+    "RENDOSOL": 0.85,
+    "RENDISOL": 0.85,
+    "RANKOSOL": 0.7,
+    "LITHOSOL": 0.75,
+    "REGOSOL": 0.75,
+    "BRUNISOL": 0.65,
+    "ALOCRISOL": 0.6,
+    "PEYROSOL": 0.95,
+    "ARENOSOL": 0.7,
+    "COLLUVIOSOL": 0.55,
+    "PELOSOL": 0.45,
+    "NEOLUVISOL": 0.5,
+    "LUVISOL": 0.5,
+    "FERSIALSOL": 0.8,
+    "PODZOSOL": 0.4,
+    "FLUVIOSOL": 0.2,
+    "REDOXISOL": 0.25,
+    "REDUCTISOL": 0.1,
+    "SALISOL": 0.1,
+    "_defaut": 0.55
+  }
+}

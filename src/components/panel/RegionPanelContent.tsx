@@ -10,6 +10,7 @@ import {
   REGION_TYPE_LABELS,
 } from "@/data/areas";
 import { getSoilsForArea } from "@/data/soils";
+import { areaTierLabel } from "@/lib/terroir-score";
 import {
   useRegionVintageClimates,
   useVintageClimate,
@@ -323,12 +324,6 @@ function typeLabel(rt?: string | null): string {
   return REGION_TYPE_LABELS[rt as RegionType] ?? rt;
 }
 
-/** Champagne GC/PC label from a lieu-dit's parent commune classification. */
-function cruLabel(rt?: string | null): string | null {
-  if (rt === "grand-cru") return "Grand Cru";
-  if (rt === "premier-cru") return "Premier Cru";
-  return null;
-}
 
 function IdRow({ label, value }: { label: string; value: string | null }) {
   if (!value) return null;
@@ -371,8 +366,8 @@ function RealFeaturePanel({
       ? "Parcelle"
       : feature.kind === "lieu-dit"
       ? "Lieu-dit"
-      : typeLabel(feature.regionType);
-  const cru = cruLabel(feature.areaRegionType);
+      : areaTierLabel(feature.regionType, feature.rootRegionId) ?? typeLabel(feature.regionType);
+  const cru = areaTierLabel(feature.areaRegionType, feature.rootRegionId);
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">

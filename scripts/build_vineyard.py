@@ -228,7 +228,10 @@ def load_inao() -> gpd.GeoDataFrame:
 def load_geology() -> gpd.GeoDataFrame:
     frames = []
     for d in R.departments:
-        shp = next((RAW / "brgm-bdcharm50" / d / "extracted").glob(f"GEO050K_HARM_0{d}_S_FGEOL_2154.shp"))
+        shp = next((RAW / "brgm-bdcharm50" / d / "extracted").glob(f"GEO050K_HARM_0{d}_S_FGEOL_2154.shp"), None)
+        if shp is None:  # 77: no BD Charm-50 archive on InfoTerre (mode op B2)
+            print(f"  ! BD Charm-50 absente pour le département {d} : géologie « autre »")
+            continue
         g = pyogrio.read_dataframe(shp, encoding="cp1252", columns=["NOTATION", "DESCR"])
         frames.append(g)
     g = gpd.GeoDataFrame(pd.concat(frames, ignore_index=True), crs=L93)
@@ -493,6 +496,183 @@ def classify_bourgogne(v: gpd.GeoDataFrame, inao: gpd.GeoDataFrame) -> gpd.GeoDa
     return v
 
 
+# Rhône méridional (ADR 0024). The Inter-Rhône pyramid mapped on the four
+# cru levels: crus (4) > Côtes du Rhône Villages + nom géographique (3) >
+# Côtes du Rhône Villages (2) > Côtes du Rhône and the satellite AOCs (1).
+# Northern Rhône and the Diois are out of scope for now (mode op B1).
+RHS_CRUS = {"Châteauneuf-du-Pape", "Gigondas", "Vacqueyras", "Beaumes de Venise", "Muscat de Beaumes-de-Venise",
+            "Rasteau", "Cairanne", "Vinsobres", "Lirac", "Tavel", "Laudun"}
+RHS_CDRV = "Côtes du Rhône Villages"
+# satellite AOC -> its sector (a plot only in one of these is in that sector)
+RHS_SATELLITES = {
+    "Ventoux": "ventoux", "Luberon": "luberon", "Costières de Nîmes": "costieres",
+    "Clairette de Bellegarde": "costieres", "Les Baux de Provence": "alpilles", "Pierrevert": "pierrevert",
+    "Grignan-les-Adhémar": "drome-provencale", "Côtes du Vivarais": "ardeche-meridionale",
+}
+RHS_APPS = RHS_CRUS | {RHS_CDRV, "Côtes du Rhône"} | set(RHS_SATELLITES)
+RHS_NORTH_LAT = 44.6  # Côtes du Rhône rows north of Montélimar are the northern Rhône
+RHS_DEPT_SECTEUR = {"84": "vaucluse", "30": "gard-rhodanien", "26": "drome-provencale", "07": "ardeche-meridionale"}
+RHS_SECTEURS = {
+    "vaucluse": "Vaucluse rhodanien", "gard-rhodanien": "Gard rhodanien", "drome-provencale": "Drôme provençale",
+    "ardeche-meridionale": "Ardèche méridionale", "ventoux": "Ventoux", "luberon": "Luberon",
+    "costieres": "Costières de Nîmes", "alpilles": "Alpilles", "pierrevert": "Pierrevert",
+}
+
+
+def _rhs_rank(app: str, denom: str) -> int:
+    if app in RHS_CRUS:
+        return 4
+    if app == RHS_CDRV:
+        return 3 if denom != app else 2
+    return 1
+
+
+def _rhs_inao(inao: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Southern Rhône rows of the parcellaire, denominations cleaned."""
+    inao = inao[inao.app.isin(RHS_APPS)].copy()
+    lat = inao.representative_point().to_crs(4326).y
+    inao = inao[(lat < RHS_NORTH_LAT) | ~inao.app.isin({"Côtes du Rhône", RHS_CDRV})].copy()
+    inao["denom"] = [a if a == "Rasteau" else _clean_denom(d) for a, d in zip(inao.app, inao.denom)]
+    inao["rank"] = [_rhs_rank(a, d) for a, d in zip(inao.app, inao.denom)]
+    return inao
+
+
+def _rhs_secteur(dept: str, top: int, apps: set[str]) -> str:
+    if top <= 1 and "Côtes du Rhône" not in apps:
+        sat = next((RHS_SATELLITES[a] for a in sorted(apps) if a in RHS_SATELLITES), None)
+        if sat:
+            return sat
+    return RHS_DEPT_SECTEUR.get(dept) or next((RHS_SATELLITES[a] for a in sorted(apps) if a in RHS_SATELLITES),
+                                              "vaucluse")
+
+
+def classify_rhone(v: gpd.GeoDataFrame, inao: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Rank = highest Inter-Rhône tier among the aires holding the plot centre.
+
+    Crus are stored as cru_level ``grand_cru`` with the cru name in
+    ``appellation`` (``grand_cru`` stays empty: there is no grand cru in the
+    Rhône); named villages as ``premier_cru`` with the village name in
+    ``premier_cru`` and "Côtes du Rhône Villages" in ``village``.
+    """
+    inao = _rhs_inao(inao)
+    zone = inao.buffer(20).union_all()
+    v = _plot_ids(v[v.representative_point().within(zone)])
+    v = split_by_aires(v, inao[inao["rank"] >= 3])
+    aire_ha = inao.dissolve(by="denom").area / 1e4
+    pts = gpd.GeoDataFrame(v[["id"]], geometry=v.representative_point(), crs=L93)
+    m = pd.DataFrame(gpd.sjoin(pts, inao[["app", "denom", "rank", "insee", "nomcom", "geometry"]],
+                               predicate="within").drop(columns="geometry"))
+    m["spec"] = -m.denom.map(aire_ha).values
+    m = m.sort_values(["rank", "spec"], ascending=False)
+    best = m.drop_duplicates("id").set_index("id")
+    v = v[v["id"].isin(best.index)].copy()
+    b = best.loc[v["id"]]
+    v["commune_insee"] = b.insee.values
+    v["commune_name"] = b.nomcom.str.title().values
+    rank = b["rank"].values
+    v["cru_level"] = np.array(["regional", "regional", "village", "premier_cru", "grand_cru"])[rank]
+    v["appellation"] = b.denom.values
+    v["grand_cru"] = None
+    v["premier_cru"] = [d.replace(RHS_CDRV, "").strip() if r == 3 else None for d, r in zip(b.denom, rank)]
+    v["village"] = np.where(rank >= 2, np.where(rank == 4, None, RHS_CDRV), None)
+    v["wine_area_id"] = [slugify(f"rhone-{n}") for n in b.denom]
+    by_id = m.groupby("id")
+    apps = by_id.app.agg(set)
+    v["secteur"] = [_rhs_secteur(str(c)[:2], r, apps[i]) for i, c, r in zip(v["id"], v.commune_insee, rank)]
+    return v
+
+
+# Champagne (ADR 0024). The INAO parcellaire has no Champagne row and no
+# vector delimitation of the aire parcellaire exists (law of 6 May 1919, mode
+# op B4): vines = RPG / BD TOPO inside the 319 crus (communes). Grand / premier
+# cru are communes, some of them former communes merged into a commune
+# nouvelle (Aÿ, Mareuil-sur-Aÿ and Bisseuil in Aÿ-Champagne): they are found
+# through the prefix of the cadastral sections.
+CHAMPAGNE_REF = ROOT / "scripts" / "data" / "champagne-crus.json"
+CHP_APPELLATION = {"grand_cru": "Champagne grand cru", "premier_cru": "Champagne premier cru", None: "Champagne"}
+
+
+def champagne_ref() -> dict[str, dict]:
+    """Historic INSEE code of each cru -> its entry (name, current commune, zone, terroir, cru)."""
+    rows = json.loads(CHAMPAGNE_REF.read_text(encoding="utf-8"))["communes"]
+    return {r["insee_historique"]: r for r in rows}
+
+
+def _hist_key(commune: str, prefixe: str) -> str:
+    return commune if prefixe in ("000", "", None) else commune[:2] + prefixe
+
+
+def champagne_communes(refresh: bool = False) -> gpd.GeoDataFrame:
+    """Outline of each cru (historic commune) from the cadastral sections."""
+    def build() -> gpd.GeoDataFrame:
+        ref = champagne_ref()
+        current = {r["insee"] for r in ref.values()}
+        frames = []
+        for d in R.departments:
+            s = gpd.read_file(RAW / "etalab-cadastre" / "departements" / d / f"cadastre-{d}-sections.geojson")
+            frames.append(s[s.commune.isin(current)][["commune", "prefixe", "geometry"]])
+        s = gpd.GeoDataFrame(pd.concat(frames, ignore_index=True), crs=frames[0].crs).to_crs(L93)
+        s["key"] = [_hist_key(c, p) for c, p in zip(s.commune, s.prefixe)]
+        # a former commune not listed on its own is part of its current commune's cru
+        s["key"] = [k if k in ref else c for k, c in zip(s.key, s.commune)]
+        s = s[s.key.isin(ref)]
+        s["geometry"] = s.geometry.make_valid().buffer(0.5)
+        g = s.dissolve(by="key").reset_index()[["key", "geometry"]]
+        g["geometry"] = g.geometry.buffer(-0.5)
+        return g
+    return cached("communes", build, refresh)
+
+
+def classify_champagne(v: gpd.GeoDataFrame, _inao: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    ref = champagne_ref()
+    com = champagne_communes()
+    zone = com.buffer(20).union_all()
+    v = _plot_ids(v[v.representative_point().within(zone)])
+    v = split_by_aires(v, com.rename(columns={"key": "denom"}))
+    pts = gpd.GeoDataFrame(v[["id"]], geometry=v.representative_point(), crs=L93)
+    j = gpd.sjoin(pts, com, predicate="within").drop_duplicates("id").set_index("id")
+    v = v[v["id"].isin(j.index)].copy()
+    e = [ref[k] for k in j.key.loc[v["id"]]]
+    cru = [r["cru"] for r in e]
+    v["commune_insee"] = [r["insee"] for r in e]
+    v["commune_name"] = [r["name"] for r in e]
+    v["commune_actuelle"] = [r.get("commune_actuelle") or r["name"] for r in e]
+    v["cru_level"] = [c or "regional" for c in cru]
+    v["appellation"] = [CHP_APPELLATION[c] for c in cru]
+    v["grand_cru"] = [r["name"] if r["cru"] == "grand_cru" else None for r in e]
+    v["premier_cru"] = [r["name"] if r["cru"] == "premier_cru" else None for r in e]
+    v["village"] = None
+    v["secteur"] = [slugify(r["zone"]) for r in e]
+    v["terroir"] = [r["terroir"] for r in e]
+    v["wine_area_id"] = [slugify(f"champagne-{r['name']}-{r['insee_historique']}") for r in e]
+    return v
+
+
+def build_areas_champagne(v: gpd.GeoDataFrame) -> list[dict]:
+    """1 Champagne > 2 zone (4) > 3 terroir (17) > 4 cru (commune, historic).
+
+    Zones and terroirs are the Union des Maisons de Champagne's, outlined by
+    the footprint of their vines; crus are whole historic communes, like the
+    commune × appellation aires of the other regions.
+    """
+    ref = champagne_ref()
+    zones = {slugify(r["zone"]): r["zone"] for r in ref.values()}
+    rows = _sector_rows(v, zones)
+    zone_of = {r["terroir"]: slugify(r["zone"]) for r in ref.values()}
+    for ter, d in v.groupby("terroir"):
+        geom = d.geometry.buffer(150).union_all().buffer(-100)
+        rows.append(_area_row(slugify(f"champagne-terroir-{ter}"), ter, 3, f"{R.id}-secteur-{zone_of[ter]}",
+                              "subregion", geom, True, tol=30))
+    planted = set(v.wine_area_id)
+    for r in champagne_communes().itertuples():
+        e = ref[r.key]
+        area_id = slugify(f"champagne-{e['name']}-{e['insee_historique']}")
+        rtype = {"grand_cru": "grand-cru", "premier_cru": "premier-cru"}.get(e["cru"], "village")
+        rows.append(_area_row(area_id, e["name"], 4, slugify(f"champagne-terroir-{e['terroir']}"), rtype,
+                              r.geometry, area_id in planted, insee_commune=e["insee"]))
+    return sorted(rows, key=lambda r: r["level"])
+
+
 @dataclass(frozen=True)
 class Region:
     id: str
@@ -500,8 +680,12 @@ class Region:
     departments: tuple[str, ...]
     bbox: tuple[float, float, float, float]  # lon/lat, the whole vineyard
     classify: Callable[[gpd.GeoDataFrame, gpd.GeoDataFrame], gpd.GeoDataFrame]
-    builds_areas: bool = False  # wine_areas + lieux-dits built here (Bourgogne)
+    areas: str | None = None  # name of the wine_areas builder (+ lieux-dits built here)
     prune_rpc: str | None = None  # Alsace: delete INAO aire "parcels" (ADR 0016)
+
+    @property
+    def builds_areas(self) -> bool:
+        return self.areas is not None
 
     @property
     def cache(self) -> Path:
@@ -524,7 +708,11 @@ REGIONS = {
     "alsace": Region("alsace", "Alsace", ("67", "68"), (7.0, 47.55, 7.95, 49.08), classify_alsace,
                      prune_rpc="prune_alsace_vineless_geodata"),
     "bourgogne": Region("bourgogne", "Bourgogne", ("21", "71", "89"), (3.3, 46.15, 5.25, 48.1),
-                        classify_bourgogne, builds_areas=True),
+                        classify_bourgogne, areas="build_areas_bourgogne"),
+    "rhone": Region("rhone", "Vallée du Rhône", ("84", "30", "26", "07", "13", "04"), (4.1, 43.55, 5.95, 44.6),
+                    classify_rhone, areas="build_areas_rhone"),
+    "champagne": Region("champagne", "Champagne", ("51", "10", "02", "52", "77"), (3.0, 47.85, 5.0, 49.45),
+                        classify_champagne, areas="build_areas_champagne"),
 }
 R: Region = REGIONS["alsace"]
 
@@ -656,7 +844,8 @@ def resolve_places(d: dict, v: gpd.GeoDataFrame) -> tuple[list[tuple[ts.Place, p
     for name in d.get("lieux_dits") or []:
         mask = pd.Series(False, index=v.index)
         for s in specs.get(name, []):
-            mask |= (v._com == _norm(s["commune"])) & v.lieu_dit.isin(s["cadastre"])
+            com = _norm(s["commune"])
+            mask |= ((v._com == com) | (v._com2 == com)) & v.lieu_dit.isin(s["cadastre"])
         if mask.any():
             lieux[name] = mask
         else:
@@ -682,7 +871,8 @@ def resolve_places(d: dict, v: gpd.GeoDataFrame) -> tuple[list[tuple[ts.Place, p
     # Bourgogne (ADR 0021): premiers crus are exact INAO denominations, villages
     # are communal appellations counted on their village-level vines only.
     for denom in d.get("premiers_crus") or []:
-        mask = v._app == ts.fold(denom)
+        # Champagne: a premier cru is a commune, stored in premier_cru (ADR 0024)
+        mask = (v._app == ts.fold(denom)) | ((v._pc == ts.fold(denom)) & (v.cru_level == "premier_cru"))
         village_app = re.split(r"(?i)\s*premier cru", denom)[0].strip()
         if re.sub(r"(?i)premier cru", "", denom).strip() == village_app:
             # the "<village> premier cru" umbrella: every premier cru of the village
@@ -728,6 +918,10 @@ def build_domains(v: gpd.GeoDataFrame, raw: list[dict]) -> list[dict]:
     v["_cru"] = v.grand_cru.map(lambda c: ts.fold(c) if isinstance(c, str) else None)
     v["_app"] = v.appellation.map(lambda c: ts.fold(c) if isinstance(c, str) else None)
     v["_village"] = v.village.map(lambda c: ts.fold(c) if isinstance(c, str) else None)
+    v["_pc"] = v.premier_cru.map(lambda c: ts.fold(c) if isinstance(c, str) else None)
+    # Champagne: commune_name is the historic cru (Mareuil-sur-Aÿ), a domain may
+    # give the commune nouvelle (Aÿ-Champagne)
+    v["_com2"] = v["commune_actuelle"].fillna("").map(_norm) if "commune_actuelle" in v else v._com
     rp = v.representative_point()
     xy = gpd.GeoSeries(gpd.points_from_xy([d["lon"] for d in located], [d["lat"] for d in located]),
                        crs=4326).to_crs(L93)
@@ -740,7 +934,11 @@ def build_domains(v: gpd.GeoDataFrame, raw: list[dict]) -> list[dict]:
 
         communes = d.get("communes") or ([d["commune"]] if d.get("commune") else [])
         # the rest: village and regional vines of the communes (no grand / premier cru)
-        rest = v[v._com.isin({_norm(c) for c in communes}) & v.cru_level.isin(("village", "regional"))]
+        in_communes = v._com.isin({_norm(c) for c in communes}) | v._com2.isin({_norm(c) for c in communes})
+        rest = v[in_communes & v.cru_level.isin(("village", "regional"))]
+        if communes and rest.empty and R.id in ("champagne", "rhone"):
+            # communes entirely in crus (Châteauneuf, Avize…): the rest at their average (mode op B6)
+            rest = v[in_communes]
         if communes and rest.empty:
             print(f"  ! {d['id']} : aucune vigne village / régionale dans {communes}")
         rest_sun = ts.weighted_mean(rest.score_sun, rest.area_ha)
@@ -856,8 +1054,42 @@ def domain_rows(domains: list[dict]) -> list[dict]:
 def _request(method: str, url: str, key: str, body: object | None = None) -> None:
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, headers=_headers(key), method=method)
-    with urllib.request.urlopen(req, timeout=600, context=SSL_CTX) as r:
-        r.read()
+    _send(req, method, url, lambda r: r.read())
+
+
+def _send(req: urllib.request.Request, method: str, url: str, read: Callable) -> object:
+    """Send with three retries on 5xx (statement timeouts come and go while the
+    database settles after a large delete, mode op B9); print PostgREST's reason."""
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=600, context=SSL_CTX) as r:
+                return read(r)
+        except urllib.error.HTTPError as exc:
+            print(f"  ! {method} {url.split('/rest/v1/')[-1][:120]} → {exc.code} {exc.read()[:400]!r}",
+                  file=sys.stderr)
+            if exc.code < 500 or attempt == 3:
+                raise
+            time.sleep(20 * (attempt + 1))
+    raise RuntimeError("unreachable")
+
+
+def _delete(base: str, key: str, table: str, where: str, batch: int = 300) -> None:
+    """DELETE ``table?where`` in batches of ids: a single DELETE of 70 000 vine
+    plots hits the PostgREST statement timeout (57014, mode op B9)."""
+    # No order=id: sorting made Postgres walk the primary key of the whole
+    # table and time out. Take any page of matching ids until none is left.
+    total = 0
+    while True:
+        req = urllib.request.Request(f"{base}/{table}?select=id&{where}&limit=3000", headers=_headers(key))
+        ids = [r["id"] for r in _send(req, "GET", f"{base}/{table}", json.load)]
+        if not ids:
+            break
+        for i in range(0, len(ids), batch):
+            chunk = ",".join(f'"{x}"' for x in ids[i:i + batch])
+            _request("DELETE", f"{base}/{table}?id=in.({urllib.parse.quote(chunk)})", key)
+        total += len(ids)
+    if total:
+        print(f"  {table} : {total} lignes supprimées ({where})")
 
 
 def _get_rows(url: str, key: str, path: str, page: int = 1000) -> list[dict]:
@@ -865,8 +1097,7 @@ def _get_rows(url: str, key: str, path: str, page: int = 1000) -> list[dict]:
     while True:
         headers = {**_headers(key), "Range": f"{len(rows)}-{len(rows) + page - 1}"}
         req = urllib.request.Request(f"{url}/{path}", headers=headers)
-        with urllib.request.urlopen(req, timeout=600, context=SSL_CTX) as r:
-            batch = json.load(r)
+        batch = _send(req, "GET", f"{url}/{path}", json.load)
         rows += batch
         if len(batch) < page:
             return rows
@@ -944,7 +1175,7 @@ def _area_row(area_id: str, name: str, level: int, parent: str | None, region_ty
         "center": geometry_to_ewkt(_to_lonlat(geom.representative_point()), kind="point"),
         "zoom_min": zmin, "zoom_max": zmax, "map_visible": visible,
         "available_data_scopes": [], "provisional": False, **extra,
-        **provenance_fields("inao-parcellaire"),
+        **provenance_fields("etalab-cadastre" if R.id == "champagne" else "inao-parcellaire"),
     }
 
 
@@ -1037,6 +1268,46 @@ def build_areas_bourgogne(v: gpd.GeoDataFrame) -> list[dict]:
     return sorted(rows, key=lambda r: r["level"])
 
 
+def _sector_rows(v: gpd.GeoDataFrame, names: dict[str, str]) -> list[dict]:
+    """Region (level 1) + sectors (level 2), outlined by the footprint of their vines."""
+    rows, geoms = [], {}
+    for sec, d in v.groupby("secteur"):
+        geoms[sec] = d.geometry.buffer(150).union_all().buffer(-100)
+        rows.append(_area_row(f"{R.id}-secteur-{sec}", names[sec], 2, R.id, "subregion", geoms[sec], True, tol=40))
+    rows.insert(0, _area_row(R.id, R.name, 1, None, "region", shapely.union_all(list(geoms.values())),
+                             True, tol=100))
+    return rows
+
+
+def build_areas_rhone(v: gpd.GeoDataFrame) -> list[dict]:
+    """1 Vallée du Rhône > 2 secteur > 3 cru / Côtes du Rhône Villages nommé.
+
+    Crus take the ``grand-cru`` tier colour and named villages the
+    ``premier-cru`` one (the front labels them « Cru » / « Villages nommé »
+    in the Rhône). Côtes du Rhône, generic Villages and the satellite AOCs
+    cover whole sectors: navigation nodes only, no outline (mode op A13).
+    """
+    inao = _rhs_inao(load_inao())
+    inao["geometry"] = inao.geometry.make_valid()
+    g = inao.dissolve(by="denom", aggfunc={"app": "first", "id_app": "first", "id_denom": "first",
+                                           "rank": "max"}).reset_index()
+    rows = _sector_rows(v, RHS_SECTEURS)
+    sec_of = v.groupby("appellation").secteur.agg(lambda s: s.mode().iat[0]).to_dict()
+    for r in g.itertuples():
+        area_id = slugify(f"rhone-{r.denom}")
+        ids = {"inao_id_app": r.id_app, "inao_id_denom": r.id_denom}
+        sec = sec_of.get(r.denom)
+        parent = f"{R.id}-secteur-{sec}" if sec else R.id
+        if r.rank >= 3:
+            rows.append(_area_row(area_id, r.denom, 3, parent, "grand-cru" if r.rank == 4 else "premier-cru",
+                                  r.geometry, True, **ids))
+        else:
+            row = _area_row(area_id, r.denom, 3, R.id, "appellation", r.geometry.envelope, False, **ids)
+            row["geom"] = None
+            rows.append(row)
+    return sorted(rows, key=lambda r: r["level"])
+
+
 def lieux_dits_rows(v: gpd.GeoDataFrame) -> list[dict]:
     """Cadastral lieux-dits clipped to the planted vines (ADR 0017), never the
     whole cadastre: only planted parts reach the database."""
@@ -1072,7 +1343,7 @@ def push_lieux_dits(v: gpd.GeoDataFrame, url: str, key: str) -> int:
     base = url.rstrip("/") + "/rest/v1"
     rows = lieux_dits_rows(v)
     for d in R.departments:
-        _request("DELETE", f"{base}/wine_lieux_dits?commune_insee=like.{d}*", key)
+        _delete(base, key, "wine_lieux_dits", f"commune_insee=like.{d}*")
     _, err = upsert_rows("wine_lieux_dits", "id", rows, url, key, 200)
     print(f"table=wine_lieux_dits upserted={len(rows)} errors={err}")
     return 1 if err else 0
@@ -1087,12 +1358,12 @@ def commit(v: gpd.GeoDataFrame | None, domains: list[dict], prune: bool) -> int:
         return 1
     base = url.rstrip("/") + "/rest/v1"
     if v is not None and R.builds_areas:
-        areas = build_areas_bourgogne(v)
+        areas = globals()[R.areas](v)
         known = {a["id"] for a in areas}
         v = v.copy()
         v.loc[~v.wine_area_id.isin(known), "wine_area_id"] = None
-        _request("DELETE", f"{base}/vine_plots?root_region_id=eq.{R.id}", key)
-        _request("DELETE", f"{base}/wine_areas?root_region_id=eq.{R.id}&level=gt.1", key)
+        _delete(base, key, "vine_plots", f"root_region_id=eq.{R.id}")
+        _delete(base, key, "wine_areas", f"root_region_id=eq.{R.id}&level=gt.1", batch=50)
         w, e0 = upsert_rows("wine_areas", "id", areas, url, key, 20)
         print(f"table=wine_areas upserted={w} errors={e0}")
         if e0:
@@ -1104,7 +1375,7 @@ def commit(v: gpd.GeoDataFrame | None, domains: list[dict], prune: bool) -> int:
     print(f"table=wine_domains upserted={w} errors={e1}")
     if v is None:
         return 1 if e1 else 0
-    _request("DELETE", f"{base}/vine_plots?root_region_id=eq.{R.id}", key)
+    _delete(base, key, "vine_plots", f"root_region_id=eq.{R.id}")
     w, e2 = upsert_rows("vine_plots", "id", plot_rows(v), url, key, 500)
     print(f"table=vine_plots upserted={w} errors={e2}")
     if e1 or e2:

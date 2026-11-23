@@ -1,0 +1,1376 @@
+{
+  "generated": "2026-11-23",
+  "_aide": "Liste de producteurs de référence de Champagne (Montagne de Reims, Vallée de la Marne, Côte des Blancs, Côte de Sézanne et Montgueux, Côte des Bar) qui possèdent des vignes : surtout des récoltants-manipulants, plus quelques maisons dont les vignes en propre sont bien documentées (Bollinger, Philipponnat, Jacquesson, Krug). Compilée à la main à partir de sources publiques (sites des maisons, Wikipedia, importateurs, guides) : données informatives, source_type manual, surfaces déclarées publiquement et non vérifiées. En Champagne, un cru est une commune : grands_crus et premiers_crus donnent les noms historiques des communes classées (17 grands crus ; premiers crus sous leur nom d'avant les fusions, ex. Mareuil-sur-Aÿ, Bisseuil, Tauxières-Mutry, Vertus, Oger). villages et regionales restent vides : le reste du domaine est calculé à partir de ses communes. Champs : surface_ha (surface totale en propre déclarée, milieu de fourchette si les sources divergent), communes (où sont les vignes, nom officiel actuel INSEE : Aÿ-Champagne pour Aÿ, Bisseuil et Mareuil-sur-Aÿ ; Blancs-Coteaux pour Vertus et Oger ; Val de Livre pour Louvois et Tauxières-Mutry ; Vallées en Champagne pour Saint-Agnan), lieux_dits (parcelles ou clos connus du producteur) et lieux_dits_cadastre (commune + nom(s) exact(s) du lieu-dit au cadastre Etalab, uniquement quand ils ont été vérifiés ; pour une commune nouvelle, une seconde entrée au nom de l'ancienne commune est donnée), surfaces_ha (surface d'un cru ou d'un lieu-dit quand une source la publie), coord_precision (commune = centre de la commune actuelle du chai), certification (bio, biodynamie ou null ; mode de culture déclaré, certification non vérifiée), confidence (haute, moyenne, basse).",
+  "domaines": [
+    {
+      "id": "egly-ouriet",
+      "name": "Champagne Egly-Ouriet",
+      "commune": "Ambonnay",
+      "insee": "51007",
+      "lat": 49.0926,
+      "lon": 4.1778,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "~10 ha de grands crus à Ambonnay (majoritaire), Bouzy et Verzenay (Gault&Millau, Bibendum) + ~2 ha de meunier en premier cru à Vrigny (cuvée Les Vignes de Vrigny, Bibendum). Totaux divergents : 12, 15,5, 17 ha selon les fiches plus anciennes ; Wine Anorak (2025) indique 20 ha après des achats récents, retenus. Des vignes à Trigny (non classé) sont citées par Gault&Millau (7 ha) et d'autres (3,25 ha) : commune incluse, surface non retenue. Lieu-dit Les Crayères (Ambonnay) = cuvée Blanc de Noirs Vieilles Vignes.",
+      "grands_crus": [
+        "Ambonnay",
+        "Bouzy",
+        "Verzenay"
+      ],
+      "premiers_crus": [
+        "Vrigny"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Ambonnay",
+        "Bouzy",
+        "Verzenay",
+        "Vrigny",
+        "Trigny"
+      ],
+      "lieux_dits": [
+        "Les Crayères"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Crayères": [
+          {
+            "commune": "Ambonnay",
+            "cadastre": [
+              "LES CRAYÈRES"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {
+        "Vrigny": 2
+      },
+      "certification": null,
+      "sources": [
+        "https://fr.gaultmillau.com/en/wineries/egly-ouriet",
+        "https://www.bibendum.com.au/pages/egly-ouriet",
+        "https://wineanorak.com/2025/01/13/egly-ouriet-stunning-grower-champagnes-from-ambonnay/",
+        "https://frankfissette.squarespace.com/blog-domeinen-streken-wijnen/2023/11/14/champagne-egly-ouriet"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "paul-bara",
+      "name": "Champagne Paul Bara",
+      "commune": "Bouzy",
+      "insee": "51079",
+      "lat": 49.0861,
+      "lon": 4.1297,
+      "coord_precision": "commune",
+      "surface_ha": 11,
+      "surface_note": "11 ha, tous dans le grand cru de Bouzy (Gault&Millau, Kermit Lynch, Wine Scholar Guild) ; ~9,5 ha de pinot noir et 1,5 ha de chardonnay.",
+      "grands_crus": [
+        "Bouzy"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Bouzy"
+      ],
+      "surfaces_ha": {
+        "Bouzy": 11
+      },
+      "certification": null,
+      "sources": [
+        "https://fr.gaultmillau.com/en/wineries/paul-bara",
+        "https://kermitlynch.com/files/champagne-paul-bara.pdf",
+        "https://www.winescholarguild.com/producer-guide/france/champagne/1649-paul-bara"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "vilmart",
+      "name": "Champagne Vilmart & Cie",
+      "commune": "Rilly-la-Montagne",
+      "insee": "51461",
+      "lat": 49.1621,
+      "lon": 4.048,
+      "coord_precision": "commune",
+      "surface_ha": 11,
+      "surface_note": "11 ha, tous en premier cru, essentiellement à Rilly-la-Montagne avec quelques parcelles à Villers-Allerand (Decanter, Skurnik). Le Cœur de Cuvée et le Grand Cellier d'Or viennent du lieu-dit Les Blanches Voies (Rilly) ; une source y donne 5 ha (sur 15) non recoupés, donc non retenus. Culture « organique » déclarée, HVE ; pas de certification bio confirmée.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Rilly-la-Montagne",
+        "Villers-Allerand"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Rilly-la-Montagne",
+        "Villers-Allerand"
+      ],
+      "lieux_dits": [
+        "Les Blanches Voies"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Blanches Voies": [
+          {
+            "commune": "Rilly-la-Montagne",
+            "cadastre": [
+              "LES BLANCHES VOIES",
+              "LES HAUTES BLANCHES VOIES"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.decanter.com/wine/producer-profiles/grower-champagne-vilmart-cie-270576",
+        "https://www.skurnik.com/producer/vilmart-cie",
+        "https://www.skurnik.com/vilmart-wine-first-then-champagne/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "marguet",
+      "name": "Champagne Marguet",
+      "commune": "Ambonnay",
+      "insee": "51007",
+      "lat": 49.0926,
+      "lon": 4.1778,
+      "coord_precision": "commune",
+      "surface_ha": 8,
+      "surface_note": "~8 ha : 7,30 ha à Ambonnay et 0,70 ha à Bouzy (fiche importateur). Lieux-dits vinifiés à part : Les Crayères, Les Saints Rémys, Les Beurys, La Grande Ruelle (Ambonnay), Les Loges et Les Hannepés (Bouzy). Biodynamie depuis 2009, certifications Ecocert et Demeter (dates divergentes selon les sources).",
+      "grands_crus": [
+        "Ambonnay",
+        "Bouzy"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Ambonnay",
+        "Bouzy"
+      ],
+      "lieux_dits": [
+        "Les Crayères",
+        "Les Saints Rémys",
+        "Les Beurys",
+        "La Grande Ruelle",
+        "Les Loges",
+        "Les Hannepés"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Crayères": [
+          {
+            "commune": "Ambonnay",
+            "cadastre": [
+              "LES CRAYÈRES"
+            ]
+          }
+        ],
+        "Les Saints Rémys": [
+          {
+            "commune": "Ambonnay",
+            "cadastre": [
+              "LES SAINTS RÉMYS"
+            ]
+          }
+        ],
+        "Les Beurys": [
+          {
+            "commune": "Ambonnay",
+            "cadastre": [
+              "LES BEURYS"
+            ]
+          }
+        ],
+        "La Grande Ruelle": [
+          {
+            "commune": "Ambonnay",
+            "cadastre": [
+              "LA GRANDE RUELLE"
+            ]
+          }
+        ],
+        "Les Loges": [
+          {
+            "commune": "Bouzy",
+            "cadastre": [
+              "LES LOGES"
+            ]
+          }
+        ],
+        "Les Hannepés": [
+          {
+            "commune": "Bouzy",
+            "cadastre": [
+              "LES HANNEPES",
+              "LE BAS DES HANNEPÉS"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {
+        "Ambonnay": 7.3,
+        "Bouzy": 0.7
+      },
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.winescholarguild.com/producer-guide/france/champagne/1684-marguet",
+        "https://www.leaandsandeman.co.uk/wine/2020-AMBONNAY-Grand-Cru-Champagne-Marguet-106077-00.html",
+        "https://www.thewinecollective.com.au/collections/benoit-marguet",
+        "https://fr.gaultmillau.com/en/wineries/marguet"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "bereche",
+      "name": "Champagne Bérêche et Fils",
+      "commune": "Ludes",
+      "insee": "51333",
+      "lat": 49.1595,
+      "lon": 4.0841,
+      "coord_precision": "commune",
+      "surface_ha": 11,
+      "surface_note": "9 à 14 ha selon les sources (11 ha chez Idealwine et d'autres, milieu retenu). Cœur à Ludes (premier cru), avec Ormes (Petite Montagne, non classé) et Mareuil-le-Port (vallée de la Marne, non classé). Idealwine donne ~3 ha par site, trop arrondi pour être retenu.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Ludes"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Ludes",
+        "Ormes",
+        "Mareuil-le-Port"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.idealwine.net/bereche-fils-champagnes-de-terroir-depuis-1847/",
+        "https://www.rarewineco.com/trade/bereche-champagne",
+        "https://thefinestbubble.com/news-and-reviews/bereche-et-fils-top-grower-turns-iconic-domaine/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "eric-rodez",
+      "name": "Champagne Eric Rodez",
+      "commune": "Ambonnay",
+      "insee": "51007",
+      "lat": 49.0926,
+      "lon": 4.1778,
+      "coord_precision": "commune",
+      "surface_ha": 6.12,
+      "surface_note": "6,12 ha à Ambonnay en 35 parcelles (fiche producteur relayée par les importateurs) ; 6 à 6,5 ha ailleurs (4 ha de pinot noir, 2 ha de chardonnay). Une fiche (9 + 7 ha) semble inclure des vignes familiales et n'est pas retenue. La Grande Ruelle est une cuvée parcellaire de pinot noir.",
+      "grands_crus": [
+        "Ambonnay"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Ambonnay"
+      ],
+      "lieux_dits": [
+        "La Grande Ruelle"
+      ],
+      "lieux_dits_cadastre": {
+        "La Grande Ruelle": [
+          {
+            "commune": "Ambonnay",
+            "cadastre": [
+              "LA GRANDE RUELLE"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {
+        "Ambonnay": 6.12
+      },
+      "certification": null,
+      "sources": [
+        "https://www.premiumgrandscrus.com/en/123_champagne-eric-rodez",
+        "https://leaandsandeman.co.uk/wine-producer/Champagne-Rodez-2710-04.html",
+        "https://www.charlesnealselections.com/eric-rodez.html",
+        "https://www.thatcherswine.com/collections/champagne/products/2016-eric-rodez-la-grande-ruelle-pinot-noir-grand-cru-ambonnay"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "benoit-lahaye",
+      "name": "Champagne Benoît Lahaye",
+      "commune": "Bouzy",
+      "insee": "51079",
+      "lat": 49.0861,
+      "lon": 4.1297,
+      "coord_precision": "commune",
+      "surface_ha": 4.8,
+      "surface_note": "4,8 ha : Bouzy 3 ha (3,2 ailleurs), Ambonnay 1 ha, Tauxières-Mutry 0,6 ha (importateurs, Wikipedia) ; 4,5 ha dans d'autres fiches. Tauxières-Mutry fait partie de la commune nouvelle Val de Livre. Bio certifié (2003 ou 2007 selon les sources), biodynamie certifiée en 2010.",
+      "grands_crus": [
+        "Bouzy",
+        "Ambonnay"
+      ],
+      "premiers_crus": [
+        "Tauxières-Mutry"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Bouzy",
+        "Ambonnay",
+        "Val de Livre"
+      ],
+      "surfaces_ha": {
+        "Bouzy": 3,
+        "Ambonnay": 1,
+        "Tauxières-Mutry": 0.6
+      },
+      "certification": "biodynamie",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Beno%C3%AEt_Lahaye",
+        "https://www.charlesnealselections.com/benoit-lahaye.html",
+        "https://www.decanter.com/wine/producer-profiles/grower-champagne-benoit-lahaye-270572"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "savart",
+      "name": "Champagne Frédéric Savart",
+      "commune": "Écueil",
+      "insee": "51225",
+      "lat": 49.1791,
+      "lon": 3.9528,
+      "coord_precision": "commune",
+      "surface_ha": 4,
+      "surface_note": "~4 ha : ~3 ha à Écueil et ~1 ha à Villers-aux-Nœuds, deux premiers crus ; ~90 % de pinot noir (Vinography, Wine With Seth). Une fiche commerciale donne 6 ha, non recoupée.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Écueil",
+        "Villers-aux-Nœuds"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Écueil",
+        "Villers-aux-Nœuds"
+      ],
+      "surfaces_ha": {
+        "Écueil": 3,
+        "Villers-aux-Nœuds": 1
+      },
+      "certification": null,
+      "sources": [
+        "https://www.vinography.com/2015/08/a_persistent_personality_the_c",
+        "https://www.winewithseth.com/winewiki/savart/",
+        "https://www.callmewine.com/en/frederic-savart-B1700.htm"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "chartogne-taillet",
+      "name": "Champagne Chartogne-Taillet",
+      "commune": "Merfy",
+      "insee": "51362",
+      "lat": 49.293,
+      "lon": 3.9552,
+      "coord_precision": "commune",
+      "surface_ha": 11.68,
+      "surface_note": "11,68 ha (CellarTracker) ; 11 ha chez Decanter. Merfy (massif de Saint-Thierry, non classé) ; CellarTracker cite aussi Chenay et Saint-Thierry, non retenus faute de recoupement. Lieux-dits : Les Barres (meunier franc de pied, 1952), Chemin de Reims (un peu plus d'1 ha, chardonnay) ; Les Orizeaux non trouvé au cadastre de Merfy.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Merfy"
+      ],
+      "lieux_dits": [
+        "Les Barres",
+        "Chemin de Reims"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Barres": [
+          {
+            "commune": "Merfy",
+            "cadastre": [
+              "LES BARRES"
+            ]
+          }
+        ],
+        "Chemin de Reims": [
+          {
+            "commune": "Merfy",
+            "cadastre": [
+              "LE CHEMIN DE REIMS"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.cellartracker.com/m/articles/producer/3409",
+        "https://www.decanter.com/wine/producer-profiles/grower-champagne-chartogne-taillet-270567/",
+        "https://flatiron-wines.com/blogs/producers/chartogne-taillet"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "jerome-prevost",
+      "name": "Champagne Jérôme Prévost (La Closerie)",
+      "commune": "Gueux",
+      "insee": "51282",
+      "lat": 49.2534,
+      "lon": 3.9097,
+      "coord_precision": "commune",
+      "surface_ha": 2.2,
+      "surface_note": "2,2 ha (Gault&Millau), ~2 ha ailleurs, concentrés dans le lieu-dit Les Béguines à Gueux (non classé), presque tout en meunier.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Gueux"
+      ],
+      "lieux_dits": [
+        "Les Béguines"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Béguines": [
+          {
+            "commune": "Gueux",
+            "cadastre": [
+              "LES BÉGUINES"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://fr.gaultmillau.com/en/wineries/la-closerie",
+        "https://www.winewithseth.com/winewiki/jerome-prevost/",
+        "https://cdn.winescholarguild.com/producer-guide/france/champagne/1645-jerome-prevost"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "bollinger",
+      "name": "Champagne Bollinger",
+      "commune": "Aÿ-Champagne",
+      "insee": "51030",
+      "lat": 49.0561,
+      "lon": 4.0414,
+      "coord_precision": "commune",
+      "surface_ha": 179,
+      "surface_note": "179 ha déclarés par la maison (178 ailleurs), dont ~85 % en grands et premiers crus. Surfaces par village de Wikipedia (anciennes, somme ~142 ha) : Aÿ 22, Bouzy 0,25, Louvois 15,7, Verzenay 17, Avenay-Val-d'Or 15, Bisseuil 5,4, Cuis 21,15, Grauves 6,6, Mutigny 3,95, Tauxières-Mutry 17,95 ; Champvoisy (17 ha, meunier) non classé. Louvois et Tauxières-Mutry sont dans Val de Livre ; Aÿ et Bisseuil dans Aÿ-Champagne.",
+      "grands_crus": [
+        "Aÿ",
+        "Bouzy",
+        "Louvois",
+        "Verzenay"
+      ],
+      "premiers_crus": [
+        "Avenay-Val-d'Or",
+        "Bisseuil",
+        "Cuis",
+        "Grauves",
+        "Mutigny",
+        "Tauxières-Mutry"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Aÿ-Champagne",
+        "Bouzy",
+        "Val de Livre",
+        "Verzenay",
+        "Avenay-Val-d'Or",
+        "Cuis",
+        "Grauves",
+        "Mutigny",
+        "Champvoisy"
+      ],
+      "surfaces_ha": {
+        "Aÿ": 22,
+        "Bouzy": 0.25,
+        "Louvois": 15.7,
+        "Verzenay": 17,
+        "Avenay-Val-d'Or": 15,
+        "Bisseuil": 5.4,
+        "Cuis": 21.15,
+        "Grauves": 6.6,
+        "Mutigny": 3.95,
+        "Tauxières-Mutry": 17.95
+      },
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Bollinger",
+        "https://www.champagne-bollinger.com/en/the-house/",
+        "https://www.decanter.com/premium/champagne-bollinger-producer-profile-461814"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "philipponnat",
+      "name": "Champagne Philipponnat",
+      "commune": "Aÿ-Champagne",
+      "insee": "51030",
+      "lat": 49.0561,
+      "lon": 4.0414,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "~20 ha à Aÿ, Mareuil-sur-Aÿ, Avenay-Val-d'Or et Mutigny (Millesima, Decanter) ; 18 ha dans d'autres fiches. Clos des Goisses : 5,83 ha selon la maison (5,5 ha dans la presse, 5,40 ha chez Gault&Millau), clos muré, pente de 45°, à Mareuil-sur-Aÿ (lieu-dit cadastral Les Goisses, plus vaste que le clos). Maison à Mareuil-sur-Aÿ, aujourd'hui Aÿ-Champagne.",
+      "grands_crus": [
+        "Aÿ"
+      ],
+      "premiers_crus": [
+        "Mareuil-sur-Aÿ",
+        "Avenay-Val-d'Or",
+        "Mutigny"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Aÿ-Champagne",
+        "Avenay-Val-d'Or",
+        "Mutigny"
+      ],
+      "lieux_dits": [
+        "Clos des Goisses"
+      ],
+      "lieux_dits_cadastre": {
+        "Clos des Goisses": [
+          {
+            "commune": "Aÿ-Champagne",
+            "cadastre": [
+              "LES   GOISSES"
+            ]
+          },
+          {
+            "commune": "Mareuil-sur-Aÿ",
+            "cadastre": [
+              "LES   GOISSES"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {
+        "Clos des Goisses": 5.83
+      },
+      "certification": null,
+      "sources": [
+        "https://www.millesima-usa.com/producer-philipponnat.html",
+        "https://www.decanter.com/premium/philipponnat-producer-profile-446810/",
+        "https://www.jancisrobinson.com/articles/clos-des-goisses-champagne-1991-philipponnat",
+        "https://fr.gaultmillau.com/en/news/philipponnat--l-aristocratie-du-champagne-"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "gaston-chiquet",
+      "name": "Champagne Gaston Chiquet",
+      "commune": "Dizy",
+      "insee": "51210",
+      "lat": 49.0699,
+      "lon": 3.9716,
+      "coord_precision": "commune",
+      "surface_ha": 23,
+      "surface_note": "~23 ha (22 dans quelques fiches) à Dizy, Aÿ, Mareuil-sur-Aÿ et Hautvillers ; le Club Trésors de Champagne cite aussi Crugny et Nanteuil-la-Forêt (non classés). Cumières citée par une seule source, non retenue. Blanc de Blancs d'Aÿ grand cru, rare chardonnay d'Aÿ.",
+      "grands_crus": [
+        "Aÿ"
+      ],
+      "premiers_crus": [
+        "Dizy",
+        "Mareuil-sur-Aÿ",
+        "Hautvillers"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Dizy",
+        "Aÿ-Champagne",
+        "Hautvillers",
+        "Crugny",
+        "Nanteuil-la-Forêt"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gaston_Chiquet",
+        "https://www.skurnik.com/producer/gaston-chiquet/",
+        "https://www.clubtresorsdechampagne.com/en/?p=6256"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "jacquesson",
+      "name": "Champagne Jacquesson",
+      "commune": "Dizy",
+      "insee": "51210",
+      "lat": 49.0699,
+      "lon": 3.9716,
+      "coord_precision": "commune",
+      "surface_ha": 33,
+      "surface_note": "30 ha (Gault&Millau 2020, Idealwine) à 36 ha (Wine Scholar Guild, Wine With Seth) : milieu retenu. Vignes à Dizy, Aÿ, Mareuil-sur-Aÿ, Avize. Lieux-dits (site de la maison) : Corne Bautray à Dizy 1,33 ha, Champ Caïn à Avize 1,30 ha, Vauzelle Terme à Aÿ (surface non publiée). Environ deux tiers en bio (non certifié pour l'ensemble).",
+      "grands_crus": [
+        "Aÿ",
+        "Avize"
+      ],
+      "premiers_crus": [
+        "Dizy",
+        "Mareuil-sur-Aÿ"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Dizy",
+        "Aÿ-Champagne",
+        "Avize"
+      ],
+      "lieux_dits": [
+        "Corne Bautray",
+        "Champ Caïn",
+        "Vauzelle Terme"
+      ],
+      "lieux_dits_cadastre": {
+        "Corne Bautray": [
+          {
+            "commune": "Dizy",
+            "cadastre": [
+              "CORNE BAUTRAY"
+            ]
+          }
+        ],
+        "Champ Caïn": [
+          {
+            "commune": "Avize",
+            "cadastre": [
+              "LE CHAMP CAIN"
+            ]
+          }
+        ],
+        "Vauzelle Terme": [
+          {
+            "commune": "Aÿ-Champagne",
+            "cadastre": [
+              "VAUZELLE  TERME"
+            ]
+          },
+          {
+            "commune": "Aÿ",
+            "cadastre": [
+              "VAUZELLE  TERME"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {
+        "Corne Bautray": 1.33,
+        "Champ Caïn": 1.3
+      },
+      "certification": null,
+      "sources": [
+        "https://champagnejacquesson.com/en/mapping",
+        "https://fr.gaultmillau.com/en/wineries/jacquesson",
+        "https://www.winewithseth.com/winewiki/jacquesson/",
+        "https://www.winescholarguild.com/producer-guide/france/champagne/1599-jacquesson-dizy"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "georges-laval",
+      "name": "Champagne Georges Laval",
+      "commune": "Cumières",
+      "insee": "51202",
+      "lat": 49.0715,
+      "lon": 3.9214,
+      "coord_precision": "commune",
+      "surface_ha": 3.5,
+      "surface_note": "2 à 4 ha selon les sources ; ~3,5 ha (Vins et Millésimes), surtout à Cumières (premier cru), avec des parcelles à Chambrecy (vallée de l'Ardre), Damery et Hautvillers. Bio depuis 1971, certifié Ecocert. Cuvée parcellaire Les Chênes (Cumières) : lieu-dit non trouvé tel quel au cadastre, non retenu.",
+      "grands_crus": [],
+      "premiers_crus": [
+        "Cumières",
+        "Hautvillers"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Cumières",
+        "Hautvillers",
+        "Damery",
+        "Chambrecy"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://www.vinsetmillesimes.com/en/7754-georges-laval",
+        "https://organicwinefind.com/organic-vineyards/champagne-georges-laval/",
+        "https://fr.gaultmillau.com/en/wineries/georges-laval"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "tarlant",
+      "name": "Champagne Tarlant",
+      "commune": "Œuilly",
+      "insee": "51410",
+      "lat": 49.0599,
+      "lon": 3.7936,
+      "coord_precision": "commune",
+      "surface_ha": 14,
+      "surface_note": "14 ha en 55 parcelles sur Œuilly, Boursault, Saint-Agnan et Celles-lès-Condé (Idealwine, Bowler) ; 13 ha chez Decanter. Saint-Agnan est dans la commune nouvelle Vallées en Champagne. La Vigne d'Antan : chardonnay franc de pied du lieu-dit Les Sables (Œuilly).",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Œuilly",
+        "Boursault",
+        "Vallées en Champagne",
+        "Celles-lès-Condé"
+      ],
+      "lieux_dits": [
+        "Les Sables"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Sables": [
+          {
+            "commune": "Œuilly",
+            "cadastre": [
+              "LES SABLES"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://idealwine.com/en/buy-wine/domain-Tarlant",
+        "https://www.bowlerwine.com/producer/tarlant",
+        "https://www.decanter.com/wine/producer-profiles/grower-champagne-tarlant-oeuilly-270546/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "jacques-selosse",
+      "name": "Champagne Jacques Selosse",
+      "commune": "Avize",
+      "insee": "51029",
+      "lat": 48.9724,
+      "lon": 4.0056,
+      "coord_precision": "commune",
+      "surface_ha": 8.3,
+      "surface_note": "~8,3 ha (7 à 8,8 selon les sources) en une cinquantaine de parcelles : chardonnay à Avize, Cramant, Oger et Le Mesnil-sur-Oger ; pinot noir à Aÿ, Ambonnay et Mareuil-sur-Aÿ. Lieux-dits : Le Bout du Clos (Ambonnay), Chemin de Châlons (Cramant), Les Carelles (Le Mesnil), La Côte Faron (Aÿ), Sous le Mont (Mareuil-sur-Aÿ). Pratiques proches de la biodynamie, sans certification revendiquée.",
+      "grands_crus": [
+        "Avize",
+        "Cramant",
+        "Oger",
+        "Le Mesnil-sur-Oger",
+        "Aÿ",
+        "Ambonnay"
+      ],
+      "premiers_crus": [
+        "Mareuil-sur-Aÿ"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Avize",
+        "Cramant",
+        "Blancs-Coteaux",
+        "Le Mesnil-sur-Oger",
+        "Aÿ-Champagne",
+        "Ambonnay"
+      ],
+      "lieux_dits": [
+        "Le Bout du Clos",
+        "Chemin de Châlons",
+        "Les Carelles",
+        "La Côte Faron",
+        "Sous le Mont"
+      ],
+      "lieux_dits_cadastre": {
+        "Le Bout du Clos": [
+          {
+            "commune": "Ambonnay",
+            "cadastre": [
+              "LE BOUT DU CLOS"
+            ]
+          }
+        ],
+        "Chemin de Châlons": [
+          {
+            "commune": "Cramant",
+            "cadastre": [
+              "LE CHEMIN DE CHALONS"
+            ]
+          }
+        ],
+        "Les Carelles": [
+          {
+            "commune": "Le Mesnil-sur-Oger",
+            "cadastre": [
+              "LES CARELLES"
+            ]
+          }
+        ],
+        "La Côte Faron": [
+          {
+            "commune": "Aÿ-Champagne",
+            "cadastre": [
+              "LA   CÔTE   FARON"
+            ]
+          },
+          {
+            "commune": "Aÿ",
+            "cadastre": [
+              "LA   CÔTE   FARON"
+            ]
+          }
+        ],
+        "Sous le Mont": [
+          {
+            "commune": "Aÿ-Champagne",
+            "cadastre": [
+              "SOUS   LE   MONT"
+            ]
+          },
+          {
+            "commune": "Mareuil-sur-Aÿ",
+            "cadastre": [
+              "SOUS   LE   MONT"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jacques_Selosse",
+        "https://www.rarewineco.com/media/183344/selosse-jacques-tech-sheet.pdf",
+        "https://www.vinsetmillesimes.com/en/blog/post/the-selosse-estate-an-exceptional-growers-champagne.html",
+        "https://wineanorak.com/?p=2445"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "agrapart",
+      "name": "Champagne Agrapart & Fils",
+      "commune": "Avize",
+      "insee": "51029",
+      "lat": 48.9724,
+      "lon": 4.0056,
+      "coord_precision": "commune",
+      "surface_ha": 12,
+      "surface_note": "~12 ha en une soixantaine de parcelles, surtout dans les grands crus d'Avize, Cramant, Oiry et Oger (FRW, Bibendum) ; 9,5 à 10 ha dans des fiches plus anciennes. Vénus vient de La Fosse aux Pourceaux à Avize (0,3 ou 0,6 ha selon les sources, non retenu) ; L'Avizoise des Robarts et de La Voie d'Épernay (Avize).",
+      "grands_crus": [
+        "Avize",
+        "Cramant",
+        "Oiry",
+        "Oger"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Avize",
+        "Cramant",
+        "Oiry",
+        "Blancs-Coteaux"
+      ],
+      "lieux_dits": [
+        "La Fosse aux Pourceaux",
+        "Les Robarts"
+      ],
+      "lieux_dits_cadastre": {
+        "La Fosse aux Pourceaux": [
+          {
+            "commune": "Avize",
+            "cadastre": [
+              "LA FOSSE AUX POURCEAUX"
+            ]
+          }
+        ],
+        "Les Robarts": [
+          {
+            "commune": "Avize",
+            "cadastre": [
+              "LES ROBARTS"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.frw.co.uk/editorial/champagne-agrapart-pioneer-of-terroir-expression",
+        "https://www.bibendum.com.au/pages/champagne-agrapart",
+        "https://en.wikipedia.org/wiki/Pascal_Agrapart"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "pierre-peters",
+      "name": "Champagne Pierre Péters",
+      "commune": "Le Mesnil-sur-Oger",
+      "insee": "51367",
+      "lat": 48.9404,
+      "lon": 4.0183,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "~20 ha (Decanter ; 19 ha chez Wine With Seth), dont ~16 ha dans la Côte des Blancs : Le Mesnil-sur-Oger et Oger surtout, plus Cramant et Avize ; petites parcelles en Sézanne et Côte des Bar (communes non précisées). Les Chétillons (Le Mesnil) : ~2,5 ha en trois parcelles de vieilles vignes acquises en 1930 ; au cadastre, lieux-dits Chétillon et Chetillon de Haut.",
+      "grands_crus": [
+        "Le Mesnil-sur-Oger",
+        "Oger",
+        "Cramant",
+        "Avize"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Le Mesnil-sur-Oger",
+        "Blancs-Coteaux",
+        "Cramant",
+        "Avize"
+      ],
+      "lieux_dits": [
+        "Les Chétillons"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Chétillons": [
+          {
+            "commune": "Le Mesnil-sur-Oger",
+            "cadastre": [
+              "CHÉTILLON",
+              "CHETILLON DE HAUT"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {
+        "Les Chétillons": 2.5
+      },
+      "certification": null,
+      "sources": [
+        "https://www.decanter.com/wine/producer-profiles/grower-champagne-pierre-peters-270583",
+        "https://www.decanter.com/premium/pierre-peters-producer-profile-463873/",
+        "https://www.winewithseth.com/winewiki/pierre-peters/",
+        "https://quillandpad.com/?p=62035"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "larmandier-bernier",
+      "name": "Champagne Larmandier-Bernier",
+      "commune": "Blancs-Coteaux",
+      "insee": "51612",
+      "lat": 48.9227,
+      "lon": 3.9714,
+      "coord_precision": "commune",
+      "surface_ha": 19,
+      "surface_note": "~19 ha selon le site du domaine (15 à 18 ha dans des fiches plus anciennes), surtout à Vertus (premier cru), plus Cramant, Chouilly, Oger et Avize (grands crus). Vertus et Oger font partie de Blancs-Coteaux. Bio depuis 1992, biodynamie depuis 1999-2000.",
+      "grands_crus": [
+        "Cramant",
+        "Chouilly",
+        "Oger",
+        "Avize"
+      ],
+      "premiers_crus": [
+        "Vertus"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Blancs-Coteaux",
+        "Cramant",
+        "Chouilly",
+        "Avize"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Larmandier-Bernier",
+        "https://wineanorak.com/2020/02/12/champagne-larmandier-bernier/",
+        "https://www.winewithseth.com/winewiki/larmandier-bernier/",
+        "https://fr.gaultmillau.com/en/wineries/larmandier-bernier"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "pierre-gimonnet",
+      "name": "Champagne Pierre Gimonnet & Fils",
+      "commune": "Cuis",
+      "insee": "51200",
+      "lat": 48.9989,
+      "lon": 3.967,
+      "coord_precision": "commune",
+      "surface_ha": 29.4,
+      "surface_note": "29,4 ha (Gault&Millau, Skurnik ; 28 ha au Club Trésors), tout en chardonnay. Skurnik : 13,5 ha à Cuis, 11 ha à Cramant et Chouilly (non ventilés), 1 ha à Oger, 2 ha à Vertus.",
+      "grands_crus": [
+        "Cramant",
+        "Chouilly",
+        "Oger"
+      ],
+      "premiers_crus": [
+        "Cuis",
+        "Vertus"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Cuis",
+        "Cramant",
+        "Chouilly",
+        "Blancs-Coteaux"
+      ],
+      "surfaces_ha": {
+        "Cuis": 13.5,
+        "Oger": 1,
+        "Vertus": 2
+      },
+      "certification": null,
+      "sources": [
+        "https://www.skurnik.com/producer/pierre-gimonnet-fils/",
+        "https://fr.gaultmillau.com/fr/wineries/pierre-gimonnet-et-fils",
+        "https://wineanorak.com/?p=1924"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "krug",
+      "name": "Champagne Krug",
+      "commune": "Reims",
+      "insee": "51454",
+      "lat": 49.2535,
+      "lon": 4.0551,
+      "coord_precision": "commune",
+      "surface_ha": 20,
+      "surface_note": "Maison de Reims qui achète l'essentiel de ses raisins ; vignes en propre 15 à 21 ha selon les sources (20 ha à Aÿ, Le Mesnil et Trépail chez une source ; Trépail non retenu). Deux clos murés documentés par la maison : Clos du Mesnil, 1,84 ha de chardonnay au Mesnil-sur-Oger (acquis en 1971), et Clos d'Ambonnay, 0,68 ha de pinot noir (acquis en 1994). Nom cadastral des clos non confirmé, donc pas de lieux_dits.",
+      "grands_crus": [
+        "Le Mesnil-sur-Oger",
+        "Ambonnay",
+        "Aÿ"
+      ],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Le Mesnil-sur-Oger",
+        "Ambonnay",
+        "Aÿ-Champagne"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.krug.com/en-gb/krug-clos-du-mesnil",
+        "https://www.krug.com/en-gb/krug-clos-dambonnay",
+        "https://www.krug.com/en-gb/craftsmanship/individuality",
+        "https://wine.sothebys.com/blogs/producer/everything-you-need-to-know-about-krug-champagne",
+        "https://www.xtrawine.com/en/wines/krug/397"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "pascal-doquet",
+      "name": "Champagne Pascal Doquet",
+      "commune": "Le Mesnil-sur-Oger",
+      "insee": "51367",
+      "lat": 48.9404,
+      "lon": 4.0183,
+      "coord_precision": "commune",
+      "surface_ha": 8.66,
+      "surface_note": "8,66 ha (Gault&Millau) : ~60 % Côte des Blancs (Le Mesnil-sur-Oger grand cru, Vertus et Bergères-lès-Vertus premiers crus, Mont Aimé) et ~40 % Côtes du Perthois près de Vitry-le-François (communes non précisées). Lieux-dits : Mont Aimé (Bergères-lès-Vertus), Champ d'Alouette (Le Mesnil). Bio certifié depuis 2010.",
+      "grands_crus": [
+        "Le Mesnil-sur-Oger"
+      ],
+      "premiers_crus": [
+        "Vertus",
+        "Bergères-lès-Vertus"
+      ],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Le Mesnil-sur-Oger",
+        "Blancs-Coteaux",
+        "Bergères-lès-Vertus"
+      ],
+      "lieux_dits": [
+        "Mont Aimé",
+        "Champ d'Alouette"
+      ],
+      "lieux_dits_cadastre": {
+        "Mont Aimé": [
+          {
+            "commune": "Bergères-lès-Vertus",
+            "cadastre": [
+              "MONT-AIMÉ",
+              "LE BAS DU MONT-AIMÉ",
+              "LE COIN DE MONT-AIME"
+            ]
+          }
+        ],
+        "Champ d'Alouette": [
+          {
+            "commune": "Le Mesnil-sur-Oger",
+            "cadastre": [
+              "LE CHAMP D'ALLOUETTE"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://fr.gaultmillau.com/en/wineries/pascal-doquet",
+        "https://www.winewithseth.com/winewiki/pascal-doquet/",
+        "https://www.tatlerasia.com/profile/pascal-doquet-le-mont-aime-premier-cru-coeur-de-terroir-2009"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "jacques-lassaigne",
+      "name": "Champagne Jacques Lassaigne",
+      "commune": "Montgueux",
+      "insee": "10248",
+      "lat": 48.2967,
+      "lon": 3.9551,
+      "coord_precision": "commune",
+      "surface_ha": 5,
+      "surface_note": "4,7 à 5,5 ha selon les sources (environ 5 ha retenus), à Montgueux (Aube, non classé) ; la maison achète aussi des raisins voisins. Le Cotet : vieilles vignes de chardonnay plantées en 1964, exposées est, haut de coteau.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Montgueux"
+      ],
+      "lieux_dits": [
+        "Le Cotet"
+      ],
+      "lieux_dits_cadastre": {
+        "Le Cotet": [
+          {
+            "commune": "Montgueux",
+            "cadastre": [
+              "LE COTET"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.decanter.com/premium/champagne-jacques-lassaigne-producer-profile-484916/",
+        "https://idealwine.com/en/buy-wine/domain-Jacques%20Lassaigne",
+        "https://www.winewithseth.com/winewiki/jacques-lassaigne/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "ulysse-collin",
+      "name": "Champagne Ulysse Collin",
+      "commune": "Congy",
+      "insee": "51163",
+      "lat": 48.8707,
+      "lon": 3.8191,
+      "coord_precision": "commune",
+      "surface_ha": 8.5,
+      "surface_note": "Départ avec ~4,2 ha repris en 2003, ~8,5 ha aujourd'hui selon Winebid (21 acres) : confiance basse. Congy (Coteaux du Petit Morin) et Barbonne-Fayel (Côte de Sézanne). Les Maillons (Barbonne-Fayel) : 2,5 ha selon la plupart des sources ; Les Pierrières (Congy, 1,2 à 1,3 ha) non trouvé au cadastre, donc non localisé.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Congy",
+        "Barbonne-Fayel"
+      ],
+      "lieux_dits": [
+        "Les Maillons"
+      ],
+      "lieux_dits_cadastre": {
+        "Les Maillons": [
+          {
+            "commune": "Barbonne-Fayel",
+            "cadastre": [
+              "LES MAILLONS"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {
+        "Les Maillons": 2.5
+      },
+      "certification": null,
+      "sources": [
+        "https://wineanorak.com/champagne/champagne_ulysse_collin.htm",
+        "https://www.bowlerwine.com/producer/collin-ulysse",
+        "https://quillandpad.com/2021/01/28/ulysse-collin-grower-champagnes-with-serious-complexity/",
+        "https://Winebid.Com/BuyWine/Producer/Ulysse-Collin/13517"
+      ],
+      "confidence": "basse"
+    },
+    {
+      "id": "cedric-bouchard",
+      "name": "Champagne Cédric Bouchard (Roses de Jeanne)",
+      "commune": "Celles-sur-Ource",
+      "insee": "10070",
+      "lat": 48.0703,
+      "lon": 4.4207,
+      "coord_precision": "commune",
+      "surface_ha": 2.9,
+      "surface_note": "Départ avec 1,37 à 1,4 ha à Celles-sur-Ource, puis ajout des ~1,5 ha de son père (Val Vilaine) : ~2,9 ha (Wine Anorak, Polaner) ; Decanter donne 1,5 ha. Cuvées parcellaires : La Haute-Lemblée (chardonnay), Creux d'Enfer (rosé), Les Ursules, Côte de Val Vilaine (pinot noir, non trouvé au cadastre de Celles).",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Celles-sur-Ource"
+      ],
+      "lieux_dits": [
+        "La Haute-Lemblée",
+        "Creux d'Enfer",
+        "Les Ursules"
+      ],
+      "lieux_dits_cadastre": {
+        "La Haute-Lemblée": [
+          {
+            "commune": "Celles-sur-Ource",
+            "cadastre": [
+              "LA HAUTE LEMBLE"
+            ]
+          }
+        ],
+        "Creux d'Enfer": [
+          {
+            "commune": "Celles-sur-Ource",
+            "cadastre": [
+              "CREUX D'ENFER"
+            ]
+          }
+        ],
+        "Les Ursules": [
+          {
+            "commune": "Celles-sur-Ource",
+            "cadastre": [
+              "LES URSULES"
+            ]
+          }
+        ]
+      },
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.polanerselections.com/?p=24887",
+        "https://www.vinography.com/2015/04/a_singular_expression_the_cham",
+        "https://www.decanter.com/wine/producer-profiles/grower-champagne-roses-de-jeanne-270594/",
+        "https://www.winewithseth.com/winewiki/cedric-bouchard/"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "marie-courtin",
+      "name": "Champagne Marie-Courtin",
+      "commune": "Polisot",
+      "insee": "10295",
+      "lat": 48.0733,
+      "lon": 4.3553,
+      "coord_precision": "commune",
+      "surface_ha": 2.5,
+      "surface_note": "2,5 ha d'un seul tenant à Polisot (Aube), surtout pinot noir. Bio certifié en 2010 (Decanter) ; pratiques biodynamiques, la certification Demeter citée par certaines sources n'est pas confirmée.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Polisot"
+      ],
+      "surfaces_ha": {},
+      "certification": "bio",
+      "sources": [
+        "https://www.decanter.com/wine/producer-profiles/grower-champagne-marie-courtin-270589/",
+        "https://www.polanerselections.com/wp-content/uploads/2021/04/Marie-Courtin-Fact-Sheet.pdf",
+        "https://www.winewithseth.com/winewiki/marie-courtin/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "drappier",
+      "name": "Champagne Drappier",
+      "commune": "Urville",
+      "insee": "10390",
+      "lat": 48.1706,
+      "lon": 4.6712,
+      "coord_precision": "commune",
+      "surface_ha": 60,
+      "surface_note": "~60 à 62 ha en propre autour d'Urville (Côte des Bar), plus ~50 ha sous contrat. Conversion bio partielle (17 à 27 ha certifiés selon les sources) ; Gault&Millau indique une certification bio depuis 2023, sans préciser la surface. Autres communes des vignes non précisées.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Urville"
+      ],
+      "surfaces_ha": {},
+      "certification": null,
+      "sources": [
+        "https://www.millesima-usa.com/blog/champagne-drappier-a-legendary-champagne-house-in-urville.html",
+        "https://wineanorak.com/2021/10/27/champagne-drappier-a-forward-thinking-champagne-house-from-the-south-of-the-region/",
+        "https://fr.gaultmillau.com/en/wineries/drappier"
+      ],
+      "confidence": "moyenne"
+    },
+    {
+      "id": "vouette-et-sorbee",
+      "name": "Champagne Vouette et Sorbée",
+      "commune": "Buxières-sur-Arce",
+      "insee": "10069",
+      "lat": 48.1359,
+      "lon": 4.4521,
+      "coord_precision": "commune",
+      "surface_ha": 5,
+      "surface_note": "5 ha à Buxières-sur-Arce et Ville-sur-Arce (six lieux-dits, répartition différente selon les sources). Biodynamie certifiée Demeter depuis 1998 ; premier millésime mis en bouteille par le domaine en 2001.",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Buxières-sur-Arce",
+        "Ville-sur-Arce"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.europeancellars.com/producer/champagne-vouette-et-sorbee/",
+        "https://fr.gaultmillau.com/en/wineries/vouette-et-sorbee",
+        "https://www.gourmethunters.com/en/winery/vouette-sorbee-987/"
+      ],
+      "confidence": "haute"
+    },
+    {
+      "id": "fleury",
+      "name": "Champagne Fleury",
+      "commune": "Courteron",
+      "insee": "10111",
+      "lat": 48.016,
+      "lon": 4.4652,
+      "coord_precision": "commune",
+      "surface_ha": 15,
+      "surface_note": "15 ha à Courteron (Côte des Bar), ~85 % pinot noir. Biodynamie depuis 1989 sur 3 ha, tout le domaine depuis 1992 (Demeter, Biodyvin). La maison achète aussi des raisins (7 à 15 ha selon les sources).",
+      "grands_crus": [],
+      "premiers_crus": [],
+      "villages": [],
+      "regionales": [],
+      "communes": [
+        "Courteron"
+      ],
+      "surfaces_ha": {},
+      "certification": "biodynamie",
+      "sources": [
+        "https://www.alliancewine.com/our-producers/champagne-fleury",
+        "https://onthetrail.klwines.com/on-the-trail-blog/2020/3/4/fleury-visit",
+        "https://www.enviedechamp.com/en/37-fleury-champagne"
+      ],
+      "confidence": "haute"
+    }
+  ]
+}

@@ -47,6 +47,7 @@ import {
   cruLabel,
   domainSelection as domainFeature,
   parseComponents,
+  areaTierLabel,
   rockFamilyLabel,
 } from "@/lib/terroir-score";
 import type {
@@ -59,14 +60,14 @@ import type {
 } from "@/lib/types";
 
 /** Regions that have a reference-domain list (ADR 0016). */
-const DOMAIN_REGIONS = ["alsace", "bourgogne"];
+const DOMAIN_REGIONS = ["alsace", "bourgogne", "rhone", "champagne"];
 
 /** Lieu-dit of a region with planted vines (Alsace 67/68, Bourgogne 21/71/89):
  * the vines carry the colour, the lieu-dit fill stays near-transparent. */
 const VINE_REGION_COMMUNE = [
   "in",
   ["slice", ["coalesce", ["get", "commune_insee"], ""], 0, 2],
-  ["literal", ["67", "68", "21", "71", "89"]],
+  ["literal", ["67", "68", "21", "71", "89", "84", "30", "26", "07", "13", "04", "51", "10", "02", "52", "77"]],
 ] as unknown as maplibregl.ExpressionSpecification;
 
 const FRANCE_CENTER: [number, number] = [2.6, 46.3];
@@ -1109,6 +1110,7 @@ const DEPT_REGION: Record<string, string> = {
   "67": "alsace", "68": "alsace",
   "21": "bourgogne", "71": "bourgogne", "89": "bourgogne",
   "51": "champagne", "10": "champagne", "02": "champagne", "52": "champagne", "77": "champagne",
+  "84": "rhone", "30": "rhone", "26": "rhone", "07": "rhone", "13": "rhone", "04": "rhone",
 };
 
 /**
@@ -1235,13 +1237,7 @@ function popupHtml(sourceLayer: string, f: SelectedGeoFeature): string {
     );
   }
   if (sourceLayer === SRC.lieux) {
-    const cru = f.areaRegionType
-      ? f.areaRegionType === "grand-cru"
-        ? "Grand Cru"
-        : f.areaRegionType === "premier-cru"
-        ? "Premier Cru"
-        : ""
-      : "";
+    const cru = areaTierLabel(f.areaRegionType, f.rootRegionId) ?? "";
     return (
       `<div class="wp-name">${f.name}</div>` +
       `<div class="wp-meta">Lieu-dit · ${f.communeInsee ?? "—"}</div>` +

@@ -58,8 +58,15 @@ Ne pas mettre chaque parcelle cadastrale dans `wine_areas` (explosion de volume)
 | Lien | `wine_area_parcels` | many-to-many cru/climat ↔ parcelle |
 | Lieu-dit | `wine_lieux_dits` | étiquette cadastrale nommée (Champagne + Alsace) |
 
-**Champagne :** Grand Cru / Premier Cru = communes (`wine_areas`, `insee_commune`).
-Les parcelles affichent le lieu-dit via `wine_lieux_dits`, pas un cru imbriqué.
+**Champagne (ADR 0024) :** 1 Champagne > 2 zone (4) > 3 terroir (17, découpage
+de l'Union des Maisons de Champagne) > 4 cru = commune historique (17 grands
+crus, 42 premiers crus, autres crus), construit par `build_vineyard.py
+--region champagne`. Les lieux-dits sont découpés aux vignes.
+
+**Rhône méridional (ADR 0024) :** 1 Vallée du Rhône > 2 secteur > 3 cru
+(`region_type = grand-cru`, affiché « Cru ») ou Côtes du Rhône Villages nommé
+(`premier-cru`, affiché « Villages nommé »). Côtes du Rhône, Villages générique
+et AOC satellites : nœuds masqués, sans contour.
 
 **Alsace :** L1 région + sous-appellations (Côtes de Barr, …) + 51 Grands Crus.
 Les AOC produit à empreinte régionale (Crémant, AOC « Alsace ») restent en base
