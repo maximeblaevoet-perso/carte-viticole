@@ -31,7 +31,10 @@ import {
   setVineColor,
 } from "@/components/map/vineLayers";
 import { OffscreenPlaces } from "@/components/map/OffscreenPlaces";
+import { applyRevealOffset, initRevealOffset, isRevealed } from "@/components/map/reveal";
+import type { RevealKind } from "@/components/map/reveal";
 import {
+  AREA_FILL,
   GRAND_CRU_COLOR,
   HIERARCHY_LAYERS,
   PREMIER_CRU_COLOR,
@@ -459,6 +462,9 @@ export function WineMap({
     const interactiveLayers: string[] = [];
 
     map.on("load", () => {
+      // Screen-share reveal (ADR 0025): thresholds follow the screen size.
+      initRevealOffset(map);
+      map.on("resize", () => applyRevealOffset(map));
       map.addSource("areas", {
         type: "geojson",
         data: collections.polygons,
@@ -1394,11 +1400,25 @@ function addRealLayers(
   // Only the topmost interactive layer under the cursor answers: a vine plot
   // sits inside a lieu-dit inside a cru, and all three used to fire at once.
   const interactiveIds = interactive.map((i) => i.layerId);
+  // A place not yet revealed for this zoom / screen is drawn transparent but
+  // still hit by queries: it must neither take the hover nor the click.
+  const revealKind: Record<string, RevealKind> = {
+    [AREA_FILL.secteur]: "area",
+    [AREA_FILL.village]: "area",
+    [AREA_FILL.cru]: "cru",
+    [VINE_FILL]: "vine",
+  };
+  const shown = (f: MapGeoJSONFeature) => {
+    const kind = revealKind[f.layer.id];
+    return !kind || isRevealed(kind, f.properties as RealProps, map.getZoom());
+  };
   const isTopmost = (layerId: string, point: maplibregl.PointLike) =>
-    map.queryRenderedFeatures(point, {
-      // Domain markers are added later, above everything, by their own handlers.
-      layers: map.getLayer(DOMAIN_CIRCLE) ? [...interactiveIds, DOMAIN_CIRCLE] : interactiveIds,
-    })[0]?.layer.id === layerId;
+    map
+      .queryRenderedFeatures(point, {
+        // Domain markers are added later, above everything, by their own handlers.
+        layers: map.getLayer(DOMAIN_CIRCLE) ? [...interactiveIds, DOMAIN_CIRCLE] : interactiveIds,
+      })
+      .find(shown)?.layer.id === layerId;
 
   // --- hover / click on real layers --------------------------------------
   const setRealHover = (sourceLayer: string, id: string | null) => {
@@ -1417,7 +1437,7 @@ function addRealLayers(
 
   for (const { layerId, sourceLayer } of interactive) {
     map.on("mousemove", layerId, (e) => {
-      const raw = e.features?.[0];
+      const raw = e.features?.find(shown);
       if (!raw || !isTopmost(layerId, e.point)) return;
       map.getCanvas().style.cursor = "pointer";
       const props = raw.properties as unknown as RealProps;
@@ -1431,7 +1451,7 @@ function addRealLayers(
       popup.remove();
     });
     map.on("click", layerId, (e) => {
-      const raw = e.features?.[0];
+      const raw = e.features?.find(shown);
       if (!raw || !isTopmost(layerId, e.point)) return;
       const props = raw.properties as unknown as RealProps;
       const feature = featureFromProps(sourceLayer, props);

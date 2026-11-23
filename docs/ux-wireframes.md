@@ -20,7 +20,11 @@
 The panel is the right-side `aside` (`w-[380px]`), hidden below `md`.
 
 The synthetic region layer is always present. In real-enabled mode, sourced
-PostGIS areas, parcels, and lieux-dits are progressively revealed by zoom. A
+PostGIS areas, parcels, and lieux-dits are progressively revealed by zoom.
+Since ADR 0025 a place hands over to its children when it fills ~60 % of the
+screen's short side (not at a fixed zoom per level): a small Alsace
+appellation steps aside later than a large Rhône secteur, and the vines of
+Châteauneuf-du-Pape appear as soon as the appellation fills the screen. A
 click selects the geographic feature, recentres the map when appropriate, and
 shows its provenance. Climate remains attached to the root region until finer
 observations exist.
@@ -33,7 +37,8 @@ region). Picking one selects it like a click and frames its whole extent at a
 zoom where its layer is drawn. A click on the map frames the clicked place the
 same way when its extent is known, but never zooms out.
 
-**Alsace, planted vines (ADR 0016).** From zoom 13 the map shows the vines
+**Alsace, planted vines (ADR 0016).** Once their commune or appellation
+fills the screen (zoom 11.5–13, ADR 0025) the map shows the vines
 actually planted, coloured by terroir score; a bottom-left control switches
 the colouring (score soleil / fraîcheur, géologie, pente, exposition,
 altitude) and shows its legend. The géologie legend groups rock families
@@ -52,11 +57,13 @@ crus and lieux-dits**, dashed pink, labelled "name · ≈ n ha". Declared places
 outside the view become chips at the top left ("Rangen · 33 km ↓") that fly to
 them. No plot is outlined as the domain's (ADR 0019).
 
-**Cru boundary over the parcellaire (ADR 0018, 0022).** From zoom 13 the
-cru fill fades to a faint wash and its boundary is redrawn above parcels,
+**Cru boundary over the parcellaire (ADR 0018, 0022).** Once the vines are
+drawn the cru fill fades to a faint wash and its boundary is redrawn above parcels,
 lieux-dits and vines on a light casing, on every basemap, so the cru stays
 readable without hiding the plots. Premiers crus are gold, grands crus brick
-orange, in every region.
+orange, in every region. In Alsace and Bourgogne, where the cru boundary is the
+main reading, grand / premier cru outlines are drawn about 1.8× heavier on a
+wider light casing (ADR 0025); Champagne crus, whole communes, stay thin.
 
 **Progressive reading (ADR 0022).** One level is read at a time, the previous
 one fading to a faint wash but never disappearing: région (≤ 7.5) → secteurs

@@ -80,7 +80,13 @@ Map styling columns (migration 0017, ADR 0022), cosmetic, never data:
 (one label anchor on the largest part), `short_name` (cru name without the
 "<appellation> premier/grand cru" prefix). Recomputed by
 `wine_areas_refresh_map_style(<root_region_id>)`. Since 0017 `zoom_max` no
-longer cuts area tiles: the client fades levels (`AREA_BANDS`).
+longer cuts area tiles: the client fades levels. `reveal_zoom` (migration
+0020, ADR 0025): zoom at which the area fills 60 % of a 1024 px screen short
+side; tiles also carry the parent's as `parent_reveal_zoom`. Display only,
+recomputed by the same refresh function. Since migration 0022 crus
+(levels 4-5) also get a `geom_display`: closing by 3 m and enclosed holes
+< 2 500 m² dropped, so the slivers of the INAO plot union are not drawn as
+lines inside the cru (`wine_areas_refresh_cru_display_geom(<region>)`).
 
 ### `wine_parcels`
 Fine parcel polygons shown only at high zoom (`zoom_min` default 14). Separate
@@ -140,7 +146,11 @@ TOPO "Vigne" zones outside the RPG, clipped to the AOC aire. `source`
 `regional`, highest INAO rank, never a score input), `premier_cru`,
 `village`, `secteur` (drives the per-sector altitude table). `wine_domains`
 gains `premiers_crus` and `villages`.
-Streamed as the `wine-vine-plots` MVT layer from z13. Method:
+Its reveal zoom (ADR 0025) is derived in `wine_mvt`, not stored: the smaller
+of `vine_commune_reveal.reveal_zoom` (vineyard extent of the commune, one row
+per commune, migration 0020) and its village appellation's, in [11.5, 13].
+Streamed as the `wine-vine-plots` MVT layer from z13, and from z11 where
+`reveal_zoom` is low. Method:
 [`terroir-score.md`](terroir-score.md).
 
 `prune_alsace_vineless_geodata()` deletes the Alsace INAO `wine_parcels`

@@ -6,6 +6,7 @@ import type { ExpressionSpecification, GeoJSONSource, Map as MlMap } from "mapli
 import type { Feature, FeatureCollection, Point } from "geojson";
 import { SCORE_RAMP } from "@/lib/terroir-score";
 import type { WineDomain } from "@/lib/types";
+import { DEFAULT_VINE_REVEAL, perZoom, ramp as zoomRamp, revealZ, revealed, since, withState } from "./reveal";
 
 export const VINE_SOURCE_LAYER = "wine-vine-plots";
 export const VINE_FILL = "real-fill-vine-plots";
@@ -17,8 +18,15 @@ export const DOMAIN_LABEL = "domains-label";
 export const DOMAIN_PLACES_SOURCE = "domain-places";
 export const DOMAIN_PLACES_LINE = "domain-places-line";
 export const DOMAIN_PLACES_LABEL = "domain-places-label";
-/** Same zoom as the INAO parcels / lieux-dits (migration 0013). */
-export const VINE_MIN_ZOOM = 13;
+/**
+ * Vines ship from z11 where their commune / appellation fills the screen
+ * early (migration 0020); each plot fades in at its own `reveal_zoom`.
+ */
+export const VINE_MIN_ZOOM = 11;
+
+/** Vine opacity at a grid zoom: in at the plot's context reveal (ADR 0025). */
+const vineIn = (z: number, off: number, to: number) =>
+  zoomRamp(since(z, revealZ(off, DEFAULT_VINE_REVEAL)), [[-0.4, 0], [0.2, to]]);
 const DOMAIN_HIGHLIGHT = "#ff2d87";
 const NO_DOMAIN = "__none__";
 
@@ -192,12 +200,10 @@ export function addVineLayers(map: MlMap, by: VineColorBy, beforeId?: string) {
       minzoom: VINE_MIN_ZOOM,
       paint: {
         "fill-color": vineColorExpression(by),
-        "fill-opacity": [
-          "case",
-          ["boolean", ["feature-state", "selected"], false], 0.95,
-          ["boolean", ["feature-state", "hover"], false], 0.9,
-          0.72,
-        ],
+        // In as soon as their commune / appellation fills the screen (ADR 0025).
+        "fill-opacity": revealed(VINE_FILL, "fill-opacity", (off) =>
+          perZoom((z) => withState(vineIn(z, off, 0.72), 0.18, 0.95))
+        ),
       },
     },
     beforeId
@@ -214,7 +220,7 @@ export function addVineLayers(map: MlMap, by: VineColorBy, beforeId?: string) {
           "case", ["boolean", ["feature-state", "selected"], false], "#111111", "#3b2a1a",
         ],
         "line-width": ["case", ["boolean", ["feature-state", "selected"], false], 2.2, 0.4],
-        "line-opacity": 0.8,
+        "line-opacity": revealed(VINE_LINE, "line-opacity", (off) => perZoom((z) => vineIn(z, off, 0.8))),
       },
     },
     beforeId

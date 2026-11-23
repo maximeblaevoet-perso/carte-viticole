@@ -120,7 +120,8 @@ function AspectCompass() {
 
 /**
  * Colour the planted vines by score, geology, slope, aspect, altitude or
- * estimated domain, with a compact legend. Vines show from zoom 13.
+ * estimated domain, with a compact legend. Vines show once their commune /
+ * appellation fills the screen (ADR 0025).
  */
 export function VineColorSwitcher({
   value,
@@ -176,7 +177,7 @@ export function VineColorSwitcher({
       {showLegend && (
         <>
           {legend}
-          <p className="mt-1 text-[10px] text-slate-400">Visibles à partir du zoom 13 (RPG + BD TOPO).</p>
+          <p className="mt-1 text-[10px] text-slate-400">Visibles dès que la commune ou l’appellation remplit l’écran (RPG + BD TOPO).</p>
         </>
       )}
     </div>

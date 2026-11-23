@@ -94,6 +94,11 @@ pour les couches MVT réelles :
   l’apparition des crus (`z < 11`)
 - zoom fort → niveaux 4/5 (crus) puis parcelles / lieux-dits (≥ 13)
 
+Ces bandes ne valent plus que pour les couches **synthétiques**. Les aires
+réelles (MVT) sont révélées par part d'écran (ADR 0025) : un lieu passe la
+main à ses enfants quand il remplit ~60 % du petit côté de l'écran
+(`reveal_zoom`, migration 0020), quel que soit son niveau ou sa région.
+
 Les aires (`wine_areas`) et les parcelles (`wine_parcels`) avec
 `map_visible=false` ne sont jamais embarquées dans les tuiles. Les empreintes
 synthétiques de `geo.ts` sont masquées dès qu’une région possède de vrais

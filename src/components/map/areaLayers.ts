@@ -1,25 +1,30 @@
 /**
- * Real (MVT) wine-area hierarchy on the map, read progressively (ADR 0022):
+ * Real (MVT) wine-area hierarchy on the map, read progressively.
  *
- *   zoom  5 ─ 7      région (fill + name)
- *   zoom  7 ─ 10     sous-régions / secteurs, one pastel each, one name each
- *   zoom 10 ─ 12.5   villages / appellations, one pastel each
- *   zoom 11 ─ 13     crus (premier = doré, grand = orange brique)
- *   zoom 13 +        planted vines, lieux-dits
+ * Since ADR 0025 a level is no longer tied to one zoom band for all of France:
+ * each place is revealed by the share of the screen it fills (`reveal.ts`).
+ * A small Alsace appellation hands over to its grands crus later than the
+ * Côte de Nuits, and Châteauneuf-du-Pape shows its vines as soon as it fills
+ * the screen, not at a fixed z13.
+ *
+ *   région      ─ read until it fills the screen, outline kept 2 zooms more
+ *   secteur     ─ drawn from S, read until R, faint wash, outline gone at R+2
+ *   village     ─ same rule, one level down
+ *   cru         ─ drawn from S (premier = doré, grand = orange brique)
+ *   vines       ─ from their commune / appellation's reveal (vineLayers.ts)
  *
  * Each level fades in as the previous one fades to a faint wash, so the user
- * never zooms through a blank band (Mâconnais z11–13 before this). Only the
- * level **right above** the one being read keeps its outline, in a neutral
- * brown, with its name along it: région around the villages' secteurs no
- * more, secteur around the villages, village around the crus and vines.
+ * never zooms through a blank band. Only the level right above the one being
+ * read keeps its outline, in a neutral brown, with its name along it.
  *
  * Colours: `map_color_idx` (migration 0017) picks a pastel so two touching
  * siblings never share one. Crus are a quality tier, not a place: one colour
- * per tier in every region.
+ * per tier in every region (ADR 0022).
  */
 import type maplibregl from "maplibre-gl";
 import type { Map as MlMap } from "maplibre-gl";
 import type { WineLayerTheme } from "@/lib/basemaps";
+import { REVEAL, perZoom, ramp, revealZ, revealed, since, startZ, withState } from "./reveal";
 
 type Expr = maplibregl.ExpressionSpecification;
 const e = (x: unknown) => x as Expr;
@@ -68,13 +73,13 @@ export const AREA_FILL = {
   cru: "real-fill-cru",
 } as const;
 
-/** Zoom at which each level is the one being read (labels at its centre). */
-export const AREA_BANDS = {
-  region: { from: 0, to: 7.5 },
-  secteur: { from: 7, to: 10.3 },
-  village: { from: 9.6, to: 12.8 },
-  cru: { from: 10.8, to: 22 },
-} as const;
+/** Regions whose grand / premier cru outlines are drawn heavier. */
+const MARKED_CRU_REGION = e(["in", ["coalesce", ["get", "root_region_id"], ""], ["literal", ["alsace", "bourgogne"]]]);
+const MARKED_CRU = e([
+  "all",
+  MARKED_CRU_REGION,
+  ["in", ["coalesce", ["get", "region_type"], ""], ["literal", ["grand-cru", "premier-cru"]]],
+]);
 
 const isLevel = (...levels: number[]) =>
   e(["in", ["to-number", ["get", "level"]], ["literal", levels]]);
@@ -111,6 +116,62 @@ function fade(stops: [number, number][], hoverBoost = 0.14): Expr {
   ]);
 }
 
+/* --- per-feature reading windows (ADR 0025), as functions of a grid zoom -- */
+
+type AtZoom = (z: number, off: number) => Expr;
+
+/** Fades in at S. */
+const appear = (to: number): AtZoom => (z, off) =>
+  ramp(since(z, startZ(off)), [[-0.5, 0], [0, to]]);
+
+/** Secteur / village fill: read from S to R, faint wash, gone at R + 1.5. */
+const areaFill: AtZoom = (z, off) =>
+  e(["min", appear(0.45)(z, off), ramp(since(z, revealZ(off)), [[-0.3, 0.45], [0.5, 0.12], [1.5, 0]])]);
+
+/** Cru fill: in at S, a wash one zoom later — the vines carry the colour. */
+const cruFill: AtZoom = (z, off) =>
+  e(["min", appear(0.5)(z, off), ramp(since(z, startZ(off)), [[1, 0.5], [2, 0.1]])]);
+
+/** Outline kept until the place is 4× the screen (R + 2). */
+const outlineUntil = (base: number): AtZoom => (z, off) =>
+  ramp(since(z, revealZ(off)), [[REVEAL.edgeKept - 0.5, base], [REVEAL.edgeKept, 0]]);
+
+const minOf = (...fs: AtZoom[]): AtZoom => (z, off) => e(["min", ...fs.map((f) => f(z, off))]);
+
+/** Name at the centre: from S + 0.5 to R + 0.3 (hand-over). */
+const nameAtCentre: AtZoom = (z, off) =>
+  e([
+    "min",
+    ramp(since(z, startZ(off)), [[0, 0], [0.5, 1]]),
+    ramp(since(z, revealZ(off)), [[0, 1], [0.5, 0]]),
+  ]);
+/** Region name: until it fills the screen. */
+const regionName: AtZoom = (z, off) => ramp(since(z, revealZ(off)), [[0, 1], [0.5, 0]]);
+/** Leaf (cru) name: from S + 0.5 on. */
+const leafName: AtZoom = (z, off) => ramp(since(z, startZ(off)), [[0, 0], [0.5, 1]]);
+/** Name along the outline: from R to R + 2. */
+const nameAlongEdge: AtZoom = (z, off) =>
+  e([
+    "min",
+    ramp(since(z, revealZ(off)), [[0, 0], [0.4, 1]]),
+    ramp(since(z, revealZ(off)), [[REVEAL.edgeKept - 0.4, 1], [REVEAL.edgeKept, 0]]),
+  ]);
+
+/** Own colour while the place is read, neutral once its children are. */
+const handOver = (own: Expr | string) => (z: number, off: number) =>
+  e(["interpolate", ["linear"], since(z, revealZ(off)), -0.3, own, 0.5, PARENT_EDGE_COLOR]);
+
+/** Linear interpolation of `[zoom, value]` stops, in JS (for text sizes). */
+function lerp(stops: [number, number][], z: number): number {
+  if (z <= stops[0][0]) return stops[0][1];
+  for (let i = 1; i < stops.length; i++) {
+    const [z1, v1] = stops[i];
+    const [z0, v0] = stops[i - 1];
+    if (z <= z1) return v0 + ((v1 - v0) * (z - z0)) / (z1 - z0);
+  }
+  return stops[stops.length - 1][1];
+}
+
 /** Layer ids drawn by this module that handle their own theme. */
 export const HIERARCHY_LAYERS = new Set<string>();
 
@@ -119,21 +180,15 @@ interface LineSpec {
   sourceLayer: string;
   filter?: maplibregl.FilterSpecification;
   minzoom: number;
-  color: Expr | string;
+  /** Colour: constant / data expression, or per-feature by zoom. */
+  color: Expr | string | ((z: number, off: number) => Expr);
   width: Expr;
   casing?: Expr;
+  /** Casing opacity (default 0.45). */
+  casingOpacity?: Expr | number;
   dash?: number[];
-  /**
-   * Zoom past which the outline fades out: only the level right above the
-   * one being read keeps its outline (no stack of grandparent lines).
-   */
-  visibleUntil?: number;
-}
-
-/** Constant opacity, or a fade-out ending half a zoom after `until`. */
-function lineOpacity(base: number, until?: number): Expr | number {
-  if (until === undefined) return base;
-  return e(["interpolate", ["linear"], ["zoom"], until, base, until + 0.5, 0]);
+  /** Visibility 0–1, per feature and zoom (ADR 0025). */
+  visible: AtZoom;
 }
 
 /**
@@ -149,6 +204,8 @@ interface InkLayer {
 const INK_LAYERS: InkLayer[] = [];
 
 function addLine(map: MlMap, spec: LineSpec) {
+  const opacity = (base: Expr | number) => (off: number) =>
+    perZoom((z) => e(["*", base, spec.visible(z, off)]));
   if (spec.casing) {
     const casingId = `${spec.id}-casing`;
     map.addLayer({
@@ -159,45 +216,49 @@ function addLine(map: MlMap, spec: LineSpec) {
       minzoom: spec.minzoom,
       ...(spec.filter ? { filter: spec.filter } : {}),
       layout: { "line-join": "round" },
-      ...(spec.visibleUntil !== undefined ? { maxzoom: spec.visibleUntil + 0.5 } : {}),
       paint: {
         "line-color": "#fbf7ef",
         "line-width": spec.casing,
-        "line-opacity": lineOpacity(0.45, spec.visibleUntil),
+        "line-opacity": revealed(casingId, "line-opacity", opacity(spec.casingOpacity ?? 0.45)),
       },
     });
     HIERARCHY_LAYERS.add(casingId);
     INK_LAYERS.push({ id: casingId, ink: "#fbf7ef", kind: "casing" });
   }
+  const color = spec.color;
   map.addLayer({
     id: spec.id,
     type: "line",
     source: "wine",
     "source-layer": spec.sourceLayer,
     minzoom: spec.minzoom,
-    ...(spec.visibleUntil !== undefined ? { maxzoom: spec.visibleUntil + 0.5 } : {}),
     ...(spec.filter ? { filter: spec.filter } : {}),
     layout: { "line-join": "round" },
     paint: {
-      "line-color": spec.color,
+      "line-color":
+        typeof color === "function"
+          ? revealed(spec.id, "line-color", (off) => perZoom((z) => color(z, off)))
+          : color,
       "line-width": spec.width,
-      "line-opacity": lineOpacity(0.95, spec.visibleUntil),
+      "line-opacity": revealed(spec.id, "line-opacity", opacity(0.95)),
       ...(spec.dash ? { "line-dasharray": spec.dash } : {}),
     },
   });
   HIERARCHY_LAYERS.add(spec.id);
-  INK_LAYERS.push({ id: spec.id, ink: spec.color as Expr, kind: "line" });
+  INK_LAYERS.push({ id: spec.id, ink: "#000", kind: "line" });
 }
 
 interface LabelSpec {
   id: string;
   sourceLayer: string;
   filter?: maplibregl.FilterSpecification;
-  minzoom: number;
-  maxzoom?: number;
+  minzoom?: number;
   text: Expr;
-  size: Expr | number;
+  /** Text size by zoom (px), shrunk to 0 where the name is hidden. */
+  size: [number, number][];
   ink: Expr | string;
+  /** Visibility 0–1, per feature and zoom (ADR 0025). */
+  visible: AtZoom;
   /** Name written along the outline instead of at the centre. */
   alongLine?: boolean;
   upper?: boolean;
@@ -211,12 +272,19 @@ function addLabel(map: MlMap, spec: LabelSpec) {
     type: "symbol",
     source: "wine",
     "source-layer": spec.sourceLayer,
-    minzoom: spec.minzoom,
-    ...(spec.maxzoom !== undefined ? { maxzoom: spec.maxzoom } : {}),
+    ...(spec.minzoom !== undefined ? { minzoom: spec.minzoom } : {}),
     ...(spec.filter ? { filter: spec.filter } : {}),
     layout: {
       "text-field": spec.text,
-      "text-size": spec.size,
+      // A transparent label would still win collisions against the names
+      // being read: its size drops to 0 where it is hidden.
+      "text-size": revealed(
+        spec.id,
+        "text-size",
+        (off) =>
+          perZoom((z) => e(["*", lerp(spec.size, z), ["step", spec.visible(z, off), 0, 0.05, 1]])),
+        true
+      ),
       "text-font": ["Open Sans Semibold"],
       "text-allow-overlap": false,
       "text-padding": 4,
@@ -231,7 +299,12 @@ function addLabel(map: MlMap, spec: LabelSpec) {
           }
         : { "text-max-width": 9 }),
     },
-    paint: { "text-color": spec.ink, "text-halo-color": "#fbf7ef", "text-halo-width": 1.6 },
+    paint: {
+      "text-color": spec.ink,
+      "text-halo-color": "#fbf7ef",
+      "text-halo-width": 1.6,
+      "text-opacity": revealed(spec.id, "text-opacity", (off) => perZoom((z) => spec.visible(z, off))),
+    },
   });
   HIERARCHY_LAYERS.add(spec.id);
   INK_LAYERS.push({ id: spec.id, ink: spec.ink, kind: "label" });
@@ -259,7 +332,7 @@ export function addAreaFills(map: MlMap, regionColor: Expr): { layerId: string; 
     },
   });
   // Sous-régions: the coarse reading, then a faint wash that still says
-  // "you are in the Mâconnais" where no village / cru / vine is drawn.
+  // "you are in the Mâconnais" — gone once the secteur is 3× the screen.
   map.addLayer({
     id: AREA_FILL.secteur,
     type: "fill",
@@ -268,7 +341,9 @@ export function addAreaFills(map: MlMap, regionColor: Expr): { layerId: string; 
     filter: isLevel(2),
     paint: {
       "fill-color": tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, pastel),
-      "fill-opacity": fade([[7, 0.45], [9.6, 0.45], [10.8, 0.22], [13, 0.16], [14.5, 0.08]]),
+      "fill-opacity": revealed(AREA_FILL.secteur, "fill-opacity", (off) =>
+        perZoom((z) => withState(areaFill(z, off), 0.14, 0.5))
+      ),
     },
   });
   map.addLayer({
@@ -276,11 +351,12 @@ export function addAreaFills(map: MlMap, regionColor: Expr): { layerId: string; 
     type: "fill",
     source: "wine",
     "source-layer": AREA_SRC.appellation,
-    minzoom: 9,
     filter: isLevel(3),
     paint: {
       "fill-color": pastel,
-      "fill-opacity": fade([[9, 0], [10, 0.45], [11.8, 0.45], [12.8, 0.16], [14, 0.06]]),
+      "fill-opacity": revealed(AREA_FILL.village, "fill-opacity", (off) =>
+        perZoom((z) => withState(areaFill(z, off), 0.14, 0.5))
+      ),
     },
   });
   map.addLayer({
@@ -288,12 +364,13 @@ export function addAreaFills(map: MlMap, regionColor: Expr): { layerId: string; 
     type: "fill",
     source: "wine",
     "source-layer": AREA_SRC.cru,
-    minzoom: 10.4,
     paint: {
       "fill-color": cruColor,
-      // Under the vines (z13) a cru wash would tint every plot: fade it and
-      // let the cru outline above the vines carry the boundary.
-      "fill-opacity": fade([[10.4, 0], [11.2, 0.5], [12.6, 0.5], [13.4, 0.1]]),
+      // Under the vines a cru wash would tint every plot: it fades and the
+      // cru outline above the vines carries the boundary.
+      "fill-opacity": revealed(AREA_FILL.cru, "fill-opacity", (off) =>
+        perZoom((z) => withState(cruFill(z, off), 0.14, 0.5))
+      ),
     },
   });
 
@@ -326,82 +403,88 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
       ]),
     ]);
 
-  /** Own colour while the level is read, neutral once its children are. */
-  const handOver = (own: Expr | string, readUntil: number) =>
-    e(["interpolate", ["linear"], ["zoom"], readUntil - 0.3, own, readUntil + 0.5, PARENT_EDGE_COLOR]);
-
   // --- outlines (bottom → top: finest first, so parents stay on top) -----
   addLine(map, {
     id: "real-line-cru",
     sourceLayer: AREA_SRC.cru,
-    minzoom: 10.4,
+    minzoom: 9.5,
     color: tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, ink),
-    width: width([[10.4, 0.6], [13, 1.4], [16, 2.6]], (w) => tier(w * 1.5, w, w * 0.8)),
-    casing: zoomWidth(12.5, 0, 13.2, 3.2, 16, 5.5),
+    // Alsace / Bourgogne: the grand / premier cru boundary IS the reading of
+    // the map, so it is drawn ~1.8× heavier there (user review 2026-11-23).
+    // Champagne crus are whole communes: a heavy line would cut the map up.
+    width: width([[10.4, 0.7], [13, 1.4], [16, 2.6]], (w) =>
+      e(["case", MARKED_CRU_REGION, tier(w * 2.6, w * 1.9, w * 0.8), tier(w * 1.5, w, w * 0.8)])
+    ),
+    // Light casing so the line reads over vines, imagery and the geology map.
+    casing: e([
+      "interpolate", ["linear"], ["zoom"],
+      10.5, 0,
+      12, ["case", MARKED_CRU, 3.6, 1.6],
+      16, ["case", MARKED_CRU, 7.5, 5.5],
+    ]),
+    // Near-opaque there: brick / gold must not melt into red-orange vines.
+    casingOpacity: e(["case", MARKED_CRU, 0.9, 0.45]),
+    visible: appear(1),
   });
   addLine(map, {
     id: "real-line-village",
     sourceLayer: AREA_SRC.appellation,
     filter: isLevel(3),
-    minzoom: 9.4,
-    color: handOver(ink, AREA_BANDS.village.to),
+    minzoom: 7,
+    color: handOver(ink),
     width: width([[9.4, 0.5], [11, 1], [14, 1.6]]),
+    visible: minOf(appear(1), outlineUntil(1)),
   });
   addLine(map, {
     id: "real-line-secteur",
     sourceLayer: AREA_SRC.appellation,
     filter: isLevel(2),
-    minzoom: 6.5,
-    color: handOver(tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, ink), AREA_BANDS.secteur.to),
-    // Parent of the villages only: gone once the crus are read.
-    visibleUntil: AREA_BANDS.village.to,
+    minzoom: 6,
+    color: handOver(tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, ink)),
     width: width([[6.5, 0.8], [10, 1.5], [13, 1.8]]),
     casing: zoomWidth(6.5, 1.6, 10, 2.8, 13, 3.2),
+    visible: minOf(appear(1), outlineUntil(1)),
   });
   addLine(map, {
     id: "real-line-region",
     sourceLayer: AREA_SRC.region,
     minzoom: 0,
-    color: handOver(regionColor, AREA_BANDS.region.to),
-    // Parent of the secteurs only: gone once the villages are read.
-    visibleUntil: AREA_BANDS.secteur.to,
+    color: handOver(regionColor),
     width: width([[4, 1.2], [9, 2], [11, 2.2]]),
     casing: zoomWidth(4, 2.4, 9, 3.4, 11, 3.6),
+    visible: outlineUntil(1),
   });
 
-  // --- names at the centre while the level is the one being read ----------
+  // --- names at the centre while the place is the one being read ----------
   const name = e(["get", "name"]);
   addLabel(map, {
     id: "real-label-region",
     sourceLayer: AREA_SRC.labels,
     filter: isLevel(1),
-    minzoom: 0,
-    maxzoom: AREA_BANDS.region.to,
     text: name,
-    size: 15,
+    size: [[0, 15]],
     ink: regionColor,
     upper: true,
+    visible: regionName,
   });
   addLabel(map, {
     id: "real-label-secteur",
     sourceLayer: AREA_SRC.labels,
     filter: isLevel(2),
-    minzoom: AREA_BANDS.secteur.from,
-    maxzoom: AREA_BANDS.secteur.to,
     text: name,
-    size: zoomWidth(7, 12, 10, 15),
+    size: [[7, 12], [10, 15]],
     ink: tier(GRAND_CRU_DARK, PREMIER_CRU_DARK, ink),
     upper: true,
+    visible: nameAtCentre,
   });
   addLabel(map, {
     id: "real-label-village",
     sourceLayer: AREA_SRC.labels,
     filter: isLevel(3),
-    minzoom: AREA_BANDS.village.from,
-    maxzoom: AREA_BANDS.village.to,
     text: name,
-    size: zoomWidth(9.6, 11, 12.5, 13),
+    size: [[9.6, 11], [12.5, 13]],
     ink,
+    visible: nameAtCentre,
   });
   // Crus: short name + a small tier line, so "Les Caillerets" the premier cru
   // never reads like "LES CAILLERETS" the cadastral lieu-dit.
@@ -409,55 +492,54 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     id: "real-label-cru",
     sourceLayer: AREA_SRC.labels,
     filter: isLevel(4, 5),
-    minzoom: AREA_BANDS.cru.from,
     text: e([
       "format",
       ["coalesce", ["get", "short_name"], ["get", "name"]], {},
       "\n", {},
       tier("GRAND CRU", "1ER CRU", ""), { "font-scale": 0.72 },
     ]),
-    size: zoomWidth(11, 10.5, 15, 13),
+    size: [[11, 10.5], [15, 13]],
     ink: cruInk,
     // Grands crus win the collisions, then premiers crus.
     sortKey: tier(0, 1, 2),
+    visible: leafName,
   });
 
   // --- the level above, named along its own outline ------------------------
   addLabel(map, {
     id: "real-label-region-edge",
     sourceLayer: AREA_SRC.region,
-    minzoom: AREA_BANDS.region.to,
-    maxzoom: AREA_BANDS.secteur.to + 0.3,
+    minzoom: 6,
     text: name,
-    size: 12,
+    size: [[0, 12]],
     ink: PARENT_EDGE_COLOR,
     upper: true,
     alongLine: true,
     spacing: 700,
+    visible: nameAlongEdge,
   });
   addLabel(map, {
     id: "real-label-secteur-edge",
     sourceLayer: AREA_SRC.appellation,
     filter: isLevel(2),
-    minzoom: AREA_BANDS.secteur.to,
-    maxzoom: AREA_BANDS.village.to + 0.3,
     text: name,
-    size: 12,
+    size: [[0, 12]],
     ink: PARENT_EDGE_COLOR,
     upper: true,
     alongLine: true,
     spacing: 600,
+    visible: nameAlongEdge,
   });
   addLabel(map, {
     id: "real-label-village-edge",
     sourceLayer: AREA_SRC.appellation,
     filter: isLevel(3),
-    minzoom: AREA_BANDS.village.to,
     text: name,
-    size: 11.5,
+    size: [[0, 11.5]],
     ink: PARENT_EDGE_COLOR,
     alongLine: true,
     spacing: 500,
+    visible: nameAlongEdge,
   });
 }
 
