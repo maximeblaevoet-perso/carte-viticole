@@ -59,7 +59,8 @@ def fetch_all(base: str, key: str, table: str, select: str, extra: str = "", pag
     while True:
         q = f"select={urllib.parse.quote(select, safe=',()*:')}&order=id&limit={page}"
         if last is not None:
-            q += "&id=gt." + urllib.parse.quote(f'"{last}"')
+            # no double quotes: outside in.(…) PostgREST would compare them literally
+            q += "&id=gt." + urllib.parse.quote(str(last), safe="")
         if extra:
             q += "&" + extra
         req = urllib.request.Request(
