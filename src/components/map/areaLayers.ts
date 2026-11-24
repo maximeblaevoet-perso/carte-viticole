@@ -411,7 +411,8 @@ export function addAreaOutlinesAndLabels(map: MlMap, regionColor: Expr) {
     color: tier(GRAND_CRU_COLOR, PREMIER_CRU_COLOR, ink),
     // Alsace / Bourgogne: the grand / premier cru boundary IS the reading of
     // the map, so it is drawn ~1.8× heavier there (user review 2026-11-23).
-    // Champagne crus are whole communes: a heavy line would cut the map up.
+    // Champagne crus are vine footprints (ADR 0026) packed side by side: a
+    // heavy line would cut the vineyard up, so they keep the light line.
     width: width([[10.4, 0.7], [13, 1.4], [16, 2.6]], (w) =>
       e(["case", MARKED_CRU_REGION, tier(w * 2.6, w * 1.9, w * 0.8), tier(w * 1.5, w, w * 0.8)])
     ),

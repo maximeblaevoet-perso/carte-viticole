@@ -261,6 +261,7 @@ python scripts/build_alsace_vineyard.py --commit           # remplace vine_plots
 python scripts/build_alsace_vineyard.py --commit --prune   # + supprime aires INAO et lieux-dits sans vigne, découpe les autres sur les vignes
 python scripts/build_alsace_vineyard.py --lieux-dits-only  # seulement le découpage des lieux-dits (cache vine_plots.gpkg, ADR 0017)
 python scripts/build_alsace_vineyard.py --domains-only [--commit]  # seulement le score composé des domaines (cache, ADR 0019)
+python scripts/build_vineyard.py --region champagne --areas-only [--commit]  # seulement wine_areas (cache), puis wine_areas_refresh_cru_display_geom + wine_areas_refresh_map_style (ADR 0026)
 cd scripts && python -m unittest test_terroir_score
 ```
 

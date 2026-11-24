@@ -40,7 +40,7 @@ Luberon, Alpilles, Costières…) et à la Champagne. Deux difficultés :
    retrouvées par le **préfixe des sections cadastrales** Etalab.
    Référentiel : `scripts/data/champagne-crus.json`.
 5. **Arbre Champagne** : 1 Champagne > 2 zone (4) > 3 terroir (17) > 4 cru
-   (commune). Zones et terroirs : découpage de l'Union des Maisons de
+   (commune ; dessiné sur l'emprise de ses vignes depuis l'ADR 0026). Zones et terroirs : découpage de l'Union des Maisons de
    Champagne, non réglementaire, signalé comme tel. Il remplace les 37 aires
    communales de `ingest_wine_geodata.py --scope champagne` (liste de premiers
    crus fausse) et ses lieux-dits non découpés.

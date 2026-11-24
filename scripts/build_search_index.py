@@ -52,10 +52,14 @@ def load_env() -> tuple[str, str]:
 
 
 def fetch_all(base: str, key: str, table: str, select: str, extra: str = "", page: int = PAGE) -> list[dict]:
+    """Keyset pagination (id > last id): a deep ``offset`` makes Postgres skip
+    every earlier row and hit the statement timeout on vine_plots (~200 000 rows)."""
     rows: list[dict] = []
-    offset = 0
+    last = None
     while True:
-        q = f"select={urllib.parse.quote(select, safe=',()*:')}&order=id&limit={page}&offset={offset}"
+        q = f"select={urllib.parse.quote(select, safe=',()*:')}&order=id&limit={page}"
+        if last is not None:
+            q += "&id=gt." + urllib.parse.quote(f'"{last}"')
         if extra:
             q += "&" + extra
         req = urllib.request.Request(
@@ -67,7 +71,7 @@ def fetch_all(base: str, key: str, table: str, select: str, extra: str = "", pag
         rows.extend(batch)
         if len(batch) < page:
             return rows
-        offset += page
+        last = batch[-1]["id"]
 
 
 def bbox_of(geom: dict | None) -> list[float] | None:

@@ -648,12 +648,33 @@ def classify_champagne(v: gpd.GeoDataFrame, _inao: gpd.GeoDataFrame) -> gpd.GeoD
     return v
 
 
+# Cru footprint (ADR 0026): closing of the cru's vines, clipped to its
+# commune. 60 m out / 40 m back joins the rows and plots of one slope across
+# paths and hedges (net +20 m) without bridging separate hillsides; parts
+# under 0.5 ha (a lone plot far from the rest) are dropped unless nothing
+# else is left.
+CHP_CRU_CLOSE_M = (60.0, 40.0)
+CHP_CRU_MIN_PART_M2 = 5_000.0
+
+
+def _cru_footprint(vines: gpd.GeoSeries, commune: shapely.Geometry) -> shapely.Geometry:
+    out, back = CHP_CRU_CLOSE_M
+    g = vines.buffer(out, resolution=4).union_all().buffer(-back, quad_segs=4)
+    g = shapely.make_valid(g.intersection(commune))
+    parts = [p for p in getattr(g, "geoms", [g]) if p.geom_type == "Polygon"]
+    big = [p for p in parts if p.area >= CHP_CRU_MIN_PART_M2]
+    return shapely.MultiPolygon(big or parts)
+
+
 def build_areas_champagne(v: gpd.GeoDataFrame) -> list[dict]:
     """1 Champagne > 2 zone (4) > 3 terroir (17) > 4 cru (commune, historic).
 
     Zones and terroirs are the Union des Maisons de Champagne's, outlined by
-    the footprint of their vines; crus are whole historic communes, like the
-    commune × appellation aires of the other regions.
+    the footprint of their vines. A cru is a whole historic commune by law,
+    but no vector delimitation of the planted aire exists (ADR 0024): it is
+    drawn as the footprint of its vines inside the commune (ADR 0026), not as
+    the commune's fields, woods and villages. A cru without vines keeps its
+    commune outline, hidden.
     """
     ref = champagne_ref()
     zones = {slugify(r["zone"]): r["zone"] for r in ref.values()}
@@ -663,13 +684,17 @@ def build_areas_champagne(v: gpd.GeoDataFrame) -> list[dict]:
         geom = d.geometry.buffer(150).union_all().buffer(-100)
         rows.append(_area_row(slugify(f"champagne-terroir-{ter}"), ter, 3, f"{R.id}-secteur-{zone_of[ter]}",
                               "subregion", geom, True, tol=30))
-    planted = set(v.wine_area_id)
+    vines_of = {k: d.geometry for k, d in v.groupby("wine_area_id")}
     for r in champagne_communes().itertuples():
         e = ref[r.key]
         area_id = slugify(f"champagne-{e['name']}-{e['insee_historique']}")
         rtype = {"grand_cru": "grand-cru", "premier_cru": "premier-cru"}.get(e["cru"], "village")
+        planted = area_id in vines_of
+        geom = _cru_footprint(vines_of[area_id], r.geometry) if planted else r.geometry
+        if geom.is_empty:
+            geom, planted = r.geometry, False
         rows.append(_area_row(area_id, e["name"], 4, slugify(f"champagne-terroir-{e['terroir']}"), rtype,
-                              r.geometry, area_id in planted, insee_commune=e["insee"]))
+                              geom, planted, insee_commune=e["insee"]))
     return sorted(rows, key=lambda r: r["level"])
 
 
@@ -1435,6 +1460,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="Alsace, avec --commit : supprime les aires INAO et lieux-dits sans vigne")
     ap.add_argument("--lieux-dits-only", action="store_true",
                     help="découpe seulement les lieux-dits sur les vignes déjà construites (cache), sans réécrire vine_plots")
+    ap.add_argument("--areas-only", action="store_true",
+                    help="reconstruit seulement wine_areas à partir des vignes en cache (avec --commit : upsert, vine_plots intact)")
     ap.add_argument("--domains-only", action="store_true",
                     help="recalcule seulement les domaines à partir des vignes en cache (avec --commit : réécrit wine_domains)")
     args = ap.parse_args(argv)
@@ -1448,6 +1475,30 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         v = gpd.read_file(R.cache / "vine_plots.gpkg").to_crs(L93)
         return prune_lieux_dits(v, url, key) if not R.builds_areas else push_lieux_dits(v, url, key)
+
+    if args.areas_only:
+        if not R.builds_areas:
+            print(f"ERROR: {R.name} ne construit pas ses aires ici", file=sys.stderr)
+            return 1
+        v = gpd.read_file(R.cache / "vine_plots.gpkg").to_crs(L93)
+        areas = globals()[R.areas](v)
+        shown = [a for a in areas if a["map_visible"]]
+        print(f"{len(areas)} aires ({len(shown)} visibles)")
+        if not args.commit:
+            print("\nDry-run : rien n'est écrit dans Supabase (ajouter --commit).")
+            return 0
+        _load_project_env()
+        url, key = _resolve_env()
+        if not url or not key:
+            print("ERROR: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY manquants", file=sys.stderr)
+            return 1
+        # same ids as the full build: upsert in place, vine_plots untouched
+        w, err = upsert_rows("wine_areas", "id", areas, url, key, 20)
+        print(f"table=wine_areas upserted={w} errors={err}")
+        print("\nPuis dans l'éditeur SQL, une requête à la fois :\n"
+              f"  select wine_areas_refresh_cru_display_geom('{R.id}');\n"
+              f"  select wine_areas_refresh_map_style('{R.id}');")
+        return 1 if err else 0
 
     if args.domains_only:
         v = gpd.read_file(R.cache / "vine_plots.gpkg").to_crs(L93)

@@ -275,7 +275,9 @@ Ni INAO, ni data.gouv, ni Comité Champagne ne publient l'aire parcellaire ;
 le cahier des charges (2025) renvoie à la loi du 6 mai 1919 et à des plans
 déposés en mairie. Les cartes du site du Comité sont des images : les
 géoréférencer coûterait cher pour un gain quasi nul (aire presque entièrement
-plantée). **Règle** : vignes dans les 319 crus (`champagne-crus.json`).
+plantée). **Règle** : vignes dans les 319 crus (`champagne-crus.json`). Le
+cru est **dessiné** sur l'emprise de ses vignes découpée sur sa commune
+(fermeture +60 / −40 m, ADR 0026), pas sur la commune entière.
 
 ### B5 — Champagne : communes nouvelles (auto)
 Aÿ (grand cru), Mareuil-sur-Aÿ et Bisseuil (premiers crus) ne font plus
